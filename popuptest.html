@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Всплывающее окно на JavaScript</title>
+  <!-- style>
+  #pop {
+    display: none;
+    /*-webkit-flex-direction: column;
+    flex-direction: column;
+    flex-grow: 3;
+    -webkit-flex-grow: 3;*/
+    /*width: 400%;*/
+    background-clip: padding-box;
+    background-color: #FFF;
+    /*box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);*/
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    height: auto;
+    overflow: hidden;
+    margin-left: 0px;
+    position: fixed;
+    /*left: -100%;*/
+    outline: medium none;
+    z-index: 1050;
+    padding:1px;
+  }
+  .flex {
+    width: 100%;
+    position: relative;
+    top: 1px;
+    padding: 1px;
+    display: -webkit-flex;
+    display: flex;
+    /*overflow-y: auto;
+    max-height: 400px;*/
+  }
+  .flex > div
+  {
+      overflow:hidden;
+      -webkit-flex: 1 1 auto;
+      flex: 1 1 auto;
+
+      width: 100%; /* To make the transition work nicely.  (Transitions to/from
+                      "width:auto" are buggy in Gecko and Webkit, at least.
+                      See http://bugzil.la/731886 for more info.) */
+
+      -webkit-transition: height 0.7s ease-out;
+      transition: height 0.7s ease-out;
+      -webkit-transition: background 0.7s ease-out;
+      transition: background 0.7s ease-out;
+  }
+  .flex > div:hover
+  {
+    background: #EEDDCC;
+    color: #112233;
+  }
+  .hrefs {
+    position:absolute;
+    bottom: 5px;
+  }
+  .bcol {
+    overflow:hidden;
+    font-size:large;
+    word-wrap:normal;
+    position: relative;
+  }
+  .columns {
+    overflow:hidden;
+    font-size:large;
+    word-wrap:normal;
+    position: relative;
+    -webkit-column-gap:8px;
+    -moz-column-gap:8px;
+    column-gap:8px;
+    column-rule:4px outset #555555;
+    -webkit-column-rule:4px outset #555555;
+    -moz-column-rule:4px outset #555555;
+    /*width: 240%;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex: 1 0 auto;
+    flex: 1 0 auto;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    height: 50%;*/
+    /*-moz-column-count:4;
+    -webkit-column-count:4;
+    column-count:4;
+    -moz-column-width:200px;
+    -webkit-column-width:200px;
+    column-width:200px;*/
+  }
+  </style -->
+  <link href="css/main.css" rel="stylesheet" type="text/css">
+  <script data-main="scripts/app" src="scripts/require.js"></script>
+</head>
+<body style='margin:4;padding:0;background-image:url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);background-repeat:repeat;'>
+<h1>Всплывающее окно на JavaScript</h1>
+<p><button id="ptop">Popup on top</button></p>
+<p><button id="pbot">Popup on bottom</button></p -->
+<div id="pop">
+  <!--table id="drugbot" style="width:100%;padding:1px;position:absolute;display:none;top:0px;"><tr><td style="text-align:left;">Word</td><td style="text-align:center;width:95%;"><a href="#" id="draggybot">***</a></td><td style="text-align:right;width:5%;"><a href="#" onclick="thumb_block('', 'none')">X________</a></td></tr><tr><br></tr></table-->
+  <div class="flex" id="pt"><div id="pts" class="bcol">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumyeirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam[...]</div></div>
+  <table id="drugtop" style="width:100%;padding:1px;position:fixed;display:block;bottom:auto;left:0px"><tr><br></tr><tr><td style="text-align:left;">Word</td><td style="text-align:center;width:45%;"><a href="#" id="draggytop" ontouchend="movecol('pop', 'left')">next</a></td><td style="text-align:center;width:45%;"><a href="#" id="draggytop" ontouchend="movecol('pop', 'right')">prev</a></td><td style="text-align:right;width:5%;"><a href="#" ontouchend="thumb_block('', 'none')">X_________</a></td></tr></table>
+</div>
+<div id="txtarea" style="position:fixed; overflow:hidden;">
+<button id="button_1">next</button>
+<button id="button_2">prev</button>
+<div class="flex" id="fl_text">
+    <div id="options" style="position:absolute; overflow:hidden; left:0; z-index:2000; background:#FFFFFF">
+        <pre>
+            Find out more information on beta version fixes/updates
+
+        Helpful Links
+
+            Previous Drivers and Software
+            Installation Instructions
+            Linux Crew Driver Feedback
+            Driver Update Notification
+            Unofficial Wiki for the AMD Linux Driver *
+            AMD Linux Platform Bug Reporting *
+
+
+         
+
+        The drivers above support English only.
+        The display driver requires POSIX shared memory to be enabled on the system.
+        Kernal Sources package is no longer required if Kernel Header package is installed.
+        32-Bit packages must be installed for 64-Bit Linux drivers to install or work.
+
+        *These sites are community resources, and are not supported by, or affiliated with AMD in any way
+        </pre>
+    </div>
+<div id="maintext" class="bcol">
+Погружение в историю
+Подводные археологи рассказали о затонувшем Гераклионе
+
+Недавно группа европейских археологов под руководством Франка Годдио продемонстрировала результаты подводных раскопок затонувшего древнеегипетского города. История открытия рассказана в документальном фильме Egypt's Sunken City, созданном учеными в сотрудничестве с немецкими документалистами во главе с Яном Тенавеном.
+
+Обнаружить местоположение города, о существовании которого было известно только от античных историков, впервые удалось в 2000 году. За 13 лет работы в бухте Абукир неподалеку от современной Александрии ученые нашли множество артефактов: несколько прекрасно сохранившихся статуй богов, саркофаги, останки 64 затонувших кораблей, 700 якорей, без счета золотых монет и стелу, надпись на которой позволила однозначно идентифицировать город как Гераклион — торговые ворота Древнего Египта.
+20 августа 2013
+Закрыть
+Город, упоминаемый Геродотом под названием Гераклион, получил свое имя в честь Геракла, согласно преданию, именно здесь впервые ступившего на египетскую землю. Сами египтяне называли свой город Тонис. Вплоть до основания Александрии в 331 году до нашей эры это были единственные торговые ворота в Египет — все прибывающие из Греции корабли должны были останавливаться в этом городе, разгружаться и платить торговые пошлины. Неудивительно, что именно здесь впервые на территории Египта были обнаружены греческие меры веса.До начала раскопок о существовании города было известно только из античных источников. Геродот, живший в V веке до нашей эры, сообщает о возведении в Гераклионе крупного храма, посвященного Гераклу. Он также говорит о том, что легендарная Елена до начала Троянской войны посещала Гераклион вместе с Парисом. О существовании Гераклиона упоминает и Страбон — другой греческий историк, живший в I веке нашей эры. Он пишет, что Гераклион расположен к востоку от <a href="http://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%BD%D0%BE%D0%B1" target="_blank">Каноба</a>, у устья канобской ветви дельты Нила.История открытия Гераклиона-Тониса началась в 1996 году, когда Френк Годдио с командой единомышленников начал изучать залив Абукир при помощи эхолотов и других дистанционных сенсоров. Первое погружение в бухте состоялось только в 2000-м году и сразу же принесло результаты. За 13 лет исследований подводным археологам удалось осмотреть около 500 квадратных километров затопленного залива. Первые артефакты были обнаружены в шести километрах от современной береговой линии на глубине около 10 метров.На месте раскопок была найдена гранитная стела высотой около двух метров, высеченная по поручению фараона Нектабо I, который жил в 378-362 годах до нашей эры. Она практически идентична стеле, хранящейся в Каирском музее, с той разницей, что место установки этой стелы указано как Гераклион-Тонис (на каирском памятнике значится «Нократже, на берегу канала Ану»). Эта находка и позволила ученым утверждать, что найденный город является именно тем Гераклионом, о котором писали Геродот и Страбон.Среди прочего на месте раскопок были обнаружены статуя богини Исиды из черного гранита и статуя бога плодородия Хапи, олицетворяющего разливающийся Нил. Высота последней достигает пяти метров — это крупнейшая из известных статуй Хапи, что, по словам археологов, говорит о важности божества для этого региона. Высеченный из гранита образ Хапи был найден неподалеку от входа в храм и датируется IV веком до нашей эры. «Пролежавшие нетронутыми под защитным слоем песка на морском дне, артефакты сохранились просто блестяще», — говорит археолог из Оксфордского университета сэр Барри Канлифф (Barry Cunliffe). По словам археологов, в Гераклионе было два крупных храма, один из которых посвящался богу солнца, царю богов и покровителю фараонов Амону, а второй — его сыну Хонсу. Образ последнего, рожденного богиней Мут, сближался с греческим Гераклом.Время расцвета Гераклиона относится к периоду Позднего царства Египта — 664-332 годам до нашей эры. После основания Александрии город отходит на второй план, а во второй половине VIII века его покрывает море. Примерно в то же время под воду ушел Канобус, расположенный в трех километрах к западу. Что именно стало причиной затопления, ученые пока не знают. В качестве одной из версий команда Годдио рассматривает опускание грунта под тяжестью массивных зданий, спровоцированное землетрясением.
+Археологи осматривают гранитную статую фараона
+Археологи осматривают гранитную статую фараона
+Фото: Christoph Gerigk / Franck Goddio / Hilti Foundation
+
+Город, упоминаемый Геродотом под названием Гераклион, получил свое имя в честь Геракла, согласно преданию, именно здесь впервые ступившего на египетскую землю. Сами египтяне называли свой город Тонис. Вплоть до основания Александрии в 331 году до нашей эры это были единственные торговые ворота в Египет — все прибывающие из Греции корабли должны были останавливаться в этом городе, разгружаться и платить торговые пошлины. Неудивительно, что именно здесь впервые на территории Египта были обнаружены греческие меры веса.
+</div>
+</div>
+</div>
+</body>
+</html>
