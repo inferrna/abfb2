@@ -13,8 +13,8 @@ require(['uitouch', 'dict'], function(uitouch, dict){
     var dtext = null;
     //document.getElementById('button_1').onclick=function(){uitouch.liftcol('pts', -1)};
    // document.getElementById('button_2').onclick=function(){uitouch.liftcol('pts', 1)};
-    document.getElementById('ptop').onclick=function(){thumb_block('top', 'block'); return false;};
-    document.getElementById('pbot').onclick=function(){thumb_block('bot', 'block'); return false;};
+    //document.getElementById('ptop').onclick=function(){thumb_block('top', 'block'); return false;};
+    //document.getElementById('pbot').onclick=function(){thumb_block('bot', 'block'); return false;};
     var txarea = document.getElementById('txtarea');
     var ta_rectObject = txarea.getBoundingClientRect();
     //console.log("txarea.style.offsetHeight==", ta_rectObject.height, "; txarea.style.offsetTop==", ta_rectObject.top);
@@ -29,6 +29,10 @@ require(['uitouch', 'dict'], function(uitouch, dict){
       dt.addEventListener("touchstart", uitouch.handleTouchstart, false);
       dt.addEventListener("touchend", uitouch.handleTouchend, false);
       dt.addEventListener("touchmove", uitouch.handleTouch, false);
+      //dt.addEventListener("mousedown", uitouch.handleTouchstart, false);
+      //dt.addEventListener("mouseup", uitouch.handleTouchend, false);
+      //.addEventListener("wheel", uitouch.handleTouch, false);
+      //dt.addEventListener("dblclick", uitouch.handleleave, false);
       var marea = document.getElementById("maintext");
       marea.style.top = "0px";
       marea.addEventListener("touchstart", uitouch.handleTouchstart, false);
