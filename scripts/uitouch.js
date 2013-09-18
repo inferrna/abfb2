@@ -6,6 +6,8 @@ define(
       var timer = null;
       var sxG = 0;
       var syG = 0;
+      var selected_word = '';
+      var got_sel_ev = new Event('got_selection');
       function sign(x) { return x && x / Math.abs(x); }
       function handleTouch(evt, start) {
           var type = evt.type.substring(0,5);
@@ -49,17 +51,29 @@ define(
               options.display('none');
               console.log("Hide opts");
           } else if(moveflag==1) {
-              sxG = x;
-              syG = y;
-              console.log("dy==", dy);
-              console.log("Touch proceed");
-              evt.preventDefault();
-              var el = document.getElementById('pop');//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-              console.log(evt.target.id);
-              //if(evt.target.id==='drugtop') 
-              if(el.style.top === '0px') movesbot(touches, el);
-              else if(el.style.bottom === '0px') movestop(touches, el);
-              else console.log("No action.", el.style.bottom, el.style.top);
+              if(evt.target.id==="maintext"){
+                  var touch = touches[0];//touches.length-1];
+                  /*var win = chrome.app.window.current();
+                  var winc = win.contentWindow;//.Document()
+                  var doc = winc.Document();
+                  console.log(doc);//document.caretRangeFromPoint(120, 250));*/
+                  if(document.caretPositionFromPoint) var soffset = document.caretPositionFromPoint(touch["clientX"], touch["clientY"]).offset; 
+                  else if(document.caretRangeFromPoint) var soffset = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]).startOffset;
+                  //soffset = caret.offset|caret.startOffset;
+                  selectword(soffset, evt.target);
+              } else {
+                  sxG = x;
+                  syG = y;
+                  console.log("dy==", dy);
+                  console.log("Touch proceed");
+                  evt.preventDefault();
+                  var el = document.getElementById('pop');//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+                  console.log("Target is", evt.target.id);
+                  //if(evt.target.id==='drugtop') 
+                  if(el.style.top === '0px') movesbot(touches, el);
+                  else if(el.style.bottom === '0px') movestop(touches, el);
+                  else console.log("No action.", el.style.bottom, el.style.top);
+              }
           }
           //else if(evt.target.id==='drugbot') 
               //movestop(touches, el);
@@ -101,7 +115,36 @@ define(
               console.log("Move to "+newpos+". Oldpos was "+oldpos);
           }
       }
+      function selectword(off, el){
+          var txt = el.textContent;//new String(el.textContent);
+          var rng = document.createRange();
+          rng.selectNode(el);
+          //off = 6;
+          /*for(var hiind = off; re.test(txt.charAt(hiind))===true; hiind++){}
+          for(var loind = off; re.test(txt.charAt(loind))===true; loind--){}
+          loind++;
+          rng.setStart(el.firstChild, loind);
+          rng.setEnd(el.firstChild, hiind);*/
+          console.log("Offset is", off);
+          rng.setStart(el.firstChild, off);
+          rng.setEnd(el.firstChild, off+1);
+          var win = window;//chrome.app.window.current().contentWindow;
+          var sel = win.getSelection();
+          sel.removeAllRanges();
+          sel.addRange( rng );
+          sel.modify("extend", "backward", "word");
+          //sel = window.getSelection();
+          sel.collapseToStart();
+          sel.modify("extend", "forward", "word");
+          console.log("Selected", sel.toString());
+          selected_word = sel.toString();
+          document.dispatchEvent(got_sel_ev);
+          //console.log(txt, off, loind, hiind);
+          //console.log(txt.slice(loind, hiind));
+      }
       return {
+          selected_word: function() { return selected_word; },
+          max_Y: function() { return syG; },
           handleTouchstart:function (evt) {
               console.log("Touch start", moveflag, syG, sxG);
               timer = window.setTimeout(function(){moveflag=1}, 1024);

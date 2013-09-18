@@ -19,25 +19,26 @@ require(['uitouch', 'dict'], function(uitouch, dict){
     var ta_rectObject = txarea.getBoundingClientRect();
     //console.log("txarea.style.offsetHeight==", ta_rectObject.height, "; txarea.style.offsetTop==", ta_rectObject.top);
     txarea.style.height = (window.innerHeight - ta_rectObject.top - 1)+"px";
-      /*dreq = new XMLHttpRequest();
-      dreq.onload = function (event) {fill_thumb(event.target.responseText);}
-      try {myws_connect('ws://192.168.0.2:2680');}
-      catch(e) {console.log(e);}
-      try {var socket = navigator.mozTCPSocket.open('localhost', '2628');}
-      catch(e) {console.log("GotError:", e);}*/
-      var dt = document.getElementById("pop");
-      dt.addEventListener("touchstart", uitouch.handleTouchstart, false);
-      dt.addEventListener("touchend", uitouch.handleTouchend, false);
-      dt.addEventListener("touchmove", uitouch.handleTouch, false);
-      //dt.addEventListener("mousedown", uitouch.handleTouchstart, false);
-      //dt.addEventListener("mouseup", uitouch.handleTouchend, false);
-      //.addEventListener("wheel", uitouch.handleTouch, false);
-      //dt.addEventListener("dblclick", uitouch.handleleave, false);
-      var marea = document.getElementById("maintext");
-      marea.style.top = "0px";
-      marea.addEventListener("touchstart", uitouch.handleTouchstart, false);
-      marea.addEventListener("touchend", uitouch.handleTouchend, false);
-      marea.addEventListener("touchmove", uitouch.handleTouch, false);
+    /*dreq = new XMLHttpRequest();
+    dreq.onload = function (event) {fill_thumb(event.target.responseText);}
+    try {myws_connect('ws://192.168.0.2:2680');}
+    catch(e) {console.log(e);}
+    try {var socket = navigator.mozTCPSocket.open('localhost', '2628');}
+    catch(e) {console.log("GotError:", e);}*/
+    var dt = document.getElementById("pop");
+    dt.addEventListener("touchstart", uitouch.handleTouchstart, false);
+    dt.addEventListener("touchend", uitouch.handleTouchend, false);
+    dt.addEventListener("touchmove", uitouch.handleTouch, false);
+    //dt.addEventListener("mousedown", uitouch.handleTouchstart, false);
+    //dt.addEventListener("mouseup", uitouch.handleTouchend, false);
+    //.addEventListener("wheel", uitouch.handleTouch, false);
+    //dt.addEventListener("dblclick", uitouch.handleleave, false);
+    var marea = document.getElementById("maintext");
+    marea.style.top = "0px";
+    marea.addEventListener("touchstart", uitouch.handleTouchstart, false);
+    marea.addEventListener("touchend", uitouch.handleTouchend, false);
+    marea.addEventListener("touchmove", uitouch.handleTouch, false);
+    document.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
     function fill_thumb(text){
         var cl = document.getElementById('pts');
         var el = document.getElementById('pop');
@@ -48,16 +49,21 @@ require(['uitouch', 'dict'], function(uitouch, dict){
         /*cf = 2.0/(parseFloat(window.innerHeight)/parseFloat(cl.clientHeight));
         width = parseInt(cf*width/100.0)*100+100;
         el.style.width = width+"%";*/
-        console.log(cl.clientWidth, "/", cl.clientHeight, cf, width);
+        //console.log(cl.clientWidth, "/", cl.clientHeight, cf, width);
     }
-    function thumb_block(pos, disp) {
+    function thumb_block(mY, word, disp) {
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
+        var pos = 0;
         //var dt = document.getElementById('drugtop');
         //var db = document.getElementById('drugbot');
         if(el){
             //el.style.height = '15%';
             if(disp!='none'){
+                ptop = marea.parentNode.parentNode.offsetHeight;
+                console.log("mY vs ptop", mY, ptop);
+                if(mY < ptop/2) pos = 'bot';
+                else pos = 'top';
                 cl.style.top = "0px";
                 /*el.style.width = "6000%";
                 el.style.left = "0%";
@@ -76,7 +82,7 @@ require(['uitouch', 'dict'], function(uitouch, dict){
                     dict.dreq.addEventListener('got_def', function (e) { fill_thumb(dict.response()); }, false);
                     //dict.dreq.open("GET", xurl, true);
                     //dict.dreq.send();
-                    dict.get_def("display");
+                    dict.get_def(word);
                     //console.log("Got response ", dict.response());
                 }
             }
