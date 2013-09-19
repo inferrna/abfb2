@@ -1,0 +1,16 @@
+{
+  "version": "0.1",
+  "name": "Ab FB2 reader",
+  "description": "An fb2 reader app",
+  "launch_path": "/popuptest.html",
+  "icons": {
+    "128": "/A.png",
+    "16": "/b.png"
+  },
+  "developer": {
+    "name": "Inferrna",
+    "url": "http://borgu.org"
+  },
+  "installs_allowed_from": ["*"]
+}
+
