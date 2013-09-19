@@ -3,6 +3,7 @@
   "name": "Ab FB2 reader",
   "description": "An fb2 reader app",
   "launch_path": "/popuptest.html",
+  "type": "certified",
   "icons": {
     "128": "/A.png",
     "16": "/b.png"
@@ -10,6 +11,10 @@
   "developer": {
     "name": "Inferrna",
     "url": "http://borgu.org"
+  },
+  "permissions": {
+      "systemXHR": {},
+      "tcp-socket":{}
   },
   "installs_allowed_from": ["*"]
 }

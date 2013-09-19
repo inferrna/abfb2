@@ -74,17 +74,18 @@ require(['uitouch', 'dict'], function(uitouch, dict){
                 cl.style.columns = clw;*/
                 if(pos==='top'){el.style.top = 0; el.style.bottom = '85%';}// db.style.display='none'; dt.style.display=disp;}
                 if(pos==='bot'){el.style.bottom = 0; el.style.top = '85%';}// dt.style.display='none'; db.style.display=disp;}
-                try {ws.send(window.btoa("DEFINE ! value"+"\n"));}
-                catch(e) {
+                //try {ws.send(window.btoa("DEFINE ! value"+"\n"));}
+                //catch(e) {
                     //var xurl = "http://192.168.0.2:8082/?word="+"value"+"&dict="+"!"+"&host="+"localhost"+"&port="+"2628";
                     //console.log(xurl);
-                    dict.init_params({text: "value"});
+                    dict.init_params({"text": "value", "dictionary": "socket"});
                     dict.dreq.addEventListener('got_def', function (e) { fill_thumb(dict.response()); }, false);
+                    //dict.dreq.onload = function (event) {fill_thumb(event.target.responseText);} 
                     //dict.dreq.open("GET", xurl, true);
                     //dict.dreq.send();
                     dict.get_def(word);
                     //console.log("Got response ", dict.response());
-                }
+              //  }
             }
             el.style.display = disp;
         }

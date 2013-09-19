@@ -80,17 +80,19 @@ define(
       }
      function liftcol(el, dir) {
           //var el = document.getElementById(elnm);
-          var top = parseInt(el.style.top);
+          //var top = parseInt(el.style.top|0);
           var ptop;
-          var el_rectObject = el.parentNode.getBoundingClientRect();
+          var par_rectO = el.parentNode.getBoundingClientRect();
+          var el_rectO = el.getBoundingClientRect();
+          var top = parseInt(el_rectO.top|0);
           //ptop = Math.max(parseInt(el.parentNode.parentNode.style.top), parseInt(el.parentNode.parentNode.style.bottom));
-          ptop = el.parentNode.parentNode.offsetHeight;
-          top = top+dir*(ptop-12);
-          console.log(top, ptop, ", el_rectObject.height==", el_rectObject.height);
+          ptop = parseInt(el.parentNode.parentNode.offsetHeight);
+          top = top+dir*(ptop-8);
+          console.log(top, ptop, ", el_rectO.height==", el_rectO.height);
           if(top>0) top = 0;
-          else if( top<(-el_rectObject.height) ){
-              console.log("el_rectObject.height==", el_rectObject.height, "; top==", top);
-              top = -(el_rectObject.height - ptop/2);
+          else if( top<(-(el_rectO.height-24)) ){
+              console.log("el_rectO.height==", el_rectO.height, "; top==", top);
+              top = -(el_rectO.height - ptop/2);
           }
           el.style.top = top+"px";
           console.log("el.style.top==", el.style.top);
@@ -133,11 +135,11 @@ define(
           sel.removeAllRanges();
           sel.addRange( rng );
           sel.modify("extend", "backward", "word");
-          //sel = window.getSelection();
-          sel.collapseToStart();
+          try {sel.collapseToStart();
           sel.modify("extend", "forward", "word");
           console.log("Selected", sel.toString());
           selected_word = sel.toString();
+          } catch(e){console.log("Got error", e, "using other word"); selected_word = "word";}
           document.dispatchEvent(got_sel_ev);
           //console.log(txt, off, loind, hiind);
           //console.log(txt.slice(loind, hiind));

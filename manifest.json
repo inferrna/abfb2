@@ -3,7 +3,7 @@
   "name": "Popuptest",
   "version": "0.1",
   "minimum_chrome_version": "23",
-  "permissions": [ "app.window", {"socket": ["tcp-connect:*:2628"]}],
+  "permissions": [ "app.window", "*://translate.google.com/*", {"socket": ["tcp-connect:*:2628"]}],
   "optional_permissions": [ "webRequest" ],
   "icons": {
     "16": "b.png",
