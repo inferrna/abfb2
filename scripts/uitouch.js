@@ -6,8 +6,10 @@ define(
       var timer = null;
       var sxG = 0;
       var syG = 0;
+      var max_Y = 0;
       var selected_word = '';
       var got_sel_ev = new Event('got_selection');
+      var pts = document.getElementById('pts');
       function sign(x) { return x && x / Math.abs(x); }
       function handleTouch(evt, start) {
           var type = evt.type.substring(0,5);
@@ -37,20 +39,24 @@ define(
           var dx = x - sxG;
           var dy = y - syG;
           //console.log(dx, dy, x, y, sxG, syG, touches);
-          if(Math.abs(dx)>64){ 
-              liftcol(evt.target, sign(dx));
+          if(Math.abs(dx)>64){
+              evt.preventDefault();
+              liftcol(pts, sign(dx));
               sxG = x; syG = y;
               window.clearTimeout(timer);
               moveflag = 0;
               //console.log(evt);
               return;
           } else if (dy>64){
+              evt.preventDefault();
               options.display('block');
               console.log("Show opts");
           } else if (dy<-64){
+              evt.preventDefault();
               options.display('none');
               console.log("Hide opts");
           } else if(moveflag==1) {
+              evt.preventDefault();
               if(evt.target.id==="maintext"){
                   var touch = touches[0];//touches.length-1];
                   /*var win = chrome.app.window.current();
@@ -60,6 +66,7 @@ define(
                   if(document.caretPositionFromPoint) var soffset = document.caretPositionFromPoint(touch["clientX"], touch["clientY"]).offset; 
                   else if(document.caretRangeFromPoint) var soffset = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]).startOffset;
                   //soffset = caret.offset|caret.startOffset;
+                  max_Y = touch["clientY"];
                   selectword(soffset, evt.target);
               } else {
                   sxG = x;
@@ -81,52 +88,51 @@ define(
      function liftcol(el, dir) {
           //var el = document.getElementById(elnm);
           //var top = parseInt(el.style.top|0);
-          var ptop;
+          console.log(el);
+          var ptop, top;
           var par_rectO = el.parentNode.getBoundingClientRect();
           var el_rectO = el.getBoundingClientRect();
-          var top = parseInt(el_rectO.top|0);
-          //ptop = Math.max(parseInt(el.parentNode.parentNode.style.top), parseInt(el.parentNode.parentNode.style.bottom));
+          var elcstyle = el.currentStyle || window.getComputedStyle(el, null);
+          if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
+          else top = parseInt(el.style.top);
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
-          top = top+dir*(ptop-8);
           console.log(top, ptop, ", el_rectO.height==", el_rectO.height);
+          console.log("elcstyle.top=="+elcstyle.top+" el.style.top=="+el.style.top+" top=="+top+" ptop=="+ptop);
+          top = top+dir*(ptop-8);
           if(top>0) top = 0;
           else if( top<(-(el_rectO.height-24)) ){
-              console.log("el_rectO.height==", el_rectO.height, "; top==", top);
+              //console.log("el_rectO.height==", el_rectO.height, "; top==", top);
               top = -(el_rectO.height - ptop/2);
           }
           el.style.top = top+"px";
-          console.log("el.style.top==", el.style.top);
+          //console.log("el.style.top==", el.style.top);
       }
       function movesbot(touches, el){
           var newpos = 0;
-          var oldpos = el.style.bottom;
+          var my = max_Y-12;
+          var oldpos = parseInt(el.style.bottom);
           for (var i=0; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
-              newpos = window.innerHeight - touches[i]["clientY"];
+              newpos = touches[i]["clientY"] < my ? window.innerHeight - touches[i]["clientY"] : window.innerHeight - my;
               el.style.bottom = newpos+'px';
-              console.log("Move to "+newpos+". Oldpos was "+oldpos);
+              console.log("Move to "+newpos+". Oldpos was "+oldpos," max_Y==",max_Y);
           }
       }
       function movestop(touches, el){
           var newpos = 0;
-          var oldpos = el.style.bottom;
+          var my = max_Y+12;
+          var oldpos = parseInt(el.style.bottom);
           for (var i=0; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
-              newpos = touches[i]["clientY"];
+              newpos = touches[i]["clientY"] > my ? touches[i]["clientY"] : my;
               el.style.top = newpos+'px';
-              console.log("Move to "+newpos+". Oldpos was "+oldpos);
+              //console.log("Move to "+newpos+". Oldpos was "+oldpos);
           }
       }
       function selectword(off, el){
           var txt = el.textContent;//new String(el.textContent);
           var rng = document.createRange();
           rng.selectNode(el);
-          //off = 6;
-          /*for(var hiind = off; re.test(txt.charAt(hiind))===true; hiind++){}
-          for(var loind = off; re.test(txt.charAt(loind))===true; loind--){}
-          loind++;
-          rng.setStart(el.firstChild, loind);
-          rng.setEnd(el.firstChild, hiind);*/
           console.log("Offset is", off);
           rng.setStart(el.firstChild, off);
           rng.setEnd(el.firstChild, off+1);
@@ -141,21 +147,20 @@ define(
           selected_word = sel.toString();
           } catch(e){console.log("Got error", e, "using other word"); selected_word = "word";}
           document.dispatchEvent(got_sel_ev);
-          //console.log(txt, off, loind, hiind);
-          //console.log(txt.slice(loind, hiind));
       }
       return {
           selected_word: function() { return selected_word; },
-          max_Y: function() { return syG; },
+          max_Y: function() { return max_Y; },
           handleTouchstart:function (evt) {
               console.log("Touch start", moveflag, syG, sxG);
               timer = window.setTimeout(function(){moveflag=1}, 1024);
-              evt.preventDefault();
+              //evt.preventDefault();
               handleTouch(evt, 1);
           },
           handleTouchend:function (evt) {
               console.log("Touch end", moveflag, syG, sxG);
               window.clearTimeout(timer);
+              //evt.preventDefault();
               handleTouch(evt, 0);
               moveflag=0;
           },

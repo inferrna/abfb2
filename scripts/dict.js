@@ -28,11 +28,20 @@ define(
     var googles = {text:'',sl:'',tl:'',hl:'',ie:'',oe:'',multires:0,otf:0,trs:0,ssel:0,tsel:0,sc:0};
     var locals  = {text:'',dict:'',host:'',port:0};
     //var locals_get_str = '';
-    dreq = new XMLHttpRequest();
+    var dreq = new XMLHttpRequest();
+    dreq.open("GET", "http://translate.google.com", true);
+    try {dreq.send();}
+    catch(e){console.log("XMLHttpRequest failed, got:",e);};
     dreq.onload = function (event) {
+            console.log("XMLHttpRequest done");
+            resp = '';
             var resptext = event.target.responseText;
-            console.log(JSON.parse(resptext)["dict"]);
-            if(datas["dictionary"]==="google")resp = JSON.parse(resptext)["dict"][0]["terms"].join(", ");
+            //console.log(JSON.parse(resptext)["dict"]);
+            if(datas["dictionary"]==="google"){
+                var respj = JSON.parse(resptext);
+                if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
+                if( Object.keys(respj).indexOf("dict">-1) )      resp += "<br>"+respj["dict"][0]["terms"].join(", ");
+            }
             else resp = resptext;
             //alert("Got "+resp);
             //console.log("Got inner response ", resp);
@@ -56,13 +65,15 @@ define(
         dreq:dreq, 
         response:function(){return resp;}, 
         get_def:function(word){
-            if(datas["dictionary"] == 'local') get_http(word, locals, datas["local_base_url"], 'local');
-            else if (datas["dictionary"] == 'google') get_http(word, googles, datas["google_base_url"], 'google');
+            lword = word.toLowerCase();
+            console.log("lword==",lword);
+            if(datas["dictionary"] == 'local') get_http(lword, locals, datas["local_base_url"], 'local');
+            else if (datas["dictionary"] == 'google') get_http(lword, googles, datas["google_base_url"], 'google');
             else if (datas["dictionary"] == 'socket'){
                 socket.check();
-                socket.init('192.168.0.2', 2628);
+                socket.init(datas["host"], 2628);
                 socket.evo.addEventListener('got_def', function (e) { resp = socket.response(); dreq.dispatchEvent(got_def_ev); }, false);
-                socket.get_def(word);
+                socket.get_def(lword);
             }
         },
         init_params:function(params){

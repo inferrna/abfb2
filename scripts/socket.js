@@ -15,9 +15,9 @@ define(
     function chromewrite(id, text){
         var data = encod.str2utf8b(text);
         //console.log(encod.utf8b2str(encod.str2utf8b("ползущий like окна")));
-        chrome.socket.write(id, data, function(writeInfo){chromeread(id);});
+        chrome.socket.write(id, data, function(){window.setTimeout(function(writeInfo){chromeread(id);}, 256);});
     }
-    function chromeread(id){  chrome.socket.read(id, 10240, function(readInfo){
+    function chromeread(id){  chrome.socket.read(id, 65536, function(readInfo){
             resp = encod.utf8b2str(readInfo.data);
             //console.log("Got from gsocket",resp);
             evo.dispatchEvent(got_def_ev);
@@ -30,20 +30,24 @@ define(
             });
     }
     function mozopen(){
-        var moz_socket = navigator.mozTCPSocket.open(host, port, {binaryType: 'arraybuffer'});//'arraybuffer''string'
+        resp = '';
         var mtext = "DEFINE ! "+text+"\n";
-        moz_socket.ondata = function(e){
+        var data = encod.str2utf8b(mtext);
+        var moz_socket = navigator.mozTCPSocket.open(host, port, {binaryType: 'arraybuffer'});//'arraybuffer''string'
+        moz_socket.onopen = function(e){
+                moz_socket.send(data);
+            };
+        moz_socket.ondata = function(e){ moz_socket.suspend(); window.setTimeout(function(){ //Lag 256ms between data appears and receiving it.
+                moz_socket.resume();
                 var rettext = encod.utf8b2str(e.data);//String(e.data);
-                if(rettext.substring(0,3)==='150'){
-                    resp = rettext;
+                if(rettext.substring(0,3)){//==='150'
+                    resp += rettext;
                     evo.dispatchEvent(got_def_ev); 
                 }else {
-                    alert(rettext.substring(0,320)); 
+                    //alert(rettext.substring(0,32)); 
                     //moz_socket.resume();
                 }
-            };
-        var data = encod.str2utf8b(mtext);
-        moz_socket.onopen = function(e){alert("Data sent"); moz_socket.send(data);};
+            }, 256)};
     }
     return {
         get_def:function(word){

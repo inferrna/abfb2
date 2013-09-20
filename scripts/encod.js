@@ -1,7 +1,7 @@
 define(
   ['utf8'],
   function(utf8){
-    console.log(utf8);
+    //console.log(utf8);
     return {
         str2utf8b:function(str){
             var strarray = utf8.encode(str);
