@@ -1,0 +1,92 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="scripts/js-epub.js"></script>
+<script src="scripts/js-unzip.js"></script>
+<script src="scripts/js-inflate.js"></script>
+<script>
+var data = ["", ""];
+var inputs = ["input1"];
+var index = 0;
+function loadnext(){
+    var Reader = new FileReader();
+    Reader.onload = function(evt) {
+        data[index] = evt.target.result;
+        index++;
+        console.log("Load input", index);
+        if(inputs[index]) loadnext();
+        else proceedepub();
+    };
+    var selected_file = document.getElementById(inputs[index]).files[0];
+    Reader.readAsBinaryString(selected_file);
+}
+
+function proceedepub(){
+    var epubFile = data[0]; // Use HTML5 files or download via XHR.
+    var epub = new JSEpub(epubFile);
+    epub.processInSteps(function (step, extras) {
+            var msg;
+
+            if (step === 1) {
+                msg = "Unzipping";
+            } else if (step === 2) {
+                msg = "Uncompressing " + extras;
+            } else if (step === 3) {
+                msg = "Reading OPF";
+            } else if (step === 4) {
+                msg = "Post processing";
+            } else if (step === 5) {
+                msg = "Finishing";
+                showFirstPage(epub);
+            }
+
+            // Render the "msg" here.
+        });
+}
+
+function showFirstPage(epub){
+//    console.log(epub);
+    var spine = epub.opf.spine[2];
+    var href = epub.opf.manifest[spine]["href"];
+    var doc = epub.files[href];
+//    console.log(doc);
+    var html = new XMLSerializer().serializeToString(doc);
+    //html = html.replace(/\(\.\.\//g, "(");
+//    console.log(html);
+    document.body.innerHTML=html;//decodeURIComponent( escape(resultDocument) ));
+    index=0;
+}
+
+
+
+/*var showFirstPage = function () {
+    // The spine lists all pages in correct order
+    var spine = epub.opf.spine[0];
+
+    // The manifest contains the href of the file
+    var href = epub.opf.manifest[spine]["href"];
+
+    // All the files are stored in here, indexed by href
+    var doc = epub.files[href];
+
+    // The doc is a DOMparser created DOM. You may want to
+    // work with a string version of the page contents.
+    var html = new XMLSerializer().serializeToString(doc);
+
+    // Use "html" to your hearts content!
+}*/
+
+// Each time something happens in the processing, the callbakc is called. The
+// step is a number, representing the actual step that was performed. You
+// can use this to render status messages to the user as you process the file.
+// The processor will also insert a tiny delay between each operation, so that
+// you don't get the browser slow script warnings.
+
+</script>
+</head>
+<body>
+<label>epub file</label><input type="file" id="input1" name="fb2 file"><br>
+<a href="#" onclick="loadnext()">"Show"</a>
+<div id="example" />
+</body>
+</html>
