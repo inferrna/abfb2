@@ -1,4 +1,4 @@
-require(['uitouch', 'dict', 'options'], function(uitouch, dict, options){
+require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options, book){
     console.log("app.js loads");
     var ongoingTouches = new Array;
     var ws = null;
@@ -24,6 +24,21 @@ require(['uitouch', 'dict', 'options'], function(uitouch, dict, options){
     marea.addEventListener("touchend", uitouch.handleTouchend, false);
     marea.addEventListener("touchmove", uitouch.handleTouch, false);
     document.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
+    console.log(options);
+    options.button().addEventListener('click', function (e) {
+            console.log("Button clicked");
+            var evo = book.init(options.bookfile());
+            evo.addEventListener('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));}, false);
+            book.load();
+        }, false);
+    function fill_toc(html){
+        console.log(html);
+        document.getElementById("toc").appendChild(html);
+    }
+    function fill_page(html){
+        console.log("Try load html");
+        marea.innerHTML = html;
+    }
     function fill_thumb(text){
         var cl = document.getElementById('pts');
         var el = document.getElementById('pop');

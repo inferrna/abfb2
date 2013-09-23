@@ -7,7 +7,8 @@ define(
     var datas = {
         dict_src: [['google', 'local', 'socket'], "Select dictionary source"],
         socket_host: ['192.168.0.2', "dictd host"],
-        socket_port: ['2628', "dictd port"]
+        socket_port: ['2628', "dictd port"],
+        file: ['', ""]
     };
     var values = null;
     //var winstyle = element.currentStyle || window.getComputedStyle(element, null);
@@ -35,7 +36,8 @@ define(
         var br  = document.createElement("br");
         sel.textContent = name;
         inp.id = key;
-        inp.type = 'text';
+        if(key==="file") inp.type = 'file';
+        else inp.type = 'text';
         inp.value = value;
         obj.appendChild(sel);
         obj.appendChild(inp);
@@ -58,6 +60,13 @@ define(
         if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key);
         if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
     }
+    var but = document.createElement("input");
+    but.value = "Click_me";
+    but.type = "button";
+    opts_brd.appendChild(but);
+    var toc = document.createElement("div");
+    toc.id = "toc";
+    opts_brd.appendChild(toc);
     //get_config();
     //console.log("Values is", values);
     return{
@@ -67,6 +76,12 @@ define(
             config:function(){
                 if(values===null) return get_config();
                 else return values;
+            },
+            bookfile:function(){
+                return document.getElementById('file').files[0];
+            },
+            button:function(){
+                return but;
             }
     };
   }

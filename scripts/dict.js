@@ -13,7 +13,6 @@ define(
         hl: 'ru',
         ie: 'UTF-8',
         oe: 'UTF-8',
-        text: '',
         multires: 1,
         otf: 2,
         trs: 1,
@@ -29,9 +28,9 @@ define(
     var locals  = {text:'',dict:'',host:'',port:0};
     //var locals_get_str = '';
     var dreq = new XMLHttpRequest();
-    dreq.open("GET", "http://translate.google.com", true);
+    /*dreq.open("GET", "http://translate.google.com", true);
     try {dreq.send();}
-    catch(e){console.log("XMLHttpRequest failed, got:",e);};
+    catch(e){console.log("XMLHttpRequest failed, got:",e);};*/
     dreq.onload = function (event) {
             console.log("XMLHttpRequest done");
             resp = '';
