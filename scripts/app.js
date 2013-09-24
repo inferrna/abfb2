@@ -24,7 +24,23 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
     marea.addEventListener("touchend", uitouch.handleTouchend, false);
     marea.addEventListener("touchmove", uitouch.handleTouch, false);
     document.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
-    console.log(options);
+    uitouch.evo.addEventListener('next_chapter', function (event) {
+            var sel = document.getElementById("tocselect");
+            var idx = sel.selectedIndex;
+            sel.options[idx].selected = null;
+            idx+=parseInt(event.target.id);
+            if(idx<sel.options.length && idx>-1){
+                sel.options[idx].selected = true;
+                console.log('next_chapter=', idx);
+                fill_page(book.get_page((sel.options[idx].id-1)||idx));
+            }
+            if(event.target.id="-1"){
+                var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
+                var marect = marea.getBoundingClientRect();
+                marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
+            }
+        }, false);
+    //console.log(options);
     options.button().addEventListener('click', function (e) {
             console.log("Button clicked");
             var evo = book.init(options.bookfile());
@@ -33,10 +49,15 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
         }, false);
     function fill_toc(html){
         //console.log(html);
-        document.getElementById("toc").appendChild(html);
+        var opts = document.getElementById("options");
+        var toc = document.getElementById("toc");
+        opts.removeChild(toc)
+        ntoc = document.createElement("div");
+        ntoc.id = "toc";
+        ntoc.appendChild(html);
+        opts.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
-        console.log("select==", sel);
-        sel.addEventListener("change", function (event){console.log("Select changed"); fill_page(book.get_page((event.target.options[this.selectedIndex].id-1)||event.target.selectedIndex));} );
+        sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; fill_page(book.get_page((event.target.options[event.target.selectedIndex].id-1)||event.target.selectedIndex));} );
     }
     function fill_page(html){
         console.log("Try load html");

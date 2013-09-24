@@ -10,6 +10,9 @@ define(
       var selected_word = '';
       var got_sel_ev = new Event('got_selection');
       var pts = document.getElementById('pts');
+      var mtext = document.getElementById('maintext');
+      var evo = document.createElement("br");
+      var next_ch_ev = new Event('next_chapter');
       function sign(x) { return x && x / Math.abs(x); }
       function handleTouch(evt, start) {
           var type = evt.type.substring(0,5);
@@ -41,7 +44,11 @@ define(
           //console.log(dx, dy, x, y, sxG, syG, touches);
           if(Math.abs(dx)>64){
               evt.preventDefault();
-              liftcol(pts, sign(dx));
+              if(evt.target===pts){liftcol(pts, sign(dx));}
+              else{
+                  console.log("Lift mtext");
+                  liftcol(mtext, sign(dx));
+              }
               sxG = x; syG = y;
               window.clearTimeout(timer);
               moveflag = 0;
@@ -57,7 +64,7 @@ define(
               console.log("Hide opts");
           } else if(moveflag==1) {
               evt.preventDefault();
-              if(evt.target.id==="maintext"){
+              if(evt.target.id!="pts" && evt.target.id!="pt" && evt.target.id!="pop"){
                   var touch = touches[0];//touches.length-1];
                   /*var win = chrome.app.window.current();
                   var winc = win.contentWindow;//.Document()
@@ -86,9 +93,7 @@ define(
               //movestop(touches, el);
       }
      function liftcol(el, dir) {
-          //var el = document.getElementById(elnm);
-          //var top = parseInt(el.style.top|0);
-          console.log(el);
+          //console.log(el);
           var ptop, top;
           var par_rectO = el.parentNode.getBoundingClientRect();
           var el_rectO = el.getBoundingClientRect();
@@ -96,13 +101,26 @@ define(
           if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
           else top = parseInt(el.style.top);
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
-          console.log(top, ptop, ", el_rectO.height==", el_rectO.height);
-          console.log("elcstyle.top=="+elcstyle.top+" el.style.top=="+el.style.top+" top=="+top+" ptop=="+ptop);
+          if( el.id==="maintext" && top<(-(el_rectO.height-ptop/2)) ){
+              evo.id = "1";
+              evo.dispatchEvent(next_ch_ev);
+              el.style.top="0px";
+              return;
+          }
+          //console.log(top, ptop, ", el_rectO.height==", el_rectO.height);
+          //console.log("elcstyle.top=="+elcstyle.top+" el.style.top=="+el.style.top+" top=="+top+" ptop=="+ptop);
           top = top+dir*(ptop-8);
-          if(top>0) top = 0;
+          if(top>0){
+              if(el.id==="maintext"){
+                  evo.id = "-1";
+                  evo.dispatchEvent(next_ch_ev);
+                  //el.style.bottom="0px";
+                  return;
+              } else { top = 0; }
+          }
           else if( top<(-(el_rectO.height-24)) ){
               //console.log("el_rectO.height==", el_rectO.height, "; top==", top);
-              top = -(el_rectO.height - ptop/2);
+              top = -(el_rectO.height - ptop/4);
           }
           el.style.top = top+"px";
           //console.log("el.style.top==", el.style.top);
@@ -171,7 +189,8 @@ define(
               if(hold === 0) hold=1;
               else hold = 0;
               console.log("click makes hold", hold);
-          }
+          },
+          evo:evo
       }
   }
 );
