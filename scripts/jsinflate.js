@@ -478,7 +478,7 @@
             // distance table
             for(i = 0; i < 30; i++)	// make an incomplete code set
                 l[i] = 5;
-            zip_fixed_bd = 5;
+            var zip_fixed_bd = 5;
 
             h = new zip_HuftBuild(l, 30, 0, zip_cpdist, zip_cpdext, zip_fixed_bd);
             if(h.status > 1) {

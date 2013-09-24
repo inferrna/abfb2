@@ -45,11 +45,12 @@ function(jsepub, jsinflate, jsunzip, stuff){
             var html = srlzr.serializeToString(doc);
             return html;//decodeURIComponent( escape(resultDocument) ));
         }else{
+            var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
             var toc = epub.toc;
-            var contents = xsltp.transformToFragment(toc,document);
+            var contents = xsltp.transformToFragment(toc,doc);
+            console.log(contents);
             return contents;
         }
-        //console.log(contents);
     }
     return {
              load:function(file, lib) {

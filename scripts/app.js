@@ -32,8 +32,11 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
             book.load();
         }, false);
     function fill_toc(html){
-        console.log(html);
+        //console.log(html);
         document.getElementById("toc").appendChild(html);
+        var sel = document.getElementById("tocselect");
+        console.log("select==", sel);
+        sel.addEventListener("change", function (event){console.log("Select changed"); fill_page(book.get_page((event.target.options[this.selectedIndex].id-1)||event.target.selectedIndex));} );
     }
     function fill_page(html){
         console.log("Try load html");
