@@ -44,11 +44,10 @@ define(
           //console.log(dx, dy, x, y, sxG, syG, touches);
           if(Math.abs(dx)>64){
               evt.preventDefault();
-              if(evt.target===pts){liftcol(pts, sign(dx));}
-              else{
-                  console.log("Lift mtext");
+              if(!evt.target.id.match(/pts|pt|pop/)){
+                  console.log("Lift mtext, target is", evt.target);
                   liftcol(mtext, sign(dx));
-              }
+              } else{liftcol(pts, sign(dx));}
               sxG = x; syG = y;
               window.clearTimeout(timer);
               moveflag = 0;
@@ -62,19 +61,26 @@ define(
               evt.preventDefault();
               options.display('none');
               console.log("Hide opts");
-          } else if(moveflag==1) {
+          } else if(moveflag===1) {
               evt.preventDefault();
-              if(evt.target.id!="pts" && evt.target.id!="pt" && evt.target.id!="pop"){
+              if(!evt.target.id.match(/pts|pt|pop/)){
                   var touch = touches[0];//touches.length-1];
                   /*var win = chrome.app.window.current();
                   var winc = win.contentWindow;//.Document()
                   var doc = winc.Document();
                   console.log(doc);//document.caretRangeFromPoint(120, 250));*/
-                  if(document.caretPositionFromPoint) var soffset = document.caretPositionFromPoint(touch["clientX"], touch["clientY"]).offset; 
-                  else if(document.caretRangeFromPoint) var soffset = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]).startOffset;
+                  if(document.caretPositionFromPoint) {
+                      var cp = document.caretPositionFromPoint(touch["clientX"], touch["clientY"]);
+                      var soffset = cp.offset;
+                      var target = cp.offsetNode;
+                  } else if(document.caretRangeFromPoint) {
+                      var cp = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]);
+                      var soffset = cp.startOffset;
+                      var target = cp.startContainer;
+                  }
                   //soffset = caret.offset|caret.startOffset;
                   max_Y = touch["clientY"];
-                  selectword(soffset, evt.target);
+                  selectword(soffset, target);
               } else {
                   sxG = x;
                   syG = y;
@@ -132,8 +138,9 @@ define(
           for (var i=0; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
               newpos = touches[i]["clientY"] < my ? window.innerHeight - touches[i]["clientY"] : window.innerHeight - my;
-              el.style.bottom = newpos+'px';
-              console.log("Move to "+newpos+". Oldpos was "+oldpos," max_Y==",max_Y);
+              if(newpos < parseInt(window.innerHeight) - 24) el.style.bottom = newpos+'px';
+              else el.style.display = 'none';
+              console.log("Move bot to "+newpos+". Oldpos was "+oldpos," max_Y==",max_Y);
           }
       }
       function movestop(touches, el){
@@ -143,27 +150,42 @@ define(
           for (var i=0; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
               newpos = touches[i]["clientY"] > my ? touches[i]["clientY"] : my;
-              el.style.top = newpos+'px';
-              //console.log("Move to "+newpos+". Oldpos was "+oldpos);
+              if(newpos < parseInt(window.innerHeight) - 24) el.style.top = newpos+'px';
+              else el.style.display = 'none';
+              console.log("Move top to "+newpos+". Oldpos was "+oldpos);
           }
+      }
+      function expand2w(off, text){
+          var re = /[\s\.\;\"\,\<\>\(\)]/;
+          for(var hiind = off; re.test(text.charAt(hiind))===false; hiind++){}
+          for(var loind = off; re.test(text.charAt(loind))===false; loind--){}
+          return text.slice(loind+1, hiind);
       }
       function selectword(off, el){
           var txt = el.textContent;//new String(el.textContent);
-          var rng = document.createRange();
-          rng.selectNode(el);
-          console.log("Offset is", off);
-          rng.setStart(el.firstChild, off);
-          rng.setEnd(el.firstChild, off+1);
           var win = window;//chrome.app.window.current().contentWindow;
           var sel = win.getSelection();
           sel.removeAllRanges();
-          sel.addRange( rng );
-          sel.modify("extend", "backward", "word");
-          try {sel.collapseToStart();
-          sel.modify("extend", "forward", "word");
-          console.log("Selected", sel.toString());
-          selected_word = sel.toString();
-          } catch(e){console.log("Got error", e, "using other word"); selected_word = "word";}
+          var rng = document.createRange();
+          rng.selectNode(el);
+          console.log("Offset is", off, "el is", el);
+          rng.setStart(el, off);
+          rng.setEnd(el, off+1);
+          try {
+              if(rng.expand){
+                  rng.expand("word");
+                  sel.addRange( rng );
+                  selected_word = sel.toString();
+                  console.log("Selected by rng.expand", sel.toString());
+              } else {
+                  sel.addRange( rng );
+                  sel.modify("extend", "backward", "word");
+                  sel.collapseToStart();
+                  sel.modify("extend", "forward", "word");
+                  selected_word = sel.toString();
+                  console.log("Selected by sel.modify", sel.toString());
+              }
+          } catch(e) { selected_word = expand2w(off, txt); console.log("Got error", e.stack, "using expand2w, got", selected_word);}
           document.dispatchEvent(got_sel_ev);
       }
       return {

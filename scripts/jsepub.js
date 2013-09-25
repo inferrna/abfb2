@@ -225,11 +225,11 @@
                     return str;
                 } else {
                     var dataUri = self.getDataUri(url, href);
-                    console.log(url,"->",dataUri);
+                    //console.log("In", href, ":", url,"->",dataUri);
                     return "url(" + dataUri + ")";
                 }
             });
-
+            //console.log(href, "->", file);
             return file;
         },
 

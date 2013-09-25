@@ -42,6 +42,7 @@ define(
                 var rettext = encod.utf8b2str(e.data);//String(e.data);
                 if(rettext.substring(0,3)){//==='150'
                     resp += rettext;
+                    resp = resp;
                     evo.dispatchEvent(got_def_ev); 
                 }else {
                     //alert(rettext.substring(0,32)); 

@@ -41,12 +41,14 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
             }
         }, false);
     //console.log(options);
-    options.button().addEventListener('click', function (e) {
+    //options.button()
+    options.evo.addEventListener('got_file', function (e) {
             console.log("Button clicked");
             var evo = book.init(options.bookfile());
             evo.addEventListener('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));}, false);
             book.load();
         }, false);
+    
     function fill_toc(html){
         //console.log(html);
         var opts = document.getElementById("options");
@@ -68,7 +70,7 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
         var el = document.getElementById('pop');
         var cf = 0.1;
         var width = parseInt(el.style.width, 10);
-        dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>");
+        dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\w\W.]+150/, '');//.replace(/<.*>\n/, '');
         cl.innerHTML = dtext;
     }
     function thumb_block(mY, word, disp) {
@@ -86,7 +88,8 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
                 cl.style.top = "0px";
                 if(pos==='top'){el.style.top = 0; el.style.bottom = '85%';}// db.style.display='none'; dt.style.display=disp;}
                 if(pos==='bot'){el.style.bottom = 0; el.style.top = '85%';}// dt.style.display='none'; db.style.display=disp;}
-                    dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"])});
+                    dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
+                                        "local_base_url": "http://"+config["proxy_host"]+":"+config["proxy_port"]+"/?"});
                     dict.dreq.addEventListener('got_def', function (e) { fill_thumb(dict.response()); }, false);
                     dict.get_def(word);
             }
