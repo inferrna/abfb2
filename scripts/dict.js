@@ -66,7 +66,7 @@ define(
         get_def:function(word){
             lword = word.toLowerCase();
             console.log("lword==",lword, "dict==", datas["dictionary"]);
-            if(datas["dictionary"] == 'local') get_http(lword, locals, datas["local_base_url"], 'local');
+            if(datas["dictionary"] == 'dictd proxy') get_http(lword, locals, datas["local_base_url"], 'local');
             else if (datas["dictionary"] == 'google') get_http(lword, googles, datas["google_base_url"], 'google');
             else if (datas["dictionary"] == 'socket'){
                 socket.check();

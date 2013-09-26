@@ -1,14 +1,14 @@
 define(
   [],
   function(){
+    var evo = document.createElement("br");
+    var got_file_ev = new Event('got_file');
     var opts_brd = document.getElementById('options');
     opts_brd.textContent = '';
     var type;
     var file = null;
-    var evo = document.createElement("br");
-    var got_file_ev = new Event('got_file');
     var datas = {
-        dict_src: [['google', 'local', 'socket'], "Select dictionary source"],
+        dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source"],
         socket_host: ['192.168.0.2', "dictd host"],
         socket_port: ['2628', "dictd port"],
         proxy_host: ['192.168.0.2', "proxy host"],
@@ -125,10 +125,6 @@ define(
         if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key);
         if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
     }
-    var but = document.createElement("input");
-    but.value = "Click_me";
-    but.type = "button";
-    opts_brd.appendChild(but);
     var toc = document.createElement("div");
     toc.id = "toc";
     opts_brd.appendChild(toc);
@@ -142,9 +138,6 @@ define(
             },
             bookfile:function(){
                 return file;//document.getElementById('file').files[0];
-            },
-            button:function(){
-                return but;
             },
             evo:evo
     };

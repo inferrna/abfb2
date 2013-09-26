@@ -1,6 +1,7 @@
 define(
     ['options'],
   function(options){
+      console.log("From uitouch",1);
       var moveflag = 0;
       var hold = 0;
       var timer = null;
@@ -8,11 +9,12 @@ define(
       var syG = 0;
       var max_Y = 0;
       var selected_word = '';
+      var evo = document.createElement("br");
       var got_sel_ev = new Event('got_selection');
       var pts = document.getElementById('pts');
       var mtext = document.getElementById('maintext');
-      var evo = document.createElement("br");
       var next_ch_ev = new Event('next_chapter');
+      //console.log("From uitouch",2,document);
       function sign(x) { return x && x / Math.abs(x); }
       function handleTouch(evt, start) {
           var type = evt.type.substring(0,5);
@@ -21,7 +23,6 @@ define(
           //console.log(type);
           if(type==="touch"){
             for(var t=0; t<touchlists.length; t++){
-                //console.log("t",t);
                 touches.push({"clientX":touchlists[t].clientX, "clientY":touchlists[t].clientY});
             }
           } else if(type==="wheel") {
@@ -41,7 +42,7 @@ define(
           var y = touches[touches.length-1]["clientY"];
           var dx = x - sxG;
           var dy = y - syG;
-          //console.log(dx, dy, x, y, sxG, syG, touches);
+          //console.log(dx, dy, x, y, sxG, syG);
           if(Math.abs(dx)>64){
               evt.preventDefault();
               if(!evt.target.id.match(/pts|pt|pop/)){
@@ -63,12 +64,12 @@ define(
               console.log("Hide opts");
           } else if(moveflag===1) {
               evt.preventDefault();
+              console.log("flag ==", moveflag);
               if(!evt.target.id.match(/pts|pt|pop/)){
                   var touch = touches[0];//touches.length-1];
                   /*var win = chrome.app.window.current();
                   var winc = win.contentWindow;//.Document()
-                  var doc = winc.Document();
-                  console.log(doc);//document.caretRangeFromPoint(120, 250));*/
+                  var doc = winc.Document();*/
                   if(document.caretPositionFromPoint) {
                       var cp = document.caretPositionFromPoint(touch["clientX"], touch["clientY"]);
                       var soffset = cp.offset;
@@ -77,7 +78,7 @@ define(
                       var cp = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]);
                       var soffset = cp.startOffset;
                       var target = cp.startContainer;
-                  }
+                  } else {console.log("No of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
                   //soffset = caret.offset|caret.startOffset;
                   max_Y = touch["clientY"];
                   selectword(soffset, target);
@@ -162,16 +163,17 @@ define(
           return text.slice(loind+1, hiind);
       }
       function selectword(off, el){
+          console.log(el);
           var txt = el.textContent;//new String(el.textContent);
-          var win = window;//chrome.app.window.current().contentWindow;
-          var sel = win.getSelection();
-          sel.removeAllRanges();
-          var rng = document.createRange();
-          rng.selectNode(el);
-          console.log("Offset is", off, "el is", el);
-          rng.setStart(el, off);
-          rng.setEnd(el, off+1);
+          console.log("Go select...");
           try {
+              var sel = window.getSelection();
+              sel.removeAllRanges();
+              var rng = document.createRange();
+              rng.selectNode(el);
+              //console.log("Offset is", off, "el is", el);
+              rng.setStart(el, off);
+              rng.setEnd(el, off+1);
               if(rng.expand){
                   rng.expand("word");
                   sel.addRange( rng );
@@ -186,7 +188,7 @@ define(
                   console.log("Selected by sel.modify", sel.toString());
               }
           } catch(e) { selected_word = expand2w(off, txt); console.log("Got error", e.stack, "using expand2w, got", selected_word);}
-          document.dispatchEvent(got_sel_ev);
+          evo.dispatchEvent(got_sel_ev);
       }
       return {
           selected_word: function() { return selected_word; },
@@ -205,6 +207,7 @@ define(
               moveflag=0;
           },
           handleTouch:function (evt){
+              console.log("Touch proceed", moveflag, syG, sxG);
               handleTouch(evt, 0);
           },
           handleclick:function(evt){

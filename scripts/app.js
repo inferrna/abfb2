@@ -20,10 +20,10 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
     dt.addEventListener("touchmove", uitouch.handleTouch, false);
     var marea = document.getElementById("maintext");
     marea.style.top = "0px";
-    marea.addEventListener("touchstart", uitouch.handleTouchstart, false);
-    marea.addEventListener("touchend", uitouch.handleTouchend, false);
-    marea.addEventListener("touchmove", uitouch.handleTouch, false);
-    document.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
+    txarea.addEventListener("touchstart", uitouch.handleTouchstart, false);
+    txarea.addEventListener("touchend", uitouch.handleTouchend, false);
+    txarea.addEventListener("touchmove", uitouch.handleTouch, false);
+    uitouch.evo.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
     uitouch.evo.addEventListener('next_chapter', function (event) {
             var sel = document.getElementById("tocselect");
             var idx = sel.selectedIndex;
@@ -60,6 +60,7 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
         opts.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
         sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; fill_page(book.get_page((event.target.options[event.target.selectedIndex].id-1)||event.target.selectedIndex));} );
+        fill_page(book.get_page((sel.options[sel.selectedIndex].id-1)||sel.selectedIndex));
     }
     function fill_page(html){
         console.log("Try load html");
