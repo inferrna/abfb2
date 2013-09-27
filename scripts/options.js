@@ -30,7 +30,8 @@ define(
         //<device storage
         if(key==="dsfile"){
             if (navigator.getDeviceStorage) {
-                parse_storage(sel, obj);
+                try { parse_storage(sel, obj);}
+                catch(e) {console.warn("Parse storage failed, got"+e.stack);}
                 sel.addEventListener("change", function (event){
                                                     var filename = event.target.options[event.target.selectedIndex].value;
                                                     console.log("Select file changed", filename);
@@ -121,7 +122,7 @@ define(
     }
     for(var key in datas){
         type = typeof(datas[key][0]);
-        console.log(type);
+        //console.log(type);
         if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key);
         if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
     }

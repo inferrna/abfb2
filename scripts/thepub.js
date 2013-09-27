@@ -4,7 +4,7 @@ function(jsepub, jsinflate, jsunzip, stuff){
     var srlzr = new XMLSerializer();
     var xsltp = new XSLTProcessor();
     var parsr = new DOMParser();
-    console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
+    //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
     xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"'), 'text/xml'));
     var evo = document.createElement("br");
     var got_book_ev = new Event('got_book');

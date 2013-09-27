@@ -1,12 +1,16 @@
 define(
-    ['thepub'],
-  function(thepub){
+    ['thepub', 'thetxt'],
+  function(thepub, thetxt){
         var foliant = null;
         var thefile = null;
         var evo = null;
+        var retxt = /[\w\W]+\.txt/;
+        var repub = /[\w\W]+\.epub/;
         return {
                  init:function(file) {
-                         foliant = thepub;
+                         if(file.name.match(repub)) foliant = thepub;
+                         else if(file.name.match(retxt)) foliant = thetxt;
+                         else { console.warn(file.name+" not matched any type"); return ''; } 
                          thefile = file;
                          evo = foliant.evo;
                          return evo;

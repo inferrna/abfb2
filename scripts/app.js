@@ -14,6 +14,10 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
     var txarea = document.getElementById('txtarea');
     var ta_rectObject = txarea.getBoundingClientRect();
     txarea.style.height = (window.innerHeight - ta_rectObject.top - 1)+"px";
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
+    document.getElementsByTagName('head')[0].appendChild(style);
     var dt = document.getElementById("pop");
     dt.addEventListener("touchstart", uitouch.handleTouchstart, false);
     dt.addEventListener("touchend", uitouch.handleTouchend, false);
@@ -34,7 +38,7 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
                 console.log('next_chapter=', idx);
                 fill_page(book.get_page((sel.options[idx].id-1)||idx));
             }
-            if(event.target.id="-1"){
+            if(event.target.id==="-1"){
                 var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
                 var marect = marea.getBoundingClientRect();
                 marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
@@ -54,7 +58,7 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
         var opts = document.getElementById("options");
         var toc = document.getElementById("toc");
         opts.removeChild(toc)
-        ntoc = document.createElement("div");
+        var ntoc = document.createElement("div");
         ntoc.id = "toc";
         ntoc.appendChild(html);
         opts.appendChild(ntoc);
@@ -71,7 +75,7 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
         var el = document.getElementById('pop');
         var cf = 0.1;
         var width = parseInt(el.style.width, 10);
-        dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\w\W.]+150/, '');//.replace(/<.*>\n/, '');
+        dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
         cl.innerHTML = dtext;
     }
     function thumb_block(mY, word, disp) {

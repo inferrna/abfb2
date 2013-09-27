@@ -1,8 +1,9 @@
 define(
-    ['options'],
-  function(options){
+    ['options', 'stuff'],
+  function(options, stuff){
       console.log("From uitouch",1);
       var moveflag = 0;
+      var liftflag = 0;
       var hold = 0;
       var timer = null;
       var sxG = 0;
@@ -45,10 +46,13 @@ define(
           //console.log(dx, dy, x, y, sxG, syG);
           if(Math.abs(dx)>64){
               evt.preventDefault();
-              if(!evt.target.id.match(/pts|pt|pop/)){
-                  console.log("Lift mtext, target is", evt.target);
-                  liftcol(mtext, sign(dx));
-              } else{liftcol(pts, sign(dx));}
+              if(liftflag===1){
+                  if(!evt.target.id.match(/pts|pt|pop/)){
+                      console.log("Lift mtext, target is", evt.target);
+                      liftcol(mtext, sign(dx));
+                  } else{liftcol(pts, sign(dx));}
+                  liftflag = 0;
+              }
               sxG = x; syG = y;
               window.clearTimeout(timer);
               moveflag = 0;
@@ -61,6 +65,7 @@ define(
           } else if (dy<-64){
               evt.preventDefault();
               options.display('none');
+              document.getElementById('pop').style.display = 'none';
               console.log("Hide opts");
           } else if(moveflag===1) {
               evt.preventDefault();
@@ -196,6 +201,7 @@ define(
           handleTouchstart:function (evt) {
               console.log("Touch start", moveflag, syG, sxG);
               timer = window.setTimeout(function(){moveflag=1}, 1024);
+              liftflag = 1;
               //evt.preventDefault();
               handleTouch(evt, 1);
           },
@@ -205,6 +211,7 @@ define(
               //evt.preventDefault();
               handleTouch(evt, 0);
               moveflag=0;
+              liftflag = 0;
           },
           handleTouch:function (evt){
               console.log("Touch proceed", moveflag, syG, sxG);
