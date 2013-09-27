@@ -1,6 +1,6 @@
 define(
-    ['thepub', 'thetxt'],
-  function(thepub, thetxt){
+    ['thepub', 'thetxt', 'stuff'],
+  function(thepub, thetxt, stuff){
         var foliant = null;
         var thefile = null;
         var evo = null;
@@ -19,7 +19,7 @@ define(
                          foliant.load(thefile, 'jsepub');
                  },
                  get_page:function(i){
-                         console.log("got request");
+                         stuff.log("got request");
                          return foliant.get_page(i);
                  },
                  evo:function(){

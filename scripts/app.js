@@ -1,6 +1,6 @@
-require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options, book){
-    console.log("app.js loads");
-    var ongoingTouches = new Array;
+require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict, options, book, stuff){
+    stuff.log("app.js loads");
+    //var ongoingTouches = new Array;
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -12,8 +12,12 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
     var moveflag = 0;
     var dtext = null;
     var txarea = document.getElementById('txtarea');
+    var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     txarea.style.height = (window.innerHeight - ta_rectObject.top - 1)+"px";
+    txarea.style.width =   window.innerWidth+"px";
+    //fl_text.style.height = window.innerHeight+"px";
+    fl_text.style.width =  window.innerWidth+"px";
     var style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
@@ -35,7 +39,7 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
             idx+=parseInt(event.target.id);
             if(idx<sel.options.length && idx>-1){
                 sel.options[idx].selected = true;
-                console.log('next_chapter=', idx);
+                stuff.log('next_chapter='+idx);
                 fill_page(book.get_page((sel.options[idx].id-1)||idx));
             }
             if(event.target.id==="-1"){
@@ -44,17 +48,17 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
                 marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
             }
         }, false);
-    //console.log(options);
+    //stuff.log(options);
     //options.button()
     options.evo.addEventListener('got_file', function (e) {
-            console.log("Button clicked");
+            stuff.log("Got file event fired");
             var evo = book.init(options.bookfile());
-            evo.addEventListener('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));}, false);
+            evo.addEventListener('got_book', function () {stuff.log("Got book"); fill_toc(book.get_page(-1));}, false);
             book.load();
         }, false);
     
     function fill_toc(html){
-        //console.log(html);
+        //stuff.log(html);
         var opts = document.getElementById("options");
         var toc = document.getElementById("toc");
         opts.removeChild(toc)
@@ -63,11 +67,11 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
         ntoc.appendChild(html);
         opts.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
-        sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; fill_page(book.get_page((event.target.options[event.target.selectedIndex].id-1)||event.target.selectedIndex));} );
+        sel.addEventListener("change", function (event){stuff.log("Select changed"); marea.style.top="0px"; fill_page(book.get_page((event.target.options[event.target.selectedIndex].id-1)||event.target.selectedIndex));} );
         fill_page(book.get_page((sel.options[sel.selectedIndex].id-1)||sel.selectedIndex));
     }
     function fill_page(html){
-        console.log("Try load html");
+        stuff.log("Try load html");
         marea.innerHTML = html;
     }
     function fill_thumb(text){
@@ -85,9 +89,9 @@ require(['uitouch', 'dict', 'options', 'book'], function(uitouch, dict, options,
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                console.log("Got config", config);
+                stuff.log("Got config "+config);
                 ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
-                console.log("mY vs ptop", mY, ptop);
+                stuff.log("mY vs ptop"+mY+" "+ptop);
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";

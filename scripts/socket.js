@@ -14,18 +14,18 @@ define(
     }
     function chromewrite(id, text){
         var data = encod.str2utf8b(text);
-        //console.log(encod.utf8b2str(encod.str2utf8b("ползущий like окна")));
+        //stuff.log(encod.utf8b2str(encod.str2utf8b("ползущий like окна")));
         chrome.socket.write(id, data, function(){window.setTimeout(function(writeInfo){chromeread(id);}, 256);});
     }
     function chromeread(id){  chrome.socket.read(id, 65536, function(readInfo){
             resp = encod.utf8b2str(readInfo.data);
-            //console.log("Got from gsocket",resp);
+            //stuff.log("Got from gsocket "+resp);
             evo.dispatchEvent(got_def_ev);
     }); }
     function chromecreate(){
         chrome.socket.create('tcp', null, function(createInfo){
                 gsocketid = createInfo.socketId;
-                //console.log("gsocketid==", gsocketid, "createInfo==", createInfo);
+                //stuff.log("gsocketid==", gsocketid, "createInfo==", createInfo);
                 chromeconnect(gsocketid);
             });
     }
@@ -55,7 +55,7 @@ define(
             text = word;
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
-            else console.log("Socket still unavailiable or check first");
+            else stuff.log("Socket still unavailiable or check first");
         },
         check:function(){
             if(navigator.mozTCPSocket) sockavail = 'mozilla';
@@ -65,7 +65,7 @@ define(
         },
         init:function(_host, _port){
             if(sockavail===null){
-                console.log("Socket unavailiable or check first");
+                stuff.log("Socket unavailiable or check first");
                 return;
             }
             host = _host;
