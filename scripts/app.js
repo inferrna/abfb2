@@ -1,5 +1,5 @@
 require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict, options, book, stuff){
-    stuff.log("app.js loads");
+    console.log("app.js loads");
     //var ongoingTouches = new Array;
     var ws = null;
     var dreq = null;
@@ -39,26 +39,26 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
             idx+=parseInt(event.target.id);
             if(idx<sel.options.length && idx>-1){
                 sel.options[idx].selected = true;
-                stuff.log('next_chapter='+idx);
+                console.log('next_chapter='+idx);
                 fill_page(book.get_page((sel.options[idx].id-1)||idx));
-            }
-            if(event.target.id==="-1"){
-                var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
-                var marect = marea.getBoundingClientRect();
-                marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
-            }
+                if(event.target.id==="-1"){
+                    var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
+                    var marect = marea.getBoundingClientRect();
+                    marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
+                }
+           }
         }, false);
-    //stuff.log(options);
+    //console.log(options);
     //options.button()
     options.evo.addEventListener('got_file', function (e) {
-            stuff.log("Got file event fired");
+            console.log("Got file event fired");
             var evo = book.init(options.bookfile());
-            evo.addEventListener('got_book', function () {stuff.log("Got book"); fill_toc(book.get_page(-1));}, false);
+            evo.addEventListener('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));}, false);
             book.load();
         }, false);
     
     function fill_toc(html){
-        //stuff.log(html);
+        //console.log(html);
         var opts = document.getElementById("options");
         var toc = document.getElementById("toc");
         opts.removeChild(toc)
@@ -67,11 +67,11 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         ntoc.appendChild(html);
         opts.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
-        sel.addEventListener("change", function (event){stuff.log("Select changed"); marea.style.top="0px"; fill_page(book.get_page((event.target.options[event.target.selectedIndex].id-1)||event.target.selectedIndex));} );
-        fill_page(book.get_page((sel.options[sel.selectedIndex].id-1)||sel.selectedIndex));
+        sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; fill_page(book.get_page((event.target.options[event.target.selectedIndex].id-1)||event.target.selectedIndex));} );
+        fill_page(book.get_page(0));
     }
     function fill_page(html){
-        stuff.log("Try load html");
+        console.log("Try load html");
         marea.innerHTML = html;
     }
     function fill_thumb(text){
@@ -89,9 +89,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                stuff.log("Got config "+config);
+                console.log("Got config "+config);
                 ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
-                stuff.log("mY vs ptop"+mY+" "+ptop);
+                console.log("mY vs ptop"+mY+" "+ptop);
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";

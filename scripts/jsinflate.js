@@ -64,7 +64,7 @@
     var zip_border = new Array(  // Order of the bit length code lengths
         16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15);
     /* objects (inflate) */
-
+    //var encod = require('encod');
     function zip_HuftList() {
         this.next = null;
         this.list = null;
@@ -740,8 +740,7 @@
         buff = new Array(1024);
         out = "";
         while((i = zip_inflate_internal(buff, 0, buff.length)) > 0) {
-            for(j = 0; j < i; j++)
-                out += String.fromCharCode(buff[j]);
+             for(j = 0; j < i; j++) out += String.fromCharCode(buff[j]);
         }
         zip_inflate_data = null; // G.C.
 

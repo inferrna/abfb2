@@ -1,7 +1,7 @@
 define(
   ['utf8', 'stuff'],
   function(utf8, stuff){
-    //stuff.log(utf8);
+    //console.log(utf8);
     return {
         str2utf8b:function(str){
             var strarray = utf8.encode(str);
@@ -34,7 +34,7 @@ define(
             for(var i = 0; i < string.length; i++) {
               bufView[i] = string.charCodeAt(i);
             }
-            //stuff.log("str2ab buffer is "+bufView);
+            //console.log("str2ab buffer is "+bufView);
             return buffer;
         },
         encodeutf8:function(str) {//http://terenceyim.wordpress.com/2011/03/04/javascript-utf-8-codec-that-supports-supplementary-code-points/

@@ -6,7 +6,7 @@ define(
     var opts_brd = document.getElementById('options');
     opts_brd.textContent = '';
     var type;
-    var file = null;
+    var file = {'name':'empty'};
     var datas = {
         dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source"],
         socket_host: ['192.168.0.2', "dictd host"],
@@ -34,15 +34,15 @@ define(
                 catch(e) {console.warn("Parse storage failed, got"+e.stack);}
                 sel.addEventListener("change", function (event){
                                                     var filename = event.target.options[event.target.selectedIndex].value;
-                                                    stuff.log("Select file changed "+filename);
+                                                    console.log("Select file changed "+filename);
                                                     var sdcard = navigator.getDeviceStorage('sdcard');
                                                     var request = sdcard.get(filename);
                                                     request.onsuccess = function () {  file = this.result;
-                                                                                       stuff.log("Got the file: "+file.name); 
+                                                                                       console.log("Got the file: "+file.name); 
                                                                                        evo.dispatchEvent(got_file_ev);}
                                                     request.onerror = function () { console.warn("Unable to get the file: " + this.error); }
                                                }, false);
-            } else { stuff.log("No navigator.getDeviceStorage api found"); delete datas[key];}
+            } else { console.log("No navigator.getDeviceStorage api found"); delete datas[key];}
             return;
         }
         //device storage>
@@ -94,7 +94,7 @@ define(
             var nm  = document.createElement("option");
             nm.textContent = file.name;
             count++;
-            stuff.log("File found: " + file.name);
+            console.log("File found: " + file.name);
             sel.appendChild(nm);
             obj.appendChild(sel);
             //alert("File found");
@@ -104,7 +104,7 @@ define(
             // success with the next file as result.
                 this.continue();
             } else {
-                stuff.log(count+" files found");
+                console.log(count+" files found");
                 obj.appendChild(sel);
             }
         }
@@ -122,7 +122,7 @@ define(
     }
     for(var key in datas){
         type = typeof(datas[key][0]);
-        //stuff.log(type);
+        //console.log(type);
         if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key);
         if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
     }

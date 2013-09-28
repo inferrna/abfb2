@@ -30,12 +30,12 @@ define(
     var dreq = new XMLHttpRequest();
     /*dreq.open("GET", "http://translate.google.com", true);
     try {dreq.send();}
-    catch(e){stuff.log("XMLHttpRequest failed, got:",e);};*/
+    catch(e){console.log("XMLHttpRequest failed, got:",e);};*/
     dreq.onload = function (event) {
-            stuff.log("XMLHttpRequest done");
+            console.log("XMLHttpRequest done");
             resp = '';
             var resptext = event.target.responseText;
-            //stuff.log(JSON.parse(resptext)["dict"]);
+            //console.log(JSON.parse(resptext)["dict"]);
             if(datas["dictionary"]==="google"){
                 var respj = JSON.parse(resptext);
                 if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
@@ -43,7 +43,7 @@ define(
             }
             else resp = resptext;
             //alert("Got "+resp);
-            //stuff.log("Got inner response ", resp);
+            //console.log("Got inner response ", resp);
             dreq.dispatchEvent(got_def_ev);
         }
     function get_http(word, params, baseurl, dictionary){
@@ -58,14 +58,14 @@ define(
             dreq.open("GET", url, "true");
             dreq.send();
             //alert("Request sended, url was "+url+".");
-            stuff.log("Request sended, url was "+url);
+            console.log("Request sended, url was "+url);
     }
     return {
         dreq:dreq, 
         response:function(){return resp;}, 
         get_def:function(word){
             lword = word.toLowerCase();
-            stuff.log("lword=="+lword+" dict=="+datas["dictionary"]);
+            console.log("lword=="+lword+" dict=="+datas["dictionary"]);
             if(datas["dictionary"] == 'dictd proxy') get_http(lword, locals, datas["local_base_url"], 'local');
             else if (datas["dictionary"] == 'google') get_http(lword, googles, datas["google_base_url"], 'google');
             else if (datas["dictionary"] == 'socket'){

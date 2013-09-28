@@ -4,14 +4,14 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
     var srlzr = new XMLSerializer();
     var xsltp = new XSLTProcessor();
     var parsr = new DOMParser();
-    //stuff.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
+    //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
     xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"'), 'text/xml'));
     var evo = document.createElement("br");
     var got_book_ev = new Event('got_book');
     function load_jsepub(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
-            stuff.log("Load input file");
+            console.log("Load input file");
             proceedepub(evt.target.result);
         };
         Reader.readAsBinaryString(file);
@@ -31,7 +31,7 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
                     msg = "Post processing";
                 } else if (step === 5) {
                     msg = "Finishing";
-                    stuff.log(msg);
+                    console.log(msg);
                     evo.dispatchEvent(got_book_ev);
                 }
                 // Render the "msg" here.
@@ -47,6 +47,18 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
                 }
                 ltag.parentNode.replaceChild(fragment, ltag);
             }
+    }
+    function get_true_id(url, id, text){
+        for(var i = 0; i<epub.opf.spine.length;i++){
+            var spine = epub.opf.spine[i];
+            var href = epub.opf.manifest[spine]["href"];
+            if(href===url) {
+                //console.log(text+"i=="+i+" id=="+id+" href=="+href);
+                return i+1;
+            }
+        }
+        console.log(url+" not found");
+        return id;
     }
     function get_indexed_page(index){
         if(index>-1){
@@ -67,10 +79,20 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
             var toc = epub.toc;
-            var contents = xsltp.transformToFragment(toc,doc);
-            stuff.log(contents);
-            //stuff.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
-            return contents;
+            //var texts = toc.childNodes[0].getElementsByTagName("texts");
+            /*console.log(toc.childNodes[0]);
+            console.log("The TOC is: ", texts.length);
+            for(var i=0; i < texts.length; i++){
+                console.log(text);
+                texts[i].textContent = escape(texts[i].textContent);
+            }*/
+            var contents = xsltp.transformToDocument(toc,doc);
+            var opts = contents.getElementsByTagName("option");
+            for(var i = 0; i < opts.length; i++) opts[i].id = get_true_id(opts[i].getAttribute('url'), opts[i].id, opts[i].textContent);
+            var docFragment = document.createDocumentFragment();
+            while(contents.firstChild) docFragment.appendChild(contents.firstChild);
+            //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
+            return docFragment;//contents;
         }
     }
     return {

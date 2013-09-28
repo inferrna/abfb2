@@ -206,9 +206,10 @@
                 } else if (mediaType === "application/xhtml+xml") {
                     result = this.postProcessHTML(href);
                 } else if( mediaType === "application/x-dtbncx+xml") {
-                    console.log("/get toc");
-                    this.toc = this.xmlDocument(this.files[href]);
-                    console.log("/got toc");
+                    //console.log("/get toc");
+                    var xml = decodeURIComponent(escape(this.files[href]));
+                    this.toc = this.xmlDocument(xml);
+                    //console.log("/got toc");
                 } else console.log(href, "media type is ", mediaType);
 
                 if (result !== undefined) {
@@ -237,12 +238,14 @@
         clean_tags: function(doc, tag){
                 var tags = doc.getElementsByTagName(tag);
                 for (var i = 0, il = tags.length; i < il; i++) {
-                    var fragment = document.createDocumentFragment();
-                    var ltag = tags[i];
-                    while(ltag.firstChild) {
-                        fragment.appendChild(ltag.firstChild);
+                    if(tags[i]){
+                        var fragment = document.createDocumentFragment();
+                        var ltag = tags[i];
+                        while(ltag.firstChild) {
+                            fragment.appendChild(ltag.firstChild);
+                        }
+                        ltag.parentNode.replaceChild(fragment, ltag);
                     }
-                    ltag.parentNode.replaceChild(fragment, ltag);
                 }
         },
         postProcessHTML: function (href) {
@@ -267,16 +270,6 @@
                 image.removeAttribute("height");
                 image.setAttribute("src", this.getDataUri(src, href))
             }
-            var svgs = doc.getElementsByTagName("svg");
-            for (var i = 0, il = svgs.length; i < il; i++) {
-                var fragment = document.createDocumentFragment();
-                var svg = svgs[i];
-                while(svg.firstChild) {
-                    fragment.appendChild(svg.firstChild);
-                }
-                svg.parentNode.replaceChild(fragment, svg);
-            }
-            //console.log(svg);
             var head = doc.getElementsByTagName("head")[0];
             var links = head.getElementsByTagName("link");
             for (var i = 0, il = links.length; i < il; i++) {
@@ -293,15 +286,19 @@
                     head.replaceChild(inlineStyle, link);
                 }
             }
-            
-            var div = document.createElement('div');
-            div.style.width =  window.innerWidth+"px";
-            while(doc.firstChild) div.appendChild(doc.firstChild);
-            this.clean_tags(div, "html");
-            this.clean_tags(div, "head");
-            this.clean_tags(div, "body");
-            delete doc;
-            return div;
+            this.clean_tags(doc, "head");
+            this.clean_tags(doc, "body");
+            this.clean_tags(doc, "meta");
+            this.clean_tags(doc, "svg");
+            try { 
+                var div = document.createElement('div');
+                div.style.width =  window.innerWidth+"px";
+                while(doc.firstChild) div.appendChild(doc.firstChild);// } catch(e) { console.log(doc.firstChild); throw(e);}
+                this.clean_tags(div, "html");
+                delete doc;
+                return div;
+            } catch(e) { return doc; } 
+            return doc;
         },
 
         getDataUri: function (url, href) {

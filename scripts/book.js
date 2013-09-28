@@ -19,7 +19,7 @@ define(
                          foliant.load(thefile, 'jsepub');
                  },
                  get_page:function(i){
-                         stuff.log("got request");
+                         console.log("got request");
                          return foliant.get_page(i);
                  },
                  evo:function(){

@@ -19,18 +19,18 @@ define(
           var type = evt.type.substring(0,5);
           var touches = [];
           var touchlists = evt.changedTouches;
-          //stuff.log(type);
+          //console.log(type);
           if(type==="touch"){
             for(var t=0; t<touchlists.length; t++){
                 touches.push({"clientX":touchlists[t].clientX, "clientY":touchlists[t].clientY});
             }
           } else if(type==="wheel") {
-            ///stuff.log(evt.type+" "+moveflag);
+            ///console.log(evt.type+" "+moveflag);
             //if(hold===1) 
                 touches = [{"clientX":evt.clientX+evt.deltaX, "clientY":evt.clientY+evt.deltaY}];
             //else return;
           } else {
-            stuff.log("Probably bad event: "+evt+" "+type);
+            console.log("Probably bad event: "+evt+" "+type);
             return
           }
           if(start===1){
@@ -41,12 +41,12 @@ define(
           var y = touches[touches.length-1]["clientY"];
           var dx = x - sxG;
           var dy = y - syG;
-          //stuff.log(dx, dy, x, y, sxG, syG);
+          //console.log(dx, dy, x, y, sxG, syG);
           if(Math.abs(dx)>64){
               evt.preventDefault();
               if(liftflag===1){
                   if(!evt.target.id.match(/pts|pt|pop/)){
-                      stuff.log("Lift mtext, target is "+evt.target);
+                      console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
                   } else{liftcol(pts, sign(dx));}
                   liftflag = 0;
@@ -54,20 +54,20 @@ define(
               sxG = x; syG = y;
               window.clearTimeout(timer);
               moveflag = 0;
-              //stuff.log(evt);
+              //console.log(evt);
               return;
           } else if (dy>64){
               evt.preventDefault();
               options.display('block');
-              stuff.log("Show opts");
+              console.log("Show opts");
           } else if (dy<-64){
               evt.preventDefault();
               options.display('none');
               document.getElementById('pop').style.display = 'none';
-              stuff.log("Hide opts");
+              console.log("Hide opts");
           } else if(moveflag===1) {
               evt.preventDefault();
-              stuff.log("flag == "+moveflag);
+              console.log("flag == "+moveflag);
               if(!evt.target.id.match(/pts|pt|pop/)){
                   var touch = touches[0];//touches.length-1];
                   /*var win = chrome.app.window.current();
@@ -81,29 +81,29 @@ define(
                       var cp = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]);
                       var soffset = cp.startOffset;
                       var target = cp.startContainer;
-                  } else {stuff.log("No of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
+                  } else {console.log("No of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
                   //soffset = caret.offset|caret.startOffset;
                   max_Y = touch["clientY"];
                   selectword(soffset, target);
               } else {
                   sxG = x;
                   syG = y;
-                  stuff.log("dy== "+dy);
-                  stuff.log("Touch proceed");
+                  console.log("dy== "+dy);
+                  console.log("Touch proceed");
                   evt.preventDefault();
                   var el = document.getElementById('pop');//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-                  stuff.log("Target is "+evt.target.id);
+                  console.log("Target is "+evt.target.id);
                   //if(evt.target.id==='drugtop') 
                   if(el.style.top === '0px') movesbot(touches, el);
                   else if(el.style.bottom === '0px') movestop(touches, el);
-                  else stuff.log("No action. "+el.style.bottom+" x "+el.style.top);
+                  else console.log("No action. "+el.style.bottom+" x "+el.style.top);
               }
           }
           //else if(evt.target.id==='drugbot') 
               //movestop(touches, el);
       }
      function liftcol(el, dir) {
-          //stuff.log(el);
+          //console.log(el);
           var ptop, top;
           var par_rectO = el.parentNode.getBoundingClientRect();
           var el_rectO = el.getBoundingClientRect();
@@ -112,28 +112,29 @@ define(
           else top = parseInt(el.style.top);
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
           if( el.id==="maintext" && top<(-(el_rectO.height-ptop/2)) ){
+              el.style.top="0px";//-(el_rectO.height-ptop)+"px";
               evo.id = "1";
               evo.dispatchEvent(next_ch_ev);
-              el.style.top="0px";
               return;
           }
-          //stuff.log(top, ptop, ", el_rectO.height==", el_rectO.height);
-          //stuff.log("elcstyle.top=="+elcstyle.top+" el.style.top=="+el.style.top+" top=="+top+" ptop=="+ptop);
+          //console.log(top, ptop, ", el_rectO.height==", el_rectO.height);
+          //console.log("elcstyle.top=="+elcstyle.top+" el.style.top=="+el.style.top+" top=="+top+" ptop=="+ptop);
           top = top+dir*(ptop-8);
           if(top>0){
               if(el.id==="maintext"){
                   evo.id = "-1";
+                  el.style.top = "0px";
                   evo.dispatchEvent(next_ch_ev);
                   //el.style.bottom="0px";
                   return;
               } else { top = 0; }
           }
           else if( top<(-(el_rectO.height-24)) ){
-              //stuff.log("el_rectO.height==", el_rectO.height, "; top==", top);
+              //console.log("el_rectO.height==", el_rectO.height, "; top==", top);
               top = -(el_rectO.height - ptop/4);
           }
           el.style.top = top+"px";
-          //stuff.log("el.style.top==", el.style.top);
+          //console.log("el.style.top==", el.style.top);
       }
       function movesbot(touches, el){
           var newpos = 0;
@@ -144,7 +145,7 @@ define(
               newpos = touches[i]["clientY"] < my ? window.innerHeight - touches[i]["clientY"] : window.innerHeight - my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.bottom = newpos+'px';
               else el.style.display = 'none';
-              stuff.log("Move bot to "+newpos+". Oldpos was "+oldpos+" max_Y=="+max_Y);
+              console.log("Move bot to "+newpos+". Oldpos was "+oldpos+" max_Y=="+max_Y);
           }
       }
       function movestop(touches, el){
@@ -156,7 +157,7 @@ define(
               newpos = touches[i]["clientY"] > my ? touches[i]["clientY"] : my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.top = newpos+'px';
               else el.style.display = 'none';
-              stuff.log("Move top to "+newpos+". Oldpos was "+oldpos);
+              console.log("Move top to "+newpos+". Oldpos was "+oldpos);
           }
       }
       function expand2w(off, text){
@@ -178,30 +179,30 @@ define(
                   rng.expand("word");
                   sel.addRange( rng );
                   selected_word = sel.toString();
-                  stuff.log("Selected by rng.expand "+sel.toString());
+                  console.log("Selected by rng.expand "+sel.toString());
               } else {
                   sel.addRange( rng );
                   sel.modify("extend", "backward", "word");
                   sel.collapseToStart();
                   sel.modify("extend", "forward", "word");
                   selected_word = sel.toString();
-                  stuff.log("Selected by sel.modify "+sel.toString());
+                  console.log("Selected by sel.modify "+sel.toString());
               }
-          } catch(e) { selected_word = expand2w(off, txt); stuff.log("Got error "+e.stack+" using expand2w, got "+selected_word);}
+          } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack+" using expand2w, got "+selected_word);}
           evo.dispatchEvent(got_sel_ev);
       }
       return {
           selected_word: function() { return selected_word; },
           max_Y: function() { return max_Y; },
           handleTouchstart:function (evt) {
-              stuff.log("Touch start "+moveflag);
+              console.log("Touch start "+moveflag);
               timer = window.setTimeout(function(){moveflag=1}, 1024);
               liftflag = 1;
               //evt.preventDefault();
               handleTouch(evt, 1);
           },
           handleTouchend:function (evt) {
-              stuff.log("Touch end "+moveflag);
+              console.log("Touch end "+moveflag);
               window.clearTimeout(timer);
               //evt.preventDefault();
               handleTouch(evt, 0);
@@ -209,13 +210,13 @@ define(
               liftflag = 0;
           },
           handleTouch:function (evt){
-              stuff.log("Touch proceed "+moveflag);
+              console.log("Touch proceed "+moveflag);
               handleTouch(evt, 0);
           },
           handleclick:function(evt){
               if(hold === 0) hold=1;
               else hold = 0;
-              stuff.log("click makes hold "+hold);
+              console.log("click makes hold "+hold);
           },
           evo:evo
       }

@@ -4,7 +4,7 @@
     }
     GLOBAL.JSUnzip = JSUnzip;
     JSUnzip.MAGIC_NUMBER = 0x04034b50;
-
+   // var utf8 = require('utf8');
     JSUnzip.prototype = {
         readEntries: function () {
             if (!this.isZipFile()) {
@@ -40,7 +40,7 @@
         }
 
         if (this.isUsingUtf8()) {
-            console.log("File is using UTF8. Not supported.");
+            console.warn("File is using UTF8. Not supported.");
         }
 
         this.crc32              = binaryStream.getNextBytesAsNumber(4);
@@ -128,13 +128,18 @@
             var result = "";
             var max = index + steps;
             var i = index;
-            while (i < max) {
-                var charCode = this.getByteAt(i);
-                result += String.fromCharCode(charCode);
-                // Accounting for multi-byte strings.
-                max -= Math.floor(charCode / 0x100);
-                i++;
-            }
+           // try { result = utf8.decode(this.stream.substring(index,index+steps));
+                //console.log(result);
+           // } catch(e) {
+                //console.warn(e.stack);
+                while (i < max) {
+                    var charCode = this.getByteAt(i);
+                    result += String.fromCharCode(charCode);
+                    // Accounting for multi-byte strings.
+                    max -= Math.floor(charCode / 0x100);
+                    i++;
+                }
+            //}
             return result;
         }
     }
