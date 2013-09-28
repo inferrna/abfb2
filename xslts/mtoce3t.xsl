@@ -25,9 +25,16 @@
         <xsl:attribute name="id">
             <xsl:value-of select="@playOrder"/>
         </xsl:attribute>
+        <xsl:attribute name="url">
+            <xsl:apply-templates select="ncx:content"/>
+        </xsl:attribute>
             <xsl:value-of select="ncx:navLabel"/>
     </option>
         <xsl:apply-templates select="ncx:navPoint"/>
+  </xsl:template>
+
+  <xsl:template match="ncx:content">
+        <xsl:apply-templates select="@src"/>
   </xsl:template>
 
   <xsl:template match="ncx:navLabel|
