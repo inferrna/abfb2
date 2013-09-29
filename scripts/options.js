@@ -4,6 +4,7 @@ define(
     var evo = document.createElement("br");
     var got_file_ev = new Event('got_file');
     var opts_brd = document.getElementById('options');
+    opts_brd.style.width = window.innerWidth-16+"px";
     opts_brd.textContent = '';
     var type;
     var file = {'name':'empty'};
@@ -27,6 +28,7 @@ define(
         nm.disabled = 1;
         sel.appendChild(nm);
         sel.id = key;
+        sel.style.width = opts_brd.style.width;
         //<device storage
         if(key==="dsfile"){
             if (navigator.getDeviceStorage) {
@@ -61,6 +63,7 @@ define(
         var br  = document.createElement("br");
         sel.textContent = name;
         inp.id = key;
+        inp.style.left="0px";
         if(key==="file") {   inp.type = 'file';
                              inp.addEventListener("change", function (event){
                                                             file = event.target.files[0];

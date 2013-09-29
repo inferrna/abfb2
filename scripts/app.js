@@ -15,9 +15,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     txarea.style.height = (window.innerHeight - ta_rectObject.top - 1)+"px";
-    txarea.style.width = 'auto';//window.innerWidth+"px";
+    txarea.style.width = window.innerWidth+"px";
     //fl_text.style.height = window.innerHeight+"px";
-    fl_text.style.width =  'auto';//window.innerWidth-16+"px";
+    fl_text.style.width =  window.innerWidth-16+"px";
     var style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
@@ -67,12 +67,14 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         ntoc.appendChild(html);
         opts.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
+        //sel.style.width = window.innerWidth-16+"px";
         sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; 
                                                 fill_page(book.foliant().get_fromopt(event.target.selectedIndex));} );
         fill_page(book.foliant().get_page(0));
     }
     function fill_page(html){
         console.log("Try load html");
+        marea.style.width = window.innerWidth-16+"px";
         marea.style.height = 'auto';
         marea.innerHTML = html;
         var cstyle = marea.getBoundingClientRect();//window.getComputedStyle(marea, null);

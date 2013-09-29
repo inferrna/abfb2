@@ -292,7 +292,7 @@
             this.clean_tags(doc, "svg");
             try { 
                 var div = document.createElement('div');
-                div.style.width =  window.innerWidth+"px";
+                //div.style.width =  window.innerWidth+"px";
                 while(doc.firstChild) div.appendChild(doc.firstChild);// } catch(e) { console.log(doc.firstChild); throw(e);}
                 this.clean_tags(div, "html");
                 delete doc;

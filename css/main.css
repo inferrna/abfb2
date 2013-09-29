@@ -30,7 +30,7 @@
   }
   .flex > div
   {
-      margin: 6px;
+      /*margin: 2px;*/
       overflow:hidden;
       -webkit-flex: 1 1 auto;
       flex: 1 1 auto;
