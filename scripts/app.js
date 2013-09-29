@@ -34,19 +34,19 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     uitouch.evo.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
     uitouch.evo.addEventListener('next_chapter', function (event) {
             var sel = document.getElementById("tocselect");
-            var idx = sel.selectedIndex;
-            sel.options[idx].selected = null;
-            idx+=parseInt(event.target.id);
-            if(idx<sel.options.length && idx>-1){
-                sel.options[idx].selected = true;
-                console.log('next_chapter='+idx);
-                fill_page(book.get_page((sel.options[idx].id-1)||idx));
+            var diff = parseInt(event.target.id);
+            //console.log('next_chapter='+idx);
+            var page = book.foliant().next_page(diff); 
+            if(page!=-1){
+                fill_page(page);
+                var newsel = book.foliant().option(sel.selectedIndex)
+                sel.options[newsel].selected = true;
                 if(event.target.id==="-1"){
                     var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
                     var marect = marea.getBoundingClientRect();
                     marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
                 }
-           }
+            }
         }, false);
     //console.log(options);
     //options.button()
@@ -67,12 +67,19 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         ntoc.appendChild(html);
         opts.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
-        sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; fill_page(book.get_page((event.target.options[event.target.selectedIndex].id-1)||event.target.selectedIndex));} );
-        fill_page(book.get_page(0));
+        sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; 
+                                                fill_page(book.foliant().get_fromopt(event.target.selectedIndex));} );
+        fill_page(book.foliant().get_page(0));
     }
     function fill_page(html){
         console.log("Try load html");
+        marea.style.height = 'auto';
         marea.innerHTML = html;
+        var cstyle = marea.getBoundingClientRect();//window.getComputedStyle(marea, null);
+        if(parseInt(cstyle.height) < parseInt(txarea.style.height)){
+            marea.style.height = txarea.style.height;
+            console.log(cstyle.height+" < "+txarea.style.height);
+        }
     }
     function fill_thumb(text){
         var cl = document.getElementById('pts');

@@ -111,7 +111,7 @@ define(
           if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
           else top = parseInt(el.style.top);
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
-          if( el.id==="maintext" && top<(-(el_rectO.height-ptop/2)) ){
+          if( top<0 && el.id==="maintext" && top<(-(el_rectO.height-ptop/2)) ){
               el.style.top="0px";//-(el_rectO.height-ptop)+"px";
               evo.id = "1";
               evo.dispatchEvent(next_ch_ev);

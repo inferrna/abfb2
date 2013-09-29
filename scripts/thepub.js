@@ -8,6 +8,8 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
     xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"'), 'text/xml'));
     var evo = document.createElement("br");
     var got_book_ev = new Event('got_book');
+    var pages = [];
+    var currentpage = 0;
     function load_jsepub(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
@@ -88,7 +90,22 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
             }*/
             var contents = xsltp.transformToDocument(toc,doc);
             var opts = contents.getElementsByTagName("option");
-            for(var i = 0; i < opts.length; i++) opts[i].id = get_true_id(opts[i].getAttribute('url'), opts[i].id, opts[i].textContent);
+
+            var hrefs = [];
+            var urls = [];
+            var re = /([\w\/]+)\/(.*)/;
+            for(var i = 0; i < opts.length; i++) {
+                urls.push(opts[i].getAttribute('url').replace(re, "$2"));
+            }
+            console.log("urls is "+urls);
+            for(var i = 0; i<epub.opf.spine.length;i++){
+                var spine = epub.opf.spine[i];
+                href = epub.opf.manifest[spine]['href'].replace(re, "$2");
+                console.log(i+" href "+href+" "+epub.opf.manifest[spine]['href']);
+                var index = urls.indexOf(href);
+                pages.push(index);
+            }
+            console.log("pages is "+pages);
             var docFragment = document.createDocumentFragment();
             while(contents.firstChild) docFragment.appendChild(contents.firstChild);
             //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
@@ -97,10 +114,32 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
     }
     return {
              load:function(file, lib) {
-                        if(lib==='jsepub') load_jsepub(file);
+                     if(lib==='jsepub') load_jsepub(file);
              },
              get_page:function(index){
                      return get_indexed_page(index);
+             },
+             option:function(i){
+                     if(pages[currentpage]>-1) return pages[currentpage];
+                     return i;
+             },
+             get_fromopt:function(idx){
+                     currentpage = idx;
+                     var tidx = pages.indexOf(idx);
+                     if(tidx>-1) currentpage = tidx;
+                     return get_indexed_page(currentpage);
+             },
+             currentpage:function(){
+                     return currentpage;
+             },
+             next_page:function(diff){
+                     console.log(currentpage+" next_page "+diff);
+                     var page = currentpage + diff;
+                     if(pages.length>page && page>-1) {
+                            currentpage += diff;
+                            return get_indexed_page(currentpage);
+                     }
+                     return -1;
              },
              evo:evo
     }
