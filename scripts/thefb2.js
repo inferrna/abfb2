@@ -105,6 +105,12 @@ function(stuff){
                      }
                      return -1;
              },
+             init:function(){
+                fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
+                pages = [];
+                divs = [];
+                currentpage = 0;
+             },
              evo:evo
     }
 }

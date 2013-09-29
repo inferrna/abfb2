@@ -15,9 +15,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     txarea.style.height = (window.innerHeight - ta_rectObject.top - 1)+"px";
-    txarea.style.width =   window.innerWidth+"px";
+    txarea.style.width = 'auto';//window.innerWidth+"px";
     //fl_text.style.height = window.innerHeight+"px";
-    fl_text.style.width =  window.innerWidth+"px";
+    fl_text.style.width =  'auto';//window.innerWidth-16+"px";
     var style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';

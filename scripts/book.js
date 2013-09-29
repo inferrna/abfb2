@@ -15,6 +15,7 @@ define(
                          else { console.warn(file.name+" not matched any type"); return ''; } 
                          thefile = file;
                          evo = foliant.evo;
+                         foliant.init();
                          return evo;
                  },
                  load:function() {

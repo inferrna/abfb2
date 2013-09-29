@@ -62,6 +62,10 @@ function(stuff){
              get_page:function(index){
                      return get_indexed_page(index);
              },
+             init:function(){
+                     text = [];
+                     name = '';
+             },
              evo:evo
     }
 }

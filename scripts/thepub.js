@@ -141,6 +141,11 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
                      }
                      return -1;
              },
+             init:function(){
+                     epub = null;
+                     pages = [];
+                     currentpage = 0;
+             },
              evo:evo
     }
 }
