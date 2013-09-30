@@ -48,6 +48,8 @@ define(
                   if(!evt.target.id.match(/pts|pt|pop/)){
                       console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
+                      var el_rectO = mtext.getBoundingClientRect();
+                      options.setpercent(-100*parseInt(mtext.style.top)/el_rectO.height);
                   } else{liftcol(pts, sign(dx));}
                   liftflag = 0;
               }

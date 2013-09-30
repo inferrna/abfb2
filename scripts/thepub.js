@@ -5,7 +5,7 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
     var xsltp = new XSLTProcessor();
     var parsr = new DOMParser();
     //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
-    xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"'), 'text/xml'));
+    xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
     var evo = document.createElement("br");
     var got_book_ev = new Event('got_book');
     var pages = [];
@@ -102,8 +102,8 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
                 var spine = epub.opf.spine[i];
                 href = epub.opf.manifest[spine]['href'].replace(re, "$2");
                 console.log(i+" href "+href+" "+epub.opf.manifest[spine]['href']);
-                var index = urls.indexOf(href);
-                pages.push(index);
+                var idx = urls.indexOf(href);
+                pages.push(idx);
             }
             console.log("pages is "+pages);
             var docFragment = document.createDocumentFragment();

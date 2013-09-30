@@ -62,6 +62,9 @@ function(stuff){
              get_page:function(index){
                      return get_indexed_page(index);
              },
+             currentpage:function(){
+                     return 0;
+             },
              init:function(){
                      text = [];
                      name = '';

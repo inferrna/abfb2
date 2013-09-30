@@ -20,15 +20,15 @@ function(stuff){
         Reader.readAsText(file);
     }
     function proceedfb2(fb2File){
-        // Use HTML5 files or download via XHR.
         var xml = parsr.parseFromString(fb2File,'text/xml');
         var resultDocument = xsltp.transformToFragment(xml, document);
         fb2.appendChild(resultDocument);
         var divlist = fb2.getElementsByTagName('div');
         var re = /TOC_.+/g;
+        clean_tags(fb2, 'script');
+        //while(fb2.firstChild && fb2.firstChild!)
         for(var i = 0; i < divlist.length; i++)
             if(re.test(divlist[i].getAttribute('id'))){ 
-                //console.log( divlist[i].getAttribute('id') );
                 divs.push(divlist[i]);//.getAttribute('id'));
         }
         evo.dispatchEvent(got_book_ev);

@@ -1,35 +1,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fb="http://www.gribuser.ru/xml/fictionbook/2.0">
-	<xsl:output method="xml" encoding="UTF-8"/>
+	<xsl:output method="html" encoding="UTF-8"/>
 	<xsl:key name="note-link" match="fb:section" use="@id"/>
 	<xsl:template match="/*">
-		<html>
-			<head>
-				<xsl:if test="fb:description/fb:title-info/fb:lang = 'ru'">
-					<meta HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8"/>
-				</xsl:if>
-				<title>
-					<xsl:value-of select="fb:description/fb:title-info/fb:book-title"/>
-				</title>
-				<style type="text/x-oeb1-css">
-					A { color : #0002CC }
-					A:HOVER { color : #BF0000 }
-					BODY { background-color : #FEFEFE; color : #000000; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; text-align : justify }
-					H1{ font-size : 160%; font-style : normal; font-weight : bold; text-align : left; border : 1px solid Black;  background-color : #E7E7E7; margin-left : 0px;  page-break-before : always; }
-					H2{ font-size : 130%; font-style : normal; font-weight : bold; text-align : left; background-color : #EEEEEE;  border : 1px solid Gray;  page-break-before : always; }
-					H3{ font-size : 110%; font-style : normal; font-weight : bold; text-align : left;  background-color : #F1F1F1;  border : 1px solid Silver;}
-					H4{ font-size : 100%; font-style : normal; font-weight : bold; text-align : left; border : 1px solid Gray;  background-color : #F4F4F4;}
-					H5{ font-size : 100%; font-style : italic; font-weight : bold; text-align : left; border : 1px solid Gray;  background-color : #F4F4F4;}
-					H6{ font-size : 100%; font-style : italic; font-weight : normal; text-align : left; border : 1px solid Gray;  background-color : #F4F4F4;}
-					SMALL{ font-size : 80% }
-					BLOCKQUOTE{ margin-left :4em; margin-top:1em; margin-right:0.2em;}
-					HR{ color : Black }
-					UL{margin-left: 0}
-					.epigraph{width:50%; margin-left : 35%;}
-				</style>
-			</head>
-			<body>
-
-
 						<h4 align="center">
         					<xsl:value-of select="fb:description/fb:title-info/fb:book-title"/>
 						</h4>
@@ -63,8 +35,6 @@
 					<!-- <xsl:apply-templates /> -->
 					<xsl:apply-templates/>
 				</xsl:for-each>
-			</body>
-		</html>
 	</xsl:template>
 	<!-- author template -->
 	<xsl:template name="author">
@@ -99,12 +69,13 @@
 				<xsl:apply-templates select="fb:section" mode="toc"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<option style="text-indent:{16*count(ancestor::*)}px">
-					<a href="#TOC_{generate-id()}"><xsl:value-of select="normalize-space(fb:title/fb:p[1] | @name)"/></a>
+				<option style="text-indent:{16*count(ancestor::*)}px" did="TOC_{generate-id()}">
+					<!--a href="#TOC_{generate-id()}"></a-->
+                    <xsl:value-of select="normalize-space(fb:title/fb:p[1] | @name)"/>
+				</option>
                     <xsl:if test="fb:section">
                         <xsl:apply-templates select="fb:section" mode="toc"/>
                     </xsl:if>
-				</option>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -118,13 +89,15 @@
 	</xsl:template>
 
 	<xsl:template match="fb:section">
-		<a name="TOC_{generate-id()}"></a>
+		<div id="TOC_{generate-id()}">
 		<xsl:if test="@id">
 			<xsl:element name="a">
 				<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
 			</xsl:element>
 		</xsl:if>
-		<xsl:apply-templates/>
+		<xsl:apply-templates select="*[not(self::fb:section)]"/>
+        </div>
+        <xsl:apply-templates select="fb:section"/>
 	</xsl:template>
 	
 	
@@ -133,7 +106,7 @@
 		<xsl:choose>
 			<xsl:when test="count(ancestor::node()) &lt; 9">
 				<xsl:element name="{concat('h',count(ancestor::node())-3)}">
-					<a name="TOC_{generate-id()}"></a>
+					<!--a name="TOC_{generate-id()}"></a-->
 					<xsl:if test="@id">
 						<xsl:element name="a">
 							<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>

@@ -31,6 +31,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     txarea.addEventListener("touchstart", uitouch.handleTouchstart, false);
     txarea.addEventListener("touchend", uitouch.handleTouchend, false);
     txarea.addEventListener("touchmove", uitouch.handleTouch, false);
+    //window.onclose = options.savepp();
     uitouch.evo.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
     uitouch.evo.addEventListener('next_chapter', function (event) {
             var sel = document.getElementById("tocselect");
@@ -38,7 +39,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
             //console.log('next_chapter='+idx);
             var page = book.foliant().next_page(diff); 
             if(page!=-1){
-                fill_page(page);
+                fill_page(page, 0);
                 var newsel = book.foliant().option(sel.selectedIndex)
                 sel.options[newsel].selected = true;
                 if(event.target.id==="-1"){
@@ -69,10 +70,10 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         var sel = document.getElementById("tocselect");
         //sel.style.width = window.innerWidth-16+"px";
         sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; 
-                                                fill_page(book.foliant().get_fromopt(event.target.selectedIndex));} );
-        fill_page(book.foliant().get_page(0));
+                                                fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
+        fill_page(book.foliant().get_page( options.getpage() ), options.getpercent() );
     }
-    function fill_page(html){
+    function fill_page(html, percent){
         console.log("Try load html");
         marea.style.width = window.innerWidth-16+"px";
         marea.style.height = 'auto';
@@ -82,6 +83,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
             marea.style.height = txarea.style.height;
             console.log(cstyle.height+" < "+txarea.style.height);
         }
+        marea.style.top = parseInt(-percent*parseInt(cstyle.height)/100)+"px";
+        options.setpage(book.foliant().currentpage());
     }
     function fill_thumb(text){
         var cl = document.getElementById('pts');

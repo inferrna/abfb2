@@ -6,8 +6,12 @@ define(
     var opts_brd = document.getElementById('options');
     opts_brd.style.width = window.innerWidth-16+"px";
     opts_brd.textContent = '';
+    //var storage = chrome.storage.local;// || 
+    var storage = localStorage;
     var type;
     var file = {'name':'empty'};
+    var currentpercent = -1;
+    var currentpage = -1;
     var datas = {
         dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source"],
         socket_host: ['192.168.0.2', "dictd host"],
@@ -132,6 +136,9 @@ define(
     var toc = document.createElement("div");
     toc.id = "toc";
     opts_brd.appendChild(toc);
+    var lbl = document.createElement("label");
+    lbl.textContent = "0%";
+    opts_brd.appendChild(lbl);
 
     return{
             display:function(mode){
@@ -142,6 +149,39 @@ define(
             },
             bookfile:function(){
                 return file;//document.getElementById('file').files[0];
+            },
+            savepp:function(){
+                try { storage.setItem(file.name+"_prc", currentpercent);
+                      storage.setItem(file.name+"_pnm", currentpage);}
+                catch(e){console.warn(e.stack);}
+                //alert("For "+file.name+" data saved"+currentpercent+" "+currentpage);
+            },
+            setpercent:function(percent){
+                currentpercent = percent;
+                this.savepp();
+                console.log("set currentpercent=="+currentpercent);
+                lbl.textContent = parseInt(currentpercent)+"% of current chapter";
+            },
+            getpercent:function(){
+                if(currentpercent===-1)
+                    try{currentpercent = parseInt(storage.getItem(file.name+"_prc"));}
+                    catch(e) {console.warn("get cpr failed, got "+e.stack); currentpercent = 0;}
+                if(isNaN(currentpercent) || currentpercent<0) currentpercent=0;
+                console.log(storage.getItem(file.name+"_prc")+" got currentpercent=="+currentpercent);
+                return currentpercent;
+            },
+            setpage:function(page){
+                currentpage = page;
+                this.savepp();
+                console.log("set currentpage=="+currentpage);
+            },
+            getpage:function(){
+                if(currentpage===-1)
+                    try{currentpage = parseInt(storage.getItem(file.name+"_pnm"));}
+                    catch(e) {console.warn("get cpg failed, got "+e.stack); currentpage = 0;}
+                if(isNaN(currentpage) || currentpage<0) currentage=0;
+                console.log(storage.getItem(file.name+"_pnm")+" got currentpage=="+currentpage);
+                return currentpage;
             },
             evo:evo
     };
