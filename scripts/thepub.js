@@ -117,6 +117,7 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
                      if(lib==='jsepub') load_jsepub(file);
              },
              get_page:function(index){
+                     currentpage = index;
                      return get_indexed_page(index);
              },
              option:function(i){

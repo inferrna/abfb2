@@ -3,15 +3,17 @@ define(
   function(stuff){
     var evo = document.createElement("br");
     var got_file_ev = new Event('got_file');
+    var got_pp_ev = new Event('got_pp');
     var opts_brd = document.getElementById('options');
     opts_brd.style.width = window.innerWidth-16+"px";
     opts_brd.textContent = '';
     //var storage = chrome.storage.local;// || 
-    var storage = localStorage;
+    try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
+    var crstorage = null;
+    try{ crstorage = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available");}
     var type;
     var file = {'name':'empty'};
-    var currentpercent = -1;
-    var currentpage = -1;
+    var currentpp = {'page':0, 'percent':0};
     var datas = {
         dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source"],
         socket_host: ['192.168.0.2', "dictd host"],
@@ -21,6 +23,16 @@ define(
         dsfile: [[], 'Select a file'],
         file: ['', ""]
     };
+    var hasStorage = (function() {
+      try {
+        localStorage.setItem('try', 'try');
+        localStorage.removeItem('try');
+        return true;
+        storage = localStorage;
+      } catch(e) {
+        return false;
+      }
+    }());
     var values = null;
     //var winstyle = element.currentStyle || window.getComputedStyle(element, null);
     function create_select(obj, name, elements, key){
@@ -127,6 +139,38 @@ define(
         //nm.textContent = "The end."
         //sel.appendChild(nm);
     }
+    function makepos(x){
+        var re = /.+?\..+?/, result = x;
+        if(re.test(x)) result = parseFloat(x);
+        else result = parseInt(x);
+        if(isNaN(x) && x<0) result = 0;
+        return result;
+    }
+    function get_cr(ps){
+        crstorage.get(Object.keys(ps), function(result){
+                console.log("Got "+JSON.stringify(result)+"from storage, was "+Object.keys(ps));
+                for(var key in Object.keys(result)){
+                    currentpp[ps[key]] = makepos(result[key]);
+                    console.log("Got "+result[key]+" from "+key);
+                }
+                evo.dispatchEvent(got_pp_ev);
+            });
+    }
+    function get_ls(ps){
+        console.log(ps);
+        for(var key in ps){
+            currentpp[ps[key]] = makepos(storage.getItem(key));
+            console.log("Got "+storage.getItem(key)+" from "+key+"->"+currentpp[ps[key]]+" stored into "+ps[key]);
+        }
+        evo.dispatchEvent(got_pp_ev);
+    }
+    function set_cr(key, p){
+        crstorage.set({key: p}, function(){console.log(p+" saved as "+key);});
+    }
+    function set_ls(key, p){
+        localStorage.setItem(key, p);
+    }
+
     for(var key in datas){
         type = typeof(datas[key][0]);
         //console.log(type);
@@ -151,37 +195,41 @@ define(
                 return file;//document.getElementById('file').files[0];
             },
             savepp:function(){
-                try { storage.setItem(file.name+"_prc", currentpercent);
-                      storage.setItem(file.name+"_pnm", currentpage);}
-                catch(e){console.warn(e.stack);}
-                //alert("For "+file.name+" data saved"+currentpercent+" "+currentpage);
+                var prckey = file.name+"_prc", pnmkey = file.name+"_pnm";
+                if(hasStorage) { set_ls(prckey, currentpp['percent']); set_ls(pnmkey, currentpp['page']); } 
+                else if(crstorage) { set_cr(prckey, currentpp['percent']); set_cr(pnmkey, currentpp['page']); }
+                //this.getpp();
+                console.log("Saved "+currentpp['percent']+"  "+currentpp['page']);
+            },
+            getpp:function(){
+                var prckey = file.name+"_prc", pnmkey = file.name+"_pnm";
+                var ps = {};
+                ps[prckey] = 'percent';
+                ps[pnmkey] = 'page';
+                if(hasStorage) get_ls(ps);
+                else if(chrome.storage) get_cr(ps);
+                else{ currentpp = {'page':0, 'percent':0}; 
+                      console.log("No any storage available.");
+                      evo.dispatchEvent(got_pp_ev);  };
             },
             setpercent:function(percent){
-                currentpercent = percent;
-                this.savepp();
-                console.log("set currentpercent=="+currentpercent);
-                lbl.textContent = parseInt(currentpercent)+"% of current chapter";
+                if(isNaN(percent)) currentpp['percent'] = 0;
+                else currentpp['percent'] = percent;
+                //this.savepp();
+                console.log("set currentpercent=="+percent);
+                lbl.textContent = parseInt(percent)+"% of current chapter";
             },
             getpercent:function(){
-                if(currentpercent===-1)
-                    try{currentpercent = parseInt(storage.getItem(file.name+"_prc"));}
-                    catch(e) {console.warn("get cpr failed, got "+e.stack); currentpercent = 0;}
-                if(isNaN(currentpercent) || currentpercent<0) currentpercent=0;
-                console.log(storage.getItem(file.name+"_prc")+" got currentpercent=="+currentpercent);
-                return currentpercent;
+                return currentpp['percent'];
             },
             setpage:function(page){
-                currentpage = page;
-                this.savepp();
-                console.log("set currentpage=="+currentpage);
+                if(isNaN(page)) currentpp['page'] = 0;
+                else currentpp['page'] = page;
+                //this.savepp();
+                console.log("set currentpage=="+page);
             },
             getpage:function(){
-                if(currentpage===-1)
-                    try{currentpage = parseInt(storage.getItem(file.name+"_pnm"));}
-                    catch(e) {console.warn("get cpg failed, got "+e.stack); currentpage = 0;}
-                if(isNaN(currentpage) || currentpage<0) currentage=0;
-                console.log(storage.getItem(file.name+"_pnm")+" got currentpage=="+currentpage);
-                return currentpage;
+                return currentpp['page'];
             },
             evo:evo
     };

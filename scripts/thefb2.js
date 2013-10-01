@@ -81,6 +81,7 @@ function(stuff){
                      load_fb2(file);
              },
              get_page:function(index){
+                     currentpage = index();
                      return get_indexed_page(index);
              },
              option:function(i){

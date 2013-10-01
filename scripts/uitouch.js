@@ -49,7 +49,8 @@ define(
                       console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
                       var el_rectO = mtext.getBoundingClientRect();
-                      options.setpercent(-100*parseInt(mtext.style.top)/el_rectO.height);
+                      options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
+                      options.savepp();
                   } else{liftcol(pts, sign(dx));}
                   liftflag = 0;
               }
