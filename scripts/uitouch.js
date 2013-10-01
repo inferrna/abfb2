@@ -84,7 +84,9 @@ define(
                       var cp = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]);
                       var soffset = cp.startOffset;
                       var target = cp.startContainer;
-                  } else {console.log("No of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
+                  } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports."); 
+                          soffset = 512;
+                          target = mtext;}
                   //soffset = caret.offset|caret.startOffset;
                   max_Y = touch["clientY"];
                   selectword(soffset, target);
