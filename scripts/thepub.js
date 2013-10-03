@@ -1,4 +1,4 @@
-define(['jsepub', 'jsinflate', 'jsunzip', 'stuff', 'encod'],
+define(['jsepubz', 'jsinflate', 'jsunzip', 'stuff', 'encod'],
 function(jsepub, jsinflate, jsunzip, stuff, encod){
     var epub = null;
     var srlzr = new XMLSerializer();
@@ -14,14 +14,15 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
             console.log("Load input file");
-            proceedepub(evt.target.result);
+            proceedepub(evt.target.result, file);
         };
         Reader.readAsBinaryString(file);
     }
-    function proceedepub(epubFile){
+    function proceedepub(epubFile, file){
         // Use HTML5 files or download via XHR.
-        epub = new JSEpub(epubFile);
-        epub.processInSteps(function (step, extras) {
+        //epub = new JSEpub(epubFile, file);
+        epub = jsepub;
+        epub.processInSteps(file, function (step, extras) {
                 var msg;
                 if (step === 1) {
                     msg = "Unzipping";
@@ -63,10 +64,14 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
         return id;
     }
     function get_indexed_page(index){
+        console.log("get_indexed_page "+index);
+        var opf = epub.opf();
+        var toc = epub.toc();
+        var files = epub.files();
         if(index>-1){
-            var spine = epub.opf.spine[index];
-            var href = epub.opf.manifest[spine]["href"];
-            var doc = epub.files[href];
+            var spine = opf.spine[index];
+            var href = opf.manifest[spine]["href"];
+            var doc = files[href];
             /*var div = document.createElement('div');
             //div.setAttribute
             //div.style.height = window.innerHeight+"px";
@@ -80,7 +85,6 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
             return html;//decodeURIComponent( escape(resultDocument) ));
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
-            var toc = epub.toc;
             //var texts = toc.childNodes[0].getElementsByTagName("texts");
             /*console.log(toc.childNodes[0]);
             console.log("The TOC is: ", texts.length);
@@ -98,10 +102,10 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
                 urls.push(opts[i].getAttribute('url').replace(re, "$2"));
             }
             console.log("urls is "+urls);
-            for(var i = 0; i<epub.opf.spine.length;i++){
-                var spine = epub.opf.spine[i];
-                href = epub.opf.manifest[spine]['href'].replace(re, "$2");
-                console.log(i+" href "+href+" "+epub.opf.manifest[spine]['href']);
+            for(var i = 0; i<opf.spine.length;i++){
+                var spine = opf.spine[i];
+                href = opf.manifest[spine]['href'].replace(re, "$2");
+                console.log(i+" href "+href+" "+opf.manifest[spine]['href']);
                 var idx = urls.indexOf(href);
                 pages.push(idx);
             }
