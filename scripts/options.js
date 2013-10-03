@@ -34,6 +34,31 @@ define(
       }
     }());
     var values = null;
+    function check_params(callbacks){
+        callbacks[0](callbacks);
+    }
+    function hasgoogle(callbacks){
+        callbacks.splice(0,1);
+        var oReq = new XMLHttpRequest();
+        oReq.addEventListener("error", function(){console.log("g error"); datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
+                                                            callbacks[0](callbacks);}, false);
+        oReq.addEventListener("abort", function(){console.log("g abrtd"); datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
+                                                            callbacks[0](callbacks);}, false);
+        oReq.open("GET", "http://translate.google.com/?", true);
+        oReq.send();
+    }
+    function hassocket(callbacks){
+        var cs = 0, ms = 0;
+        callbacks.splice(0,1);
+        try{ cs = chrome.socket } catch(e) { console.warn(e.stack);}
+        try{ ms = navigator.mozTCPSocket} catch(e) { console.warn(e.stack);}
+        if(!(cs || ms)){
+            datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('socket'),1);
+            //delete datas['socket_host'];
+            //delete datas['socket_port'];
+        }
+        callbacks[0](callbacks);
+    }
     //var winstyle = element.currentStyle || window.getComputedStyle(element, null);
     function create_select(obj, name, elements, key){
         var sel = document.createElement("select");
@@ -50,16 +75,17 @@ define(
             if (navigator.getDeviceStorage) {
                 try { parse_storage(sel, obj);}
                 catch(e) {console.warn("Parse storage failed, got"+e.stack);}
-                sel.addEventListener("change", function (event){
-                                                    var filename = event.target.options[event.target.selectedIndex].value;
-                                                    console.log("Select file changed "+filename);
-                                                    var sdcard = navigator.getDeviceStorage('sdcard');
-                                                    var request = sdcard.get(filename);
-                                                    request.onsuccess = function () {  file = this.result;
-                                                                                       console.log("Got the file: "+file.name); 
-                                                                                       evo.dispatchEvent(got_file_ev);}
-                                                    request.onerror = function () { console.warn("Unable to get the file: " + this.error); }
-                                               }, false);
+                sel.addEventListener("change", 
+                                function (event){
+                                    var filename = event.target.options[event.target.selectedIndex].value;
+                                    console.log("Select file changed "+filename);
+                                    var sdcard = navigator.getDeviceStorage('sdcard');
+                                    var request = sdcard.get(filename);
+                                    request.onsuccess = function () {  file = this.result;
+                                                                       console.log("Got the file: "+file.name); 
+                                                                       evo.dispatchEvent(got_file_ev);}
+                                    request.onerror = function () { console.warn("Unable to get the file: " + this.error); }
+                                }, false);
             } else { console.log("No navigator.getDeviceStorage api found"); delete datas[key];}
             return;
         }
@@ -170,13 +196,15 @@ define(
     function set_ls(key, p){
         localStorage.setItem(key, p);
     }
-
-    for(var key in datas){
-        type = typeof(datas[key][0]);
-        //console.log(type);
-        if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key);
-        if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
+    function fill_params(callbacks){
+        for(var key in datas){
+            type = typeof(datas[key][0]);
+            //console.log(type);
+            if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key);
+            if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
+        }
     }
+    check_params([hasgoogle, hassocket, fill_params]);
     var toc = document.createElement("div");
     toc.id = "toc";
     opts_brd.appendChild(toc);

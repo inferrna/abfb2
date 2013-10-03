@@ -17,7 +17,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     txarea.style.height = (window.innerHeight - ta_rectObject.top - 1)+"px";
     txarea.style.width = window.innerWidth+"px";
     //fl_text.style.height = window.innerHeight+"px";
-    fl_text.style.width =  window.innerWidth-16+"px";
+    fl_text.style.width =  "auto";
     var style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
@@ -76,13 +76,13 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                                                     fill_page(book.foliant().get_page( options.getpage() ), options.getpercent() ); 
                                                     var sel = document.getElementById("tocselect");
                                                     var newsel = book.foliant().option(sel.selectedIndex);
-                                                    sel.options[newsel].selected = true;
+                                                    if(sel.options[newsel]) sel.options[newsel].selected = true;
                                                 });
         options.getpp();
     }
     function fill_page(html, percent){
         console.log("Try load html");
-        marea.style.width = window.innerWidth-16+"px";
+        marea.style.width = 'auto';
         marea.style.height = 'auto';
         marea.innerHTML = html;
         var cstyle = marea.getBoundingClientRect();//window.getComputedStyle(marea, null);

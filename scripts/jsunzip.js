@@ -60,7 +60,7 @@
 
         if (this.isUsingBit3TrailingDataDescriptor()) {
             if (typeof(console) !== "undefined") {
-                console.log( "File is using bit 3 trailing data descriptor. Not supported.");
+                console.warn( "File is using bit 3 trailing data descriptor. Not supported.");
             }
             binaryStream.getNextBytesAsNumber(16);  //Skip the descriptor and move to beginning of next ZipEntry
         }
