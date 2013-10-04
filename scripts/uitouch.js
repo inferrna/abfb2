@@ -20,30 +20,19 @@ define(
           var touches = [];
           var touchlists = evt.changedTouches;
           //console.log(type);
-          if(type==="touch"){
-            for(var t=0; t<touchlists.length; t++){
-                touches.push({"clientX":touchlists[t].clientX, "clientY":touchlists[t].clientY});
-            }
-          } else if(type==="wheel") {
-            ///console.log(evt.type+" "+moveflag);
-            //if(hold===1) 
-                touches = [{"clientX":evt.clientX+evt.deltaX, "clientY":evt.clientY+evt.deltaY}];
-            //else return;
-          } else {
-            console.log("Probably bad event: "+evt+" "+type);
-            return
-          }
           if(start===1){
-              syG = touches[0]["clientY"];
-              sxG = touches[0]["clientX"];
+              syG = touchlists[0].clientY;
+              sxG = touchlists[0].clientX;
           }
-          var x = touches[touches.length-1]["clientX"];
-          var y = touches[touches.length-1]["clientY"];
+          var x = touchlists[touchlists.length-1].clientX;
+          var y = touchlists[touchlists.length-1].clientY;
           var dx = x - sxG;
           var dy = y - syG;
           //console.log(dx, dy, x, y, sxG, syG);
           if(Math.abs(dx)>64){
               evt.preventDefault();
+              window.clearTimeout(timer);
+              moveflag = 0;
               if(liftflag===1){
                   if(!evt.target.id.match(/pts|pt|pop/)){
                       console.log("Lift mtext, target is "+evt.target);
@@ -55,8 +44,6 @@ define(
                   liftflag = 0;
               }
               sxG = x; syG = y;
-              window.clearTimeout(timer);
-              moveflag = 0;
               //console.log(evt);
               return;
           } else if (dy>64){
@@ -77,18 +64,18 @@ define(
                   var winc = win.contentWindow;//.Document()
                   var doc = winc.Document();*/
                   if(document.caretPositionFromPoint) {
-                      var cp = document.caretPositionFromPoint(touch["clientX"], touch["clientY"]);
+                      var cp = document.caretPositionFromPoint(x, y);
                       var soffset = cp.offset;
                       var target = cp.offsetNode;
                   } else if(document.caretRangeFromPoint) {
-                      var cp = document.caretRangeFromPoint(touch["clientX"], touch["clientY"]);
+                      var cp = document.caretRangeFromPoint(x, y);
                       var soffset = cp.startOffset;
                       var target = cp.startContainer;
                   } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports."); 
                           soffset = 512;
                           target = mtext;}
                   //soffset = caret.offset|caret.startOffset;
-                  max_Y = touch["clientY"];
+                  max_Y = y;
                   selectword(soffset, target);
               } else {
                   sxG = x;
@@ -99,8 +86,8 @@ define(
                   var el = document.getElementById('pop');//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
                   console.log("Target is "+evt.target.id);
                   //if(evt.target.id==='drugtop') 
-                  if(el.style.top === '0px') movesbot(touches, el);
-                  else if(el.style.bottom === '0px') movestop(touches, el);
+                  if(el.style.top === '0px') movesbot(touchlists, el);
+                  else if(el.style.bottom === '0px') movestop(touchlists, el);
                   else console.log("No action. "+el.style.bottom+" x "+el.style.top);
               }
           }
@@ -147,7 +134,7 @@ define(
           var oldpos = parseInt(el.style.bottom);
           for (var i=0; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
-              newpos = touches[i]["clientY"] < my ? window.innerHeight - touches[i]["clientY"] : window.innerHeight - my;
+              newpos = touches[i].clientY < my ? window.innerHeight - touches[i].clientY : window.innerHeight - my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.bottom = newpos+'px';
               else el.style.display = 'none';
               console.log("Move bot to "+newpos+". Oldpos was "+oldpos+" max_Y=="+max_Y);
@@ -159,7 +146,7 @@ define(
           var oldpos = parseInt(el.style.bottom);
           for (var i=0; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
-              newpos = touches[i]["clientY"] > my ? touches[i]["clientY"] : my;
+              newpos = touches[i].clientY > my ? touches[i].clientY : my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.top = newpos+'px';
               else el.style.display = 'none';
               console.log("Move top to "+newpos+". Oldpos was "+oldpos);

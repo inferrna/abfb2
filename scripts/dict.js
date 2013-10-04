@@ -73,7 +73,7 @@ define(
                 socket.init(datas["host"], 2628);
                 socket.evo.addEventListener('got_def', function (e) { resp = socket.response(); dreq.dispatchEvent(got_def_ev); }, false);
                 socket.get_def(lword);
-            }
+            } else console.log("No dictionary selected");
         },
         init_params:function(params){
             for (var key in params) datas[key] = params[key];

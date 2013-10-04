@@ -5,7 +5,8 @@ define(
     var got_file_ev = new Event('got_file');
     var got_pp_ev = new Event('got_pp');
     var opts_brd = document.getElementById('options');
-    opts_brd.style.width = window.innerWidth-16+"px";
+    //opts_brd.style.width = "100%";
+    //opts_brd.style.padding = "1%";
     opts_brd.textContent = '';
     var storage = null;// || 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
@@ -66,12 +67,13 @@ define(
         var sel = document.createElement("select");
         var nm  = document.createElement("option");
         var br  = document.createElement("br");
+        var sp  = document.createElement("span");
         nm.textContent = name;
         nm.selected = 1;
         nm.disabled = 1;
         sel.appendChild(nm);
         sel.id = key;
-        sel.style.width = opts_brd.style.width;
+        sel.style.width = "40%";
         //<device storage
         if(key==="dsfile"){
             if (navigator.getDeviceStorage) {
@@ -98,13 +100,15 @@ define(
             el.value = elements[eln];
             sel.appendChild(el);
         }
-        obj.appendChild(sel);
-        obj.appendChild(br);
+        sp.appendChild(sel);
+        obj.appendChild(sp);
+        //obj.appendChild(br);
     }
     function create_input(obj, name, value, key){
         var sel = document.createElement("label");
         var inp = document.createElement("input");
         var br  = document.createElement("br");
+        var sp  = document.createElement("span");
         sel.textContent = name;
         inp.id = key;
         inp.style.left="0px";
@@ -115,12 +119,13 @@ define(
                          }
         else inp.type = 'text';
         inp.value = value;
-        obj.appendChild(sel);
-        obj.appendChild(inp);
-        obj.appendChild(br);
+        sp.appendChild(sel);
+        sp.appendChild(inp);
+        //sp.appendChild(br);
+        obj.appendChild(sp);
     }
     function display(mode){
-        opts_brd.style.display = mode;
+        opts_brd.parentNode.style.display = mode;
     }
     function get_config(){
         values = {};
@@ -138,12 +143,14 @@ define(
         cursor.onsuccess = function () {
             if(this.result!='undefined') var file = this.result;
             else this.continue();
+            try{
             var nm  = document.createElement("option");
-            nm.textContent = file.name;
-            count++;
-            console.log("File found: " + file.name);
-            sel.appendChild(nm);
-            obj.appendChild(sel);
+                nm.textContent = file.name;
+                count++;
+                console.log("File found: " + file.name);
+                sel.appendChild(nm);
+                obj.appendChild(sel);
+            }catch(e) { console.warn(e.stack); return;}
             //alert("File found");
             // Once we found a file we check if there is other results
             if (!this.done) {
@@ -211,8 +218,10 @@ define(
     toc.id = "toc";
     opts_brd.appendChild(toc);
     var lbl = document.createElement("label");
+    lbl.style.order = "99";
     lbl.textContent = "0%";
     opts_brd.appendChild(lbl);
+        //sp.className = "spflex";
 
     return{
             display:function(mode){
