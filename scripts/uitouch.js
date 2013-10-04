@@ -45,11 +45,11 @@ define(
               sxG = x; syG = y;
               //console.log(evt);
               return;
-          } else if (dy>64){
+          } else if (dy>64 && theitm!='pop'){
               evt.preventDefault();
               options.display('block');
               console.log("Show opts");
-          } else if (dy<-64){
+          } else if (dy<-64 && theitm!='pop'){
               evt.preventDefault();
               options.display('none');
               document.getElementById('pop').style.display = 'none';

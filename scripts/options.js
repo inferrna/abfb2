@@ -140,6 +140,8 @@ define(
         // Let's browse all the images available
         var cursor = pics.enumerate();
         var count = 0;
+        var self = this;
+        window.setTimeout(function(){self.return}, 2048);
         cursor.onsuccess = function () {
             if(this.result!='undefined') var file = this.result;
             else this.continue();
@@ -175,6 +177,8 @@ define(
         //sel.appendChild(nm);
     }
     function makepos(x){
+        x = x||0;
+        console.log("makepos, x==", x);
         var re = /.+?\..+?/, result = x;
         if(re.test(x)) result = parseFloat(x);
         else result = parseInt(x);

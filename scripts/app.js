@@ -28,9 +28,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     dt.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'pop');}, false);
     var marea = document.getElementById("maintext");
     marea.style.top = "0px";
-    marea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
-    marea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
-    marea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
+    txarea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
+    txarea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
+    txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
     try { window.addEventListener("beforeunload", options.savepp);}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){options.savepp();});}
     uitouch.evo.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
