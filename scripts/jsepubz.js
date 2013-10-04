@@ -189,14 +189,16 @@ define([], function () {
             var mediaType = opf.manifest[key]["media-type"]
             var href = opf.manifest[key]["href"]
             var result;
-
+            var tocre = /.+?\.ncx/i;
             if (mediaType === "text/css") {
                 result = postProcessCSS(href);
             } else if (mediaType === "application/xhtml+xml") {
                 result = postProcessHTML(href);
-            } else if( mediaType === "application/x-dtbncx+xml") {
+            } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
                 //console.log("/get toc"+href+"||"+Object.keys(files));
-                var xml = decodeURIComponent(escape(files[href]));
+                var xml = '';
+                try {xml = decodeURIComponent(escape(files[href]));}
+                catch(e) {xml = files[href]; console.warn(e.stack);};
                 toc = xmlDocument(xml);
                 //console.log("/got toc"+files[href]);
             } else console.log(href, "media type is ", mediaType);

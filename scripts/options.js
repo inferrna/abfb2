@@ -7,7 +7,7 @@ define(
     var opts_brd = document.getElementById('options');
     opts_brd.style.width = window.innerWidth-16+"px";
     opts_brd.textContent = '';
-    //var storage = chrome.storage.local;// || 
+    var storage = null;// || 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
     try{ crstorage = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available");}
@@ -44,8 +44,9 @@ define(
                                                             callbacks[0](callbacks);}, false);
         oReq.addEventListener("abort", function(){console.log("g abrtd"); datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
                                                             callbacks[0](callbacks);}, false);
-        oReq.open("GET", "http://translate.google.com/?", true);
-        oReq.send();
+        oReq.addEventListener("load", function(){callbacks[0](callbacks);}, false);
+        try { oReq.open("GET", "http://translate.google.com/?", true); oReq.send(); }
+        catch(e) { datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1); callbacks[0](callbacks); }
     }
     function hassocket(callbacks){
         var cs = 0, ms = 0;
@@ -57,6 +58,7 @@ define(
             //delete datas['socket_host'];
             //delete datas['socket_port'];
         }
+        console.log("checked socket");
         callbacks[0](callbacks);
     }
     //var winstyle = element.currentStyle || window.getComputedStyle(element, null);
