@@ -95,9 +95,8 @@
     align-items: flex-start;
     -webkit-align-items: flex-start;
     max-height: 60%;
-  }
-  .spflex :hover {
-      background: #CCCBEE;
+    white-space: nowrap;
+    background: #FFFFFF;
   }
   .spflex > span {
     align-content: flex-start;
@@ -107,7 +106,7 @@
   .spflex > div {
     width: 100%;
   }
-  .spflex > div:hover {
+  .spflex:hover {
       background: #CCCBEE;
   }
 
