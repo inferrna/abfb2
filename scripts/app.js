@@ -23,14 +23,14 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
     document.getElementsByTagName('head')[0].appendChild(style);
     var dt = document.getElementById("pop");
-    dt.addEventListener("touchstart", uitouch.handleTouchstart, false);
-    dt.addEventListener("touchend", uitouch.handleTouchend, false);
-    dt.addEventListener("touchmove", uitouch.handleTouch, false);
+    dt.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'pop');}, false);
+    dt.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'pop');}, false);
+    dt.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'pop');}, false);
     var marea = document.getElementById("maintext");
     marea.style.top = "0px";
-    document.body.addEventListener("touchstart", uitouch.handleTouchstart, false);
-    document.body.addEventListener("touchend", uitouch.handleTouchend, false);
-    document.body.addEventListener("touchmove", uitouch.handleTouch, false);
+    marea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
+    marea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
+    marea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
     try { window.addEventListener("beforeunload", options.savepp);}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){options.savepp();});}
     uitouch.evo.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);

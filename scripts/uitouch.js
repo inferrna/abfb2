@@ -1,13 +1,14 @@
 define(
     ['options', 'stuff'],
   function(options, stuff){
-      var moveflag = 0;
+      var dictflag = 0;
       var liftflag = 0;
       var hold = 0;
       var timer = null;
       var sxG = 0;
       var syG = 0;
       var max_Y = 0;
+      var theitm = 'undefined';
       var selected_word = '';
       var evo = document.createElement("br");
       var got_sel_ev = new Event('got_selection');
@@ -16,8 +17,6 @@ define(
       var next_ch_ev = new Event('next_chapter');
       function sign(x) { return x && x / Math.abs(x); }
       function handleTouch(evt, start) {
-          var type = evt.type.substring(0,5);
-          var touches = [];
           var touchlists = evt.changedTouches;
           //console.log(type);
           if(start===1){
@@ -28,13 +27,13 @@ define(
           var y = touchlists[touchlists.length-1].clientY;
           var dx = x - sxG;
           var dy = y - syG;
-          //console.log(dx, dy, x, y, sxG, syG);
+          console.log(dx, dy, x, y, sxG, syG, theitm);
           if(Math.abs(dx)>64){
               evt.preventDefault();
               window.clearTimeout(timer);
-              moveflag = 0;
+              dictflag = 0;
               if(liftflag===1){
-                  if(!evt.target.id.match(/pts|pt|pop/)){
+                  if(theitm!='pop'){
                       console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
                       var el_rectO = mtext.getBoundingClientRect();
@@ -55,12 +54,12 @@ define(
               options.display('none');
               document.getElementById('pop').style.display = 'none';
               console.log("Hide opts");
-          } else if(moveflag===1) {
+          } else if(dictflag===1) {
               evt.preventDefault();
-              console.log("flag == "+moveflag);
-              if(!evt.target.id.match(/pts|pt|pop/)){
-                  var touch = touches[0];//touches.length-1];
-                  /*var win = chrome.app.window.current();
+              console.log("flag == "+dictflag);
+              if(theitm!='pop'){
+                  /*var touch = touchlists[0];//touches.length-1];
+                  var win = chrome.app.window.current();
                   var winc = win.contentWindow;//.Document()
                   var doc = winc.Document();*/
                   if(document.caretPositionFromPoint) {
@@ -132,24 +131,24 @@ define(
           var newpos = 0;
           var my = max_Y-12;
           var oldpos = parseInt(el.style.bottom);
-          for (var i=0; i<touches.length; i++) {
+          for (var i=touches.length-1; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
               newpos = touches[i].clientY < my ? window.innerHeight - touches[i].clientY : window.innerHeight - my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.bottom = newpos+'px';
               else el.style.display = 'none';
-              console.log("Move bot to "+newpos+". Oldpos was "+oldpos+" max_Y=="+max_Y);
+              //console.log("Move bot to "+newpos+". Oldpos was "+oldpos+" max_Y=="+max_Y);
           }
       }
       function movestop(touches, el){
           var newpos = 0;
           var my = max_Y+12;
           var oldpos = parseInt(el.style.bottom);
-          for (var i=0; i<touches.length; i++) {
+          for (var i=touches.length-1; i<touches.length; i++) {
               //ongoingTouches.push(touches[i]);
               newpos = touches[i].clientY > my ? touches[i].clientY : my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.top = newpos+'px';
               else el.style.display = 'none';
-              console.log("Move top to "+newpos+". Oldpos was "+oldpos);
+              //console.log("Move top to "+newpos+". Oldpos was "+oldpos);
           }
       }
       function expand2w(off, text){
@@ -186,23 +185,24 @@ define(
       return {
           selected_word: function() { return selected_word; },
           max_Y: function() { return max_Y; },
-          handleTouchstart:function (evt) {
-              console.log("Touch start "+moveflag);
-              timer = window.setTimeout(function(){moveflag=1}, 1024);
+          handleTouchstart:function (evt, itm) {
+              console.log("Touch start "+dictflag);
+              timer = window.setTimeout(function(){dictflag=1}, 1024);
               liftflag = 1;
+              theitm = itm;
               //evt.preventDefault();
               handleTouch(evt, 1);
           },
-          handleTouchend:function (evt) {
-              console.log("Touch end "+moveflag);
+          handleTouchend:function (evt, itm) {
+              console.log("Touch end "+dictflag);
               window.clearTimeout(timer);
               //evt.preventDefault();
               handleTouch(evt, 0);
-              moveflag=0;
+              dictflag=0;
               liftflag = 0;
           },
-          handleTouch:function (evt){
-              console.log("Touch proceed "+moveflag);
+          handleTouch:function (evt, itm){
+              console.log("Touch proceed "+dictflag);
               handleTouch(evt, 0);
           },
           handleclick:function(evt){
