@@ -6,7 +6,7 @@ define(
     var got_pp_ev = new Event('got_pp');
     var opts_brd = document.getElementById('options');
     //opts_brd.style.width = "100%";
-    //opts_brd.style.padding = "1%";
+    //opts_brd.style.display = 'none';
     opts_brd.textContent = '';
     var storage = null;// || 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
