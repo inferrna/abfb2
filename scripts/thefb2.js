@@ -49,7 +49,7 @@ function(stuff){
         if(index>-1){
             var ch = divs[index];//document.getElementById(pages[index]);
             var html = srlzr.serializeToString(ch);
-            console.log("html== "+html+" id=="+index);
+            //console.log("html== "+html+" id=="+index);
             return html;
         }else{
             var result = document.createElement('div');//document.createDocumentFragment();;//document.createElement('div');
@@ -62,14 +62,14 @@ function(stuff){
                 values.push(options[i].getAttribute('did'))
             for(var i = 0; i<divs.length; i++){
                 pages.push(values.indexOf(divs[i].getAttribute('id')));
-                console.log(divs[i].getAttribute('id'));
+                //console.log(divs[i].getAttribute('id'));
             }
-            console.log("values is "+values);
+            //console.log("values is "+values);
             toc.setAttribute('id', 'tocselect');
             result.appendChild(toc);
             //var html = srlzr.serializeToString(toc);
             //return html;//decodeURIComponent( escape(resultDocument) ));
-            console.log("fb2 toc is "+toc);
+            //console.log("fb2 toc is "+toc);
             //var docFragment = document.createDocumentFragment();
             //while(toc.firstChild) docFragment.appendChild(toc.firstChild);
             //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));

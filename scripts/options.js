@@ -117,11 +117,16 @@ define(
                                                             file = event.target.files[0];
                                                             evo.dispatchEvent(got_file_ev);}, false );
                          }
-        else inp.type = 'text';
-        inp.value = value;
+        else {
+            inp.value = value;
+            var params = [];
+            params[0] = inp.id;
+            get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
+            inp.type = 'text';
+            inp.onchange = function(evt){input = evt.target; set_opt(input.id, input.value);};
+        }
         sp.appendChild(sel);
         sp.appendChild(inp);
-        //sp.appendChild(br);
         obj.appendChild(sp);
     }
     function display(mode){
@@ -185,23 +190,33 @@ define(
         if(isNaN(x) && x<0) result = 0;
         return result;
     }
-    function get_cr(ps){
-        crstorage.get(Object.keys(ps), function(result){
-                console.log("Got "+JSON.stringify(result)+"from storage, was "+Object.keys(ps));
+    function get_cr(keys, callback, evt){
+        crstorage.get(keys, function(result){
+                //console.log("Got "+JSON.stringify(result)+"from storage, was "+Object.keys(ps));
                 for(var key in Object.keys(result)){
-                    currentpp[ps[key]] = makepos(result[key]);
-                    console.log("Got "+result[key]+" from "+key);
+                    callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
+                    //console.log("Got "+result[key]+" from "+key);
                 }
-                evo.dispatchEvent(got_pp_ev);
+                if(evt) evo.dispatchEvent(evt);
             });
     }
-    function get_ls(ps){
-        console.log(ps);
-        for(var key in ps){
-            currentpp[ps[key]] = makepos(storage.getItem(key));
-            console.log("Got "+storage.getItem(key)+" from "+key+"->"+currentpp[ps[key]]+" stored into "+ps[key]);
+    function get_ls(keys, callback, evt){
+        //console.log("Got keys "+keys);
+        for(var key in keys){
+            //console.log("Got key "+keys[key]);
+            callback( keys[key], storage.getItem(keys[key]) );//currentpp[ps[key]] = makepos(storage.getItem(key));
+            //console.log("Got "+storage.getItem(key)+" from "+key+"->"+currentpp[ps[key]]+" stored into "+ps[key]);
         }
-        evo.dispatchEvent(got_pp_ev);
+        if(evt) evo.dispatchEvent(evt);//got_pp_ev);
+    }
+    function get_opt(keys, callback, evt){
+        if(hasStorage) get_ls(keys, callback, evt);
+        else if(crstorage) get_cr(keys, callback, evt);
+        else if(evt) evo.dispatchEvent(evt);
+    }
+    function set_opt(key, p){
+        if(hasStorage) set_ls(key, p);
+        else if(crstorage) set_cr(key, p);
     }
     function set_cr(key, p){
         crstorage.set({key: p}, function(){console.log(p+" saved as "+key);});
@@ -239,9 +254,8 @@ define(
             },
             savepp:function(){
                 var prckey = file.name+"_prc", pnmkey = file.name+"_pnm";
-                if(hasStorage) { set_ls(prckey, currentpp['percent']); set_ls(pnmkey, currentpp['page']); } 
-                else if(crstorage) { set_cr(prckey, currentpp['percent']); set_cr(pnmkey, currentpp['page']); }
-                //this.getpp();
+                set_opt(prckey, currentpp['percent']);
+                set_opt(pnmkey, currentpp['page']);
                 console.log("Saved "+currentpp['percent']+"  "+currentpp['page']);
             },
             getpp:function(){
@@ -249,11 +263,11 @@ define(
                 var ps = {};
                 ps[prckey] = 'percent';
                 ps[pnmkey] = 'page';
-                if(hasStorage) get_ls(ps);
-                else if(chrome.storage) get_cr(ps);
-                else{ currentpp = {'page':0, 'percent':0}; 
-                      console.log("No any storage available.");
-                      evo.dispatchEvent(got_pp_ev);  };
+                get_opt(Object.keys(ps), function(key, val){
+                        currentpp[ps[key]] = makepos(val);
+                        console.log(key+"=got="+val);
+                    }, got_pp_ev);
+                //callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
             },
             setpercent:function(percent){
                 if(isNaN(percent)) currentpp['percent'] = 0;
