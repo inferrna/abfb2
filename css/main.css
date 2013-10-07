@@ -41,10 +41,10 @@
 
       /*-webkit-transition: height 0.7s ease-out;
       transition: height 0.7s ease-out;*/
-      -webkit-transition: background 1.5s ease-out;
-      transition: background 1.5s ease-out;
+      -webkit-transition: background 2s ease-out;
+      transition: background 2s ease-out;
   }
-  .flex > div:hover
+  .flex > div:active
   {
     background: #EEDDCC;
     color: #112233;
@@ -72,10 +72,10 @@
 
       /*-webkit-transition: height 0.7s ease-out;
       transition: height 0.7s ease-out;*/
-      -webkit-transition: background 1.5s ease-out;
-      transition: background 1.5s ease-out;
+      -webkit-transition: background 2s ease-out;
+      transition: background 2s ease-out;
   }
-  .popflex > div:hover
+  .popflex > div:active
   {
     background: #DDEECC;
     color: #113322;
@@ -88,8 +88,8 @@
     padding: 1px;
     display: -webkit-flex;
     display: flex;
-    -webkit-transition: background 1.5s ease-out;
-    transition: background 1.5s ease-out;
+    -webkit-transition: background 2s ease-out;
+    transition: background 2s ease-out;
     flex-direction: column;
     -webkit-flex-direction: column;
     align-items: flex-start;
@@ -110,7 +110,7 @@
   .spflex > div {
     width: 98%;
   }
-  .spflex:hover {
+  .spflex:active {
       background: #CCCBEE;
   }
 

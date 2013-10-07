@@ -10,11 +10,13 @@ define(
       var max_Y = 0;
       var theitm = 'undefined';
       var selected_word = '';
-      var evo = document.createElement("br");
+      /*var evo = document.createElement("br");
       var got_sel_ev = new Event('got_selection');
+      var next_ch_ev = new Event('next_chapter');*/
       var pts = document.getElementById('pts');
       var mtext = document.getElementById('maintext');
-      var next_ch_ev = new Event('next_chapter');
+      var callbacks = {'got_selection':function(){}, 'next_chapter':function(){}};
+      var movef = function(){};
       function sign(x) { return x && x / Math.abs(x); }
       function handleTouch(evt, start) {
           var touchlists = evt.changedTouches;
@@ -79,15 +81,16 @@ define(
               } else {
                   sxG = x;
                   syG = y;
-                  console.log("dy== "+dy);
-                  console.log("Touch proceed");
+                  //console.log("dy== "+dy);
+                  //console.log("Touch proceed");
                   evt.preventDefault();
                   var el = document.getElementById('pop');//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-                  console.log("Target is "+evt.target.id);
+                  //console.log("Target is "+evt.target.id);
                   //if(evt.target.id==='drugtop') 
-                  if(el.style.top === '0px') movesbot(touchlists, el);
-                  else if(el.style.bottom === '0px') movestop(touchlists, el);
-                  else console.log("No action. "+el.style.bottom+" x "+el.style.top);
+                  if(el.style.top === '0px') movef = movesbot;//(touchlists, el);
+                  else if(el.style.bottom === '0px') movef = movestop;//(touchlists, el);
+                  else { console.log("No action. "+el.style.bottom+" x "+el.style.top); return; }
+                  movef(touchlists, el);
               }
           }
           //else if(evt.target.id==='drugbot') 
@@ -104,8 +107,8 @@ define(
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
           if( top<0 && el.id==="maintext" && top<(-(el_rectO.height-ptop/2)) ){
               el.style.top="0px";//-(el_rectO.height-ptop)+"px";
-              evo.id = "1";
-              evo.dispatchEvent(next_ch_ev);
+              //evo.id = "1";
+              callbacks['next_chapter'](1);//evo.dispatchEvent(next_ch_ev);
               return;
           }
           //console.log(top, ptop, ", el_rectO.height==", el_rectO.height);
@@ -113,9 +116,9 @@ define(
           top = top+dir*(ptop-8);
           if(top>0){
               if(el.id==="maintext"){
-                  evo.id = "-1";
+                  //evo.id = "-1";
                   el.style.top = "0px";
-                  evo.dispatchEvent(next_ch_ev);
+                  callbacks['next_chapter'](-1);//evo.dispatchEvent(next_ch_ev);
                   //el.style.bottom="0px";
                   return;
               } else { top = 0; }
@@ -132,11 +135,9 @@ define(
           var my = max_Y-12;
           var oldpos = parseInt(el.style.bottom);
           for (var i=touches.length-1; i<touches.length; i++) {
-              //ongoingTouches.push(touches[i]);
               newpos = touches[i].clientY < my ? window.innerHeight - touches[i].clientY : window.innerHeight - my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.bottom = newpos+'px';
               else el.style.display = 'none';
-              //console.log("Move bot to "+newpos+". Oldpos was "+oldpos+" max_Y=="+max_Y);
           }
       }
       function movestop(touches, el){
@@ -144,11 +145,9 @@ define(
           var my = max_Y+12;
           var oldpos = parseInt(el.style.bottom);
           for (var i=touches.length-1; i<touches.length; i++) {
-              //ongoingTouches.push(touches[i]);
               newpos = touches[i].clientY > my ? touches[i].clientY : my;
               if(newpos < parseInt(window.innerHeight) - 24) el.style.top = newpos+'px';
               else el.style.display = 'none';
-              //console.log("Move top to "+newpos+". Oldpos was "+oldpos);
           }
       }
       function expand2w(off, text){
@@ -180,7 +179,7 @@ define(
                   console.log("Selected by sel.modify "+sel.toString());
               }
           } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack+" using expand2w, got "+selected_word);}
-          evo.dispatchEvent(got_sel_ev);
+         callbacks['got_selection']();// evo.dispatchEvent(got_sel_ev);
       }
       return {
           selected_word: function() { return selected_word; },
@@ -189,6 +188,7 @@ define(
               console.log("Touch start "+dictflag);
               timer = window.setTimeout(function(){dictflag=1}, 1024);
               liftflag = 1;
+              movef = null;
               theitm = itm;
               //evt.preventDefault();
               handleTouch(evt, 1);
@@ -200,17 +200,21 @@ define(
               handleTouch(evt, 0);
               dictflag=0;
               liftflag = 0;
+              movef = null;
           },
           handleTouch:function (evt, itm){
               console.log("Touch proceed "+dictflag);
-              handleTouch(evt, 0);
+              if(movef!=null) movef(evt.changedTouches, document.getElementById('pop'));
+              else handleTouch(evt, 0);
           },
           handleclick:function(evt){
               if(hold === 0) hold=1;
               else hold = 0;
               console.log("click makes hold "+hold);
           },
-          evo:evo
+          add_callback:function(key, fcn){
+              callbacks[key] = fcn;
+          }
       }
   }
 );

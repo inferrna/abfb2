@@ -1,9 +1,10 @@
 define(
   ['stuff'],
   function(stuff){
-    var evo = document.createElement("br");
+    /*var evo = document.createElement("br");
     var got_file_ev = new Event('got_file');
-    var got_pp_ev = new Event('got_pp');
+    var got_pp_ev = new Event('got_pp');*/
+    var callbacks = {'got_file':function(){}, 'got_pp':function(){}};
     var opts_brd = document.getElementById('options');
     //opts_brd.style.width = "100%";
     //opts_brd.style.display = 'none';
@@ -87,7 +88,8 @@ define(
                                     var request = sdcard.get(filename);
                                     request.onsuccess = function () {  file = this.result;
                                                                        console.log("Got the file: "+file.name); 
-                                                                       evo.dispatchEvent(got_file_ev);}
+                                                                       //evo.dispatchEvent(got_file_ev);
+                                                                       callbacks['got_file']();}
                                     request.onerror = function () { console.warn("Unable to get the file: " + this.error); }
                                 }, false);
             } else { console.log("No navigator.getDeviceStorage api found"); delete datas[key];}
@@ -115,7 +117,8 @@ define(
         if(key==="file") {   inp.type = 'file';
                              inp.addEventListener("change", function (event){
                                                             file = event.target.files[0];
-                                                            evo.dispatchEvent(got_file_ev);}, false );
+                                                            //evo.dispatchEvent(got_file_ev);
+                                                            callbacks['got_file']();}, false );
                          }
         else {
             inp.value = value;
@@ -136,7 +139,8 @@ define(
         values = {};
         for(var key in datas){
             //type = typeof(datas[key][0]);
-            values[key] = document.getElementById(key).value;
+            try{ values[key] = document.getElementById(key).value; }
+            catch(e){console.warn(e.stack);}
         }
         return values;
     }
@@ -197,7 +201,7 @@ define(
                     callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
                     //console.log("Got "+result[key]+" from "+key);
                 }
-                if(evt) evo.dispatchEvent(evt);
+                if(evt) callbacks[evt]();//evo.dispatchEvent(evt);
             });
     }
     function get_ls(keys, callback, evt){
@@ -207,12 +211,12 @@ define(
             callback( keys[key], storage.getItem(keys[key]) );//currentpp[ps[key]] = makepos(storage.getItem(key));
             //console.log("Got "+storage.getItem(key)+" from "+key+"->"+currentpp[ps[key]]+" stored into "+ps[key]);
         }
-        if(evt) evo.dispatchEvent(evt);//got_pp_ev);
+        if(evt) callbacks[evt]();//evo.dispatchEvent(evt);//got_pp_ev);
     }
     function get_opt(keys, callback, evt){
         if(hasStorage) get_ls(keys, callback, evt);
         else if(crstorage) get_cr(keys, callback, evt);
-        else if(evt) evo.dispatchEvent(evt);
+        else if(evt) callbacks[evt]();//evo.dispatchEvent(evt);
     }
     function set_opt(key, p){
         if(hasStorage) set_ls(key, p);
@@ -238,7 +242,7 @@ define(
     opts_brd.appendChild(toc);
     var lbl = document.createElement("label");
     lbl.style.order = "99";
-    lbl.textContent = "0%";
+    lbl.textContent = "";
     opts_brd.appendChild(lbl);
         //sp.className = "spflex";
 
@@ -266,7 +270,7 @@ define(
                 get_opt(Object.keys(ps), function(key, val){
                         currentpp[ps[key]] = makepos(val);
                         console.log(key+"=got="+val);
-                    }, got_pp_ev);
+                    }, 'got_pp');
                 //callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
             },
             setpercent:function(percent){
@@ -275,6 +279,9 @@ define(
                 //this.savepp();
                 console.log("set currentpercent=="+percent);
                 lbl.textContent = parseInt(percent)+"% of current chapter";
+            },
+            msg:function(text){
+                lbl.textContent = text;
             },
             getpercent:function(){
                 return currentpp['percent'];
@@ -288,7 +295,10 @@ define(
             getpage:function(){
                 return currentpp['page'];
             },
-            evo:evo
+            add_callback:function(key, fcn){
+                callbacks[key] = fcn;
+            }
+            //evo:evo
     };
   }
 );

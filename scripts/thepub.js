@@ -1,5 +1,5 @@
-define(['jsepubz', 'jsinflate', 'jsunzip', 'stuff', 'encod'],
-function(jsepub, jsinflate, jsunzip, stuff, encod){
+define(['jsepubz', 'stuff', 'encod', 'options'],
+function(jsepub, stuff, encod, options){
     var epub = null;
     var srlzr = new XMLSerializer();
     var xsltp = new XSLTProcessor();
@@ -38,7 +38,7 @@ function(jsepub, jsinflate, jsunzip, stuff, encod){
                     evo.dispatchEvent(got_book_ev);
                 }
                 // Render the "msg" here.
-            });
+            }, options.msg);
     }
     function clean_tags(doc, tag){
             var tags = doc.getElementsByTagName(tag);

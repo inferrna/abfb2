@@ -33,31 +33,31 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
     try { window.addEventListener("beforeunload", options.savepp);}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){options.savepp();});}
-    uitouch.evo.addEventListener('got_selection', function (e) { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); }, false);
-    uitouch.evo.addEventListener('next_chapter', function (event) {
+    uitouch.add_callback('got_selection', function () { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); });
+    uitouch.add_callback('next_chapter', function (i) {
             var sel = document.getElementById("tocselect");
-            var diff = parseInt(event.target.id);
+            var diff = parseInt(i);
             //console.log('next_chapter='+idx);
             var page = book.foliant().next_page(diff); 
             if(page!=-1){
                 fill_page(page, 0);
                 var newsel = book.foliant().option(sel.selectedIndex);
                 sel.options[newsel].selected = true;
-                if(event.target.id==="-1"){
+                if(diff===-1){
                     var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
                     var marect = marea.getBoundingClientRect();
                     marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
                 }
             }
-        }, false);
+        });
     //console.log(options);
     //options.button()
-    options.evo.addEventListener('got_file', function (e) {
+    options.add_callback('got_file', function () {
             console.log("Got file event fired");
             var evo = book.init(options.bookfile());
             evo.addEventListener('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));}, false);
             book.load();
-        }, false);
+        });
     
     function fill_toc(html){
         //console.log(html);
@@ -72,7 +72,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         //sel.style.width = window.innerWidth-16+"px";
         sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; 
                                                 fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
-        options.evo.addEventListener('got_pp', function (e) {
+        options.add_callback('got_pp', function () {
                                                     fill_page(book.foliant().get_page( options.getpage() ), options.getpercent() ); 
                                                     var sel = document.getElementById("tocselect");
                                                     var newsel = book.foliant().option(sel.selectedIndex);

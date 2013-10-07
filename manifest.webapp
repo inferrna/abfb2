@@ -1,11 +1,12 @@
 {
   "version": "0.1",
   "name": "Ab FB2 reader",
-  "description": "An fb2 reader app",
-  "launch_path": "/popuptest.html",
+  "launch_path": "/index.html",
+  "description": "Simple epub&fb2&txt reader with dictionary support.",
   "type": "privileged",
   "icons": {
     "128": "/A.png",
+    "60": "/Ab.png",
     "16": "/b.png"
   },
   "developer": {
@@ -13,9 +14,9 @@
     "url": "http://borgu.org"
   },
   "permissions": {
-      "systemXHR": {},
-      "device-storage:sdcard": {"access":"readonly"},
-      "tcp-socket":{}
+      "systemXHR": {"description":"For access to translate.google.com"},
+      "device-storage:sdcard": {"access":"readonly", "description":"For access to books"},
+      "tcp-socket":{"description":"For requesting dictd servers"}
   },
   "installs_allowed_from": ["*"]
 }

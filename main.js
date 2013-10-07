@@ -11,7 +11,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
   var width = 512;
   var height = 768;
 
-  chrome.app.window.create('popuptest.html', {
+  chrome.app.window.create('index.html', {
     bounds: {
       width: width,
       height: height,

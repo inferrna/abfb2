@@ -4,6 +4,7 @@ define([], function () {
     var files = {};
     var opfPath, container, mimetype, opf, toc=null;
     var notifier = null;
+    var logger = function(text){console.log(text);};
     function extract_text(blob, index, array, callback, params){
         var reader = new FileReader();
         reader.addEventListener("loadend", function() {
@@ -26,7 +27,7 @@ define([], function () {
     }
     function fill_files(data, name, callback, params){
         var re = /.+?\.(jpeg|jpg|gif|png)/i;
-        console.log("Zipname " +name);
+        logger("extracting " +name+"...");
         /*console.log("DATA=="+data);
         if (name === "META-INF/container.xml") {
             container = data;
@@ -62,7 +63,7 @@ define([], function () {
                         //if(i<entries.length) getdatas(entries, i, reader);
                         //else go_all();
                     }, function(current, total) {
-                        console.log("unzip total "+total);
+                        //logger("unzip "+current+" of total "+total);
                     });
         }
         zip.createReader(new zip.BlobReader(file), function (zipReader) {
@@ -330,11 +331,13 @@ define([], function () {
         return doc;
     }
     return {
-        init: function(_file){
+        init: function(_file, _logger){
             file = _file;
+            logger = _logger;
         },
-        processInSteps: function(_file, _notifier){
+        processInSteps: function(_file, _notifier, _logger){
             file = _file;
+            logger = _logger;
             notifier = _notifier;
             unzipBlob(notifier);
         },
