@@ -31,7 +31,7 @@ define(
           var dy = y - syG;
           console.log(dx, dy, x, y, sxG, syG, theitm);
           if(Math.abs(dx)>64){
-              evt.preventDefault();
+              //evt.preventDefault();
               window.clearTimeout(timer);
               dictflag = 0;
               if(liftflag===1){
@@ -48,16 +48,18 @@ define(
               //console.log(evt);
               return;
           } else if (dy>64 && theitm!='pop'){
-              evt.preventDefault();
-              options.display('block');
+              //evt.preventDefault();
+              options.display('show');
+              sxG = x; syG = y;
               console.log("Show opts");
           } else if (dy<-64 && theitm!='pop'){
-              evt.preventDefault();
-              options.display('none');
+              //evt.preventDefault();
+              options.display('hide');
+              sxG = x; syG = y;
               document.getElementById('pop').style.display = 'none';
               console.log("Hide opts");
           } else if(dictflag===1) {
-              evt.preventDefault();
+              //evt.preventDefault();
               console.log("flag == "+dictflag);
               if(theitm!='pop'){
                   /*var touch = touchlists[0];//touches.length-1];
@@ -83,7 +85,7 @@ define(
                   syG = y;
                   //console.log("dy== "+dy);
                   //console.log("Touch proceed");
-                  evt.preventDefault();
+                  //evt.preventDefault();
                   var el = document.getElementById('pop');//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
                   //console.log("Target is "+evt.target.id);
                   //if(evt.target.id==='drugtop') 
@@ -185,6 +187,7 @@ define(
           selected_word: function() { return selected_word; },
           max_Y: function() { return max_Y; },
           handleTouchstart:function (evt, itm) {
+              evt.preventDefault();
               console.log("Touch start "+dictflag);
               timer = window.setTimeout(function(){dictflag=1}, 1024);
               liftflag = 1;
@@ -194,6 +197,7 @@ define(
               handleTouch(evt, 1);
           },
           handleTouchend:function (evt, itm) {
+              evt.preventDefault();
               console.log("Touch end "+dictflag);
               window.clearTimeout(timer);
               //evt.preventDefault();
@@ -203,6 +207,7 @@ define(
               movef = null;
           },
           handleTouch:function (evt, itm){
+              evt.preventDefault();
               console.log("Touch proceed "+dictflag);
               if(movef!=null) movef(evt.changedTouches, document.getElementById('pop'));
               else handleTouch(evt, 0);

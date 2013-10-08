@@ -1,13 +1,15 @@
 define(
-  ['stuff'],
-  function(stuff){
+  ['dict'],
+  function(dict){
     /*var evo = document.createElement("br");
     var got_file_ev = new Event('got_file');
     var got_pp_ev = new Event('got_pp');*/
     var callbacks = {'got_file':function(){}, 'got_pp':function(){}};
-    var opts_brd = document.getElementById('options');
+    var opts_brd =    document.getElementById('options');
+    var opts_brd_b = document.getElementById('options_block');
+    //opts_brd_b.style.border = "1px";
     //opts_brd.style.width = "100%";
-    //opts_brd.style.display = 'none';
+   // opts_brd.style.display = 'none';
     opts_brd.textContent = '';
     var storage = null;// || 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
@@ -18,6 +20,7 @@ define(
     var currentpp = {'page':0, 'percent':0};
     var datas = {
         dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source"],
+        dict_db: [['!'], "Dict db (! means all)"],
         socket_host: ['192.168.0.2', "dictd host"],
         socket_port: ['2628', "dictd port"],
         proxy_host: ['192.168.0.2', "proxy host"],
@@ -35,7 +38,7 @@ define(
         return false;
       }
     }());
-    var values = null;
+    var values = {};
     function check_params(callbacks){
         callbacks[0](callbacks);
     }
@@ -74,9 +77,12 @@ define(
         nm.disabled = 1;
         sel.appendChild(nm);
         sel.id = key;
-        sel.style.width = "40%";
+        sel.style.width = "75%";
         //<device storage
-        if(key==="dsfile"){
+        if(key==="dict_db"){
+            dict.add_callback('got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
+            dict.get_dbs();
+        }else if(key==="dsfile"){
             if (navigator.getDeviceStorage) {
                 try { parse_storage(sel, obj);}
                 catch(e) {console.warn("Parse storage failed, got"+e.stack);}
@@ -102,9 +108,10 @@ define(
             el.value = elements[eln];
             sel.appendChild(el);
         }
+        sel.onchange = function(evt){get_config();};
         sp.appendChild(sel);
         obj.appendChild(sp);
-        //obj.appendChild(br);
+        obj.appendChild(br);
     }
     function create_input(obj, name, value, key){
         var sel = document.createElement("label");
@@ -126,14 +133,25 @@ define(
             params[0] = inp.id;
             get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
             inp.type = 'text';
-            inp.onchange = function(evt){input = evt.target; set_opt(input.id, input.value);};
+            inp.onchange = function(evt){get_config(); input = evt.target; set_opt(input.id, input.value); 
+                                        dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"])});
+                                        dict.get_dbs();};
         }
         sp.appendChild(sel);
         sp.appendChild(inp);
         obj.appendChild(sp);
+        obj.appendChild(br);
     }
     function display(mode){
-        opts_brd.parentNode.style.display = mode;
+        console.log(mode, opts_brd_b.style.display, opts_brd.style.display);
+        if(mode==='show')
+            //opts_brd.parentNode.display='block';
+            if(opts_brd_b.style.display==='none') opts_brd_b.style.display='block';
+            else{console.log("go_flex"); opts_brd.parentNode.style.display='block';}
+        if(mode==='hide')
+            //opts_brd.parentNode.display='none';
+            if(opts_brd.parentNode.style.display!='none') opts_brd.parentNode.style.display='none';
+            else opts_brd_b.style.display='none';
     }
     function get_config(){
         values = {};
@@ -142,6 +160,7 @@ define(
             try{ values[key] = document.getElementById(key).value; }
             catch(e){console.warn(e.stack);}
         }
+        console.log("Got config: "+JSON.stringify(values));
         return values;
     }
     function parse_storage(sel, obj){
@@ -172,6 +191,9 @@ define(
                 console.log(count+" files found");
                 obj.appendChild(sel);
             }
+            get_config();
+            dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"])});
+            dict.get_dbs();
         }
         cursor.onerror = function () {
           var nm  = document.createElement("option");
@@ -236,14 +258,33 @@ define(
             if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
         }
     }
+    function add_dbs(sel, _nm, txt){
+        var arr = txt.split("\n");
+        var start = arr.length-4;
+        var reend = /110.+?present/;
+        var itms = [];
+        while(sel.firstChild) {delete sel.removeChild(sel.firstChild);}
+        sel.appendChild(_nm);
+        for(var i = start; i>0; i--){
+            if(reend.test(arr[i])) { console.log("The end "+arr[i]); return;}
+            else{ 
+                var itms = arr[i].split(" ");
+                nm  = document.createElement("option");
+                nm.value = itms[0];
+                nm.textContent = itms[1];
+                sel.appendChild(nm);
+                console.log(itms);
+            }
+        }
+    }
     check_params([hasgoogle, hassocket, fill_params]);
     var toc = document.createElement("div");
     toc.id = "toc";
-    opts_brd.appendChild(toc);
+    opts_brd_b.appendChild(toc);
     var lbl = document.createElement("label");
     lbl.style.order = "99";
     lbl.textContent = "";
-    opts_brd.appendChild(lbl);
+    opts_brd_b.appendChild(lbl);
         //sp.className = "spflex";
 
     return{
@@ -251,7 +292,7 @@ define(
                 display(mode);
             },
             config:function(){
-                return get_config();
+                return values;//get_config();
             },
             bookfile:function(){
                 return file;//document.getElementById('file').files[0];

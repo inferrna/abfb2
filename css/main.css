@@ -85,6 +85,7 @@
     bottom: 5px;
   }
   .spflex {
+    height: auto;
     padding: 1px;
     display: -webkit-flex;
     display: flex;
@@ -95,8 +96,10 @@
     align-items: flex-start;
     -webkit-align-items: flex-start;
     max-height: 60%;
-    white-space: nowrap;
-    background: #FFFFFF;
+    border: 1px solid #555;
+    border-radius: 0 0 3px 3px;
+    /*white-space: nowrap;*/
+    /*background: #FFEEFF;*/
   }
   .spflex > span {
     align-content: flex-start;
@@ -116,7 +119,7 @@
 
   .bcol {
     overflow:hidden;
-    font-size:large;
+    font-size:small;
     word-wrap:normal;
     position: relative;
     /*width: 100%;*/

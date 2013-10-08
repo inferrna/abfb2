@@ -2,24 +2,38 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
-import threading, urllib, json, socket
+import threading, urllib, json, socket, time
 from base64 import standard_b64encode as b64encode
 from http.cookiejar import CookieJar, DefaultCookiePolicy
 try: from lxml import etree
 except: import xml.etree.ElementTree as etree
 from xml.sax.saxutils import escape
 
-def get_def(word, dct, host, port):
+def get_def(text, host, port):
     #HOST = 'localhost'    # The remote host
     #PORT = 2628         # The same port as used by the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
-    s.recv(1024)
-    s.sendall(('DEFINE '+dct+' '+word+'\n').encode())
-    data = s.recv(1024)
-    if data.decode()[:3]=="150":
-        data = data + s.recv(512000)
-    s.close()
+    s.sendall((text+'\n').encode())
+    data = bytes(0);
+    i=0;
+    rv = s.recv(1024)
+    s.setblocking(0)
+    while True:
+        i+=1
+        data = data + rv
+        time.sleep(0.2)
+        try: rv = s.recv(1024)
+        except:
+            print("Read error")
+            rv = 0;
+        print("received", i)
+        if not rv:
+            print("recv ends")
+            break
+    i = 0
+    try: s.close()
+    except: print("already closed")
     return data
 
 
@@ -54,10 +68,6 @@ class Handler(BaseHTTPRequestHandler):
         except:
             self.wfile.write('{error: no word given}'.encode('utf-8'))
             return
-        try: dct = data['dict'][0]
-        except:
-            self.wfile.write('{error: no dictionary given}'.encode('utf-8'))
-            return
         try: host = data['host'][0]
         except:
             self.wfile.write('{error: no host given}'.encode('utf-8'))
@@ -66,8 +76,8 @@ class Handler(BaseHTTPRequestHandler):
         except:
             self.wfile.write('{error: no port given}'.encode('utf-8'))
             return
-        print(dct, host, port, word)
-        self.wfile.write(get_def(word, dct, host, port))
+        print(host, port, word)
+        self.wfile.write(get_def(word, host, port))
         if not self.wfile.closed:
             self.wfile.flush()
             self.wfile.close()

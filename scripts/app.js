@@ -31,6 +31,10 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     txarea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
     txarea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
     txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
+    var opt_bl = document.getElementById("options_block");
+    opt_bl.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'opts');}, false);
+    opt_bl.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'opts');}, false);
+    opt_bl.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'opts');}, false);
     try { window.addEventListener("beforeunload", options.savepp);}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){options.savepp();});}
     uitouch.add_callback('got_selection', function () { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); });
@@ -61,7 +65,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     
     function fill_toc(html){
         //console.log(html);
-        var opts = document.getElementById("options");
+        var opts = document.getElementById("options_block");
         var toc = document.getElementById("toc");
         opts.removeChild(toc)
         var ntoc = document.createElement("div");
@@ -119,8 +123,11 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                 if(pos==='top'){el.style.top = 0; el.style.bottom = '85%';}// db.style.display='none'; dt.style.display=disp;}
                 if(pos==='bot'){el.style.bottom = 0; el.style.top = '85%';}// dt.style.display='none'; db.style.display=disp;}
                     dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
-                                        "local_base_url": "http://"+config["proxy_host"]+":"+config["proxy_port"]+"/?"});
-                    dict.dreq.addEventListener('got_def', function (e) { fill_thumb(dict.response()); }, false);
+                                        "local_base_url": "http://"+config["proxy_host"]+":"+config["proxy_port"]+"/?", "db": config["dict_db"]});
+                    dict.add_callback('got_def', function (txt) {
+                        if(txt.length>1) fill_thumb(txt);
+                        else fill_thumb("Something went wrong. Please check your options.");
+                    });
                     dict.get_def(word);
             }
             el.style.display = disp;
