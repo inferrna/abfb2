@@ -286,7 +286,7 @@ define(
         }
     }
     function add_dbs(sel, _nm, txt){
-        var arr = txt.split("\n");
+        var arr = txt.replace(/\"/g, "").split("\n");
         var start = arr.length-4;
         var reend = /110.+?present/;
         var itms = [];

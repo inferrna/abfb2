@@ -90,7 +90,7 @@ define(
             }
         },
         init_params:function(params){
-            for (var key in params) datas[key] = params[key] | datas[key];
+            for (var key in params) datas[key] = (params[key] != null ? params[key] : datas[key]);
             for (var key in googles) googles[key] = datas[key];
             for (var key in locals){
                 locals[key] = datas[key];
