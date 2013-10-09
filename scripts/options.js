@@ -17,17 +17,37 @@ define(
     try{ crstorage = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available");}
     var type;
     var file = {'name':'empty'};
+    var filename = 'name';
     var currentpp = {'page':0, 'percent':0};
     var datas = {
-        dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source"],
-        dict_db: [['!'], "Dict db (! means all)"],
-        socket_host: ['192.168.0.2', "dictd host"],
-        socket_port: ['2628', "dictd port"],
-        proxy_host: ['192.168.0.2', "proxy host"],
-        proxy_port: ['8082', "proxy port"],
-        dsfile: [[], 'Select a file'],
-        file: ['', ""]
+        dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source", 'list-item'],
+        dict_db: [['!'], "Dict db (! means all)", 'none'],
+        lang_f: ['en', "Translate from", 'none'],
+        lang_t: ['ru', "Translate to", 'none'],
+        socket_host: ['192.168.0.2', "dictd host", 'none'],
+        socket_port: ['2628', "dictd port", 'none'],
+        proxy_host: ['192.168.0.2', "proxy host", 'none'],
+        proxy_port: ['8082', "proxy port", 'none'],
+        dsfile: [[], 'Select a file', 'list-item'],
+        file: ['', "", 'list-item']
     };
+    var showdeps = {
+        'google':/lang_f|lang_t/,
+        'dictd proxy':/socket_host|socket_port|proxy_host|proxy_port|dict_db/,
+        'socket':/socket_host|socket_port|dict_db/,
+        'excepts':/dsfile|file|dict_src/
+    };
+    function draw_deps(el){
+        if(el.id!='dict_src') return;
+        console.log("selected "+el.value);
+        var ex = showdeps['excepts'];
+        var shows = showdeps[el.value];
+        if(el.value==='dictd proxy' || el.value==='socket') dict.get_dbs();
+        for(var key in datas){
+            if(!ex.test(key) && !shows.test(key)) document.getElementById(key).parentNode.style.display = 'none';
+            else if (shows.test(key)) document.getElementById(key).parentNode.style.display = 'list-item';
+        }
+    }
     var hasStorage = (function() {
       try {
         localStorage.setItem('try', 'try');
@@ -37,6 +57,7 @@ define(
       } catch(e) {
         return false;
       }
+      return false;
     }());
     var values = {};
     function check_params(callbacks){
@@ -67,7 +88,7 @@ define(
         callbacks[0](callbacks);
     }
     //var winstyle = element.currentStyle || window.getComputedStyle(element, null);
-    function create_select(obj, name, elements, key){
+    function create_select(obj, name, elements, key, disp){
         var sel = document.createElement("select");
         var nm  = document.createElement("option");
         var br  = document.createElement("br");
@@ -81,7 +102,7 @@ define(
         //<device storage
         if(key==="dict_db"){
             dict.add_callback('got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
-            dict.get_dbs();
+            //dict.get_dbs();
         }else if(key==="dsfile"){
             if (navigator.getDeviceStorage) {
                 try { parse_storage(sel, obj);}
@@ -93,7 +114,8 @@ define(
                                     var sdcard = navigator.getDeviceStorage('sdcard');
                                     var request = sdcard.get(filename);
                                     request.onsuccess = function () {  file = this.result;
-                                                                       console.log("Got the file: "+file.name); 
+                                                                       filename = file.name;
+                                                                       console.log("Got the file: "+filename); 
                                                                        //evo.dispatchEvent(got_file_ev);
                                                                        callbacks['got_file']();}
                                     request.onerror = function () { console.warn("Unable to get the file: " + this.error); }
@@ -108,22 +130,24 @@ define(
             el.value = elements[eln];
             sel.appendChild(el);
         }
-        sel.onchange = function(evt){get_config();};
+        sel.onchange = function(evt){draw_deps(evt.target); get_config();};
         sp.appendChild(sel);
+        sp.style.display=disp;
         obj.appendChild(sp);
-        obj.appendChild(br);
+        //obj.appendChild(br);
     }
-    function create_input(obj, name, value, key){
+    function create_input(obj, name, value, key, disp){
         var sel = document.createElement("label");
         var inp = document.createElement("input");
         var br  = document.createElement("br");
         var sp  = document.createElement("span");
         sel.textContent = name;
         inp.id = key;
-        inp.style.left="0px";
+        //inp.style.left="0px";
         if(key==="file") {   inp.type = 'file';
                              inp.addEventListener("change", function (event){
                                                             file = event.target.files[0];
+                                                            filename = file.name;
                                                             //evo.dispatchEvent(got_file_ev);
                                                             callbacks['got_file']();}, false );
                          }
@@ -134,13 +158,15 @@ define(
             get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
             inp.type = 'text';
             inp.onchange = function(evt){get_config(); input = evt.target; set_opt(input.id, input.value); 
-                                        dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"])});
+                                        dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]),
+                                                                                            "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"]});
                                         dict.get_dbs();};
         }
+        //obj.appendChild(br);
         sp.appendChild(sel);
         sp.appendChild(inp);
+        sp.style.display=disp;
         obj.appendChild(sp);
-        obj.appendChild(br);
     }
     function display(mode){
         console.log(mode, opts_brd_b.style.display, opts_brd.style.display);
@@ -192,8 +218,9 @@ define(
                 obj.appendChild(sel);
             }
             get_config();
-            dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"])});
-            dict.get_dbs();
+            dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
+                                                                "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"]});
+            //dict.get_dbs();
         }
         cursor.onerror = function () {
           var nm  = document.createElement("option");
@@ -218,7 +245,7 @@ define(
     }
     function get_cr(keys, callback, evt){
         crstorage.get(keys, function(result){
-                //console.log("Got "+JSON.stringify(result)+"from storage, was "+Object.keys(ps));
+                console.log("Got "+JSON.stringify(result)+"from storage, keys was "+keys);
                 for(var key in Object.keys(result)){
                     callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
                     //console.log("Got "+result[key]+" from "+key);
@@ -254,8 +281,8 @@ define(
         for(var key in datas){
             type = typeof(datas[key][0]);
             //console.log(type);
-            if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key);
-            if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key);
+            if(type=="object") create_select(opts_brd, datas[key][1], datas[key][0], key, datas[key][2]);
+            if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key, datas[key][2]);
         }
     }
     function add_dbs(sel, _nm, txt){
@@ -298,13 +325,13 @@ define(
                 return file;//document.getElementById('file').files[0];
             },
             savepp:function(){
-                var prckey = file.name+"_prc", pnmkey = file.name+"_pnm";
+                var prckey = filename+"_prc", pnmkey = filename+"_pnm";
                 set_opt(prckey, currentpp['percent']);
                 set_opt(pnmkey, currentpp['page']);
                 console.log("Saved "+currentpp['percent']+"  "+currentpp['page']);
             },
             getpp:function(){
-                var prckey = file.name+"_prc", pnmkey = file.name+"_pnm";
+                var prckey = filename+"_prc", pnmkey = filename+"_pnm";
                 var ps = {};
                 ps[prckey] = 'percent';
                 ps[pnmkey] = 'page';

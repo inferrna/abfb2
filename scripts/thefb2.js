@@ -26,6 +26,7 @@ function(stuff){
         var divlist = fb2.getElementsByTagName('div');
         var re = /TOC_.+/g;
         clean_tags(fb2, 'script');
+        clean_tags(fb2, 'a');
         //while(fb2.firstChild && fb2.firstChild!)
         for(var i = 0; i < divlist.length; i++)
             if(re.test(divlist[i].getAttribute('id'))){ 

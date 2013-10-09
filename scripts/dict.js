@@ -42,7 +42,8 @@ define(
                 if(datas["dictionary"]==="google"){
                     var respj = JSON.parse(resptext);
                     if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
-                    if( Object.keys(respj).indexOf("dict">-1) )      resp += "<br>"+respj["dict"][0]["terms"].join(", ");
+                    if( Object.keys(respj).indexOf("dict">-1) )      try{ resp += "<br>"+respj["dict"][0]["terms"].join(", ");}
+                    catch(e) {console.warn(e.stack);}
                 }
                 else resp = resptext;
                 //alert("Got "+resp);
@@ -89,7 +90,7 @@ define(
             }
         },
         init_params:function(params){
-            for (var key in params) datas[key] = params[key];
+            for (var key in params) datas[key] = params[key] | datas[key];
             for (var key in googles) googles[key] = datas[key];
             for (var key in locals){
                 locals[key] = datas[key];

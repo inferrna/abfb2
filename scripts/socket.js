@@ -7,7 +7,7 @@ define(
     var text = '';
     var resp = '';
     var db = "!";
-    callback = function(){};
+    var callback = function(){};
    // var evo = document.createElement("br");
    // var got_def_ev = new Event('got_def');
     function chromeconnect(id){  chrome.socket.connect(id, host, port, function(){

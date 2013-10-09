@@ -285,6 +285,7 @@ define([], function () {
         clean_tags(doc, "meta");
         clean_tags(doc, "svg");
         clean_tags(doc, "script");
+        clean_tags(doc, "a");
         try { 
             var div = document.createElement('div');
             while(doc.firstChild) div.appendChild(doc.firstChild);

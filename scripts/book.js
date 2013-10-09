@@ -7,12 +7,14 @@ define(
         var retxt = /[\w\W]+\.txt/;
         var repub = /[\w\W]+\.(epub|zip)/;
         var refb2 = /[\w\W]+\.fb2/;
+        var filename = 'name';
         return {
                  init:function(file) {
-                         if(file.name.match(repub)) foliant = thepub;
-                         else if(file.name.match(retxt)) foliant = thetxt;
-                         else if(file.name.match(refb2)) foliant = thefb2;
-                         else { console.warn(file.name+" not matched any type"); return ''; } 
+                         if(file) filename = file.name;
+                         if(filename.match(repub)) foliant = thepub;
+                         else if(filename.match(retxt)) foliant = thetxt;
+                         else if(filename.match(refb2)) foliant = thefb2;
+                         else { console.warn(filename+" not matched any type"); return ''; } 
                          thefile = file;
                          evo = foliant.evo;
                          foliant.init();
