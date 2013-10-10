@@ -8,7 +8,7 @@ define(
     var datas = {
         google_base_url: 'http://translate.google.com/translate_a/t?client=Firefox&',
         local_base_url: "http://192.168.0.2:8082/?",//?text=+"value"+"&dict="+"!"+"&host="+"localhost"+"&port="+"2628";
-        dictionary: 'google',
+        dictionary: '',
         sl: 'en',
         tl: 'ru',
         hl: 'ru',
@@ -24,6 +24,8 @@ define(
         dict: "!", //Dictionary for dictd. "!" means all availiable
         host: "192.168.0.2", //Host where is dictd on.
         port: 2628, //Port where is dictd on.
+        phost: '',
+        pport: '',
         db: '!' //Dictionary db
     };
     var googles = {text:'',sl:'',tl:'',hl:'',ie:'',oe:'',multires:0,otf:0,trs:0,ssel:0,tsel:0,sc:0};
@@ -71,7 +73,7 @@ define(
         get_def:function(word){
             lword = word.toLowerCase();
             console.log("lword=="+lword+" dict=="+datas["dictionary"]);
-            if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, datas["local_base_url"], callbacks['got_def']);
+            if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def']);
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def']);
             else if (datas["dictionary"] === 'socket'){
                 socket.check();
@@ -80,8 +82,8 @@ define(
                 socket.get_def(lword, callbacks['got_def']);
             } else console.log("No dictionary selected");
         },
-        get_dbs:function(){
-            if(datas["dictionary"] === 'dictd proxy') get_http("SHOW DATABASES\n", locals, datas["local_base_url"], callbacks['got_dbs']);
+        get_dbs:function(type){
+            if(type === 'dictd proxy') get_http("SHOW DATABASES\n", locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_dbs']);
             else {
                 socket.check();
                 console.log("init by ", datas["host"], 2628);

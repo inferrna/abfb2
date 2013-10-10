@@ -42,7 +42,7 @@ define(
         console.log("selected "+el.value);
         var ex = showdeps['excepts'];
         var shows = showdeps[el.value];
-        if(el.value==='dictd proxy' || el.value==='socket') dict.get_dbs();
+        if(el.value==='dictd proxy' || el.value==='socket') dict.get_dbs(el.value);
         for(var key in datas){
             if(!ex.test(key) && !shows.test(key)) document.getElementById(key).parentNode.style.display = 'none';
             else if (shows.test(key)) document.getElementById(key).parentNode.style.display = 'list-item';
@@ -134,7 +134,7 @@ define(
             el.value = elements[eln];
             sel.appendChild(el);
         }
-        sel.onchange = function(evt){draw_deps(evt.target); get_config();};
+        sel.onchange = function(evt){get_config(); draw_deps(evt.target); };
         disable_prop(sel);
         sp.appendChild(sel);
         sp.style.display=disp;
@@ -164,8 +164,9 @@ define(
             inp.type = 'text';
             inp.onchange = function(evt){get_config(); input = evt.target; set_opt(input.id, input.value); 
                                         dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]),
-                                                                                            "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"]});
-                                        dict.get_dbs();};
+                                              "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
+                                               "phost": values['proxy_host'], "pport": values['proxy_port']  });
+                                        dict.get_dbs(values["dict_src"]);};
         }
         //obj.appendChild(br);
         sp.appendChild(sel);
@@ -193,6 +194,9 @@ define(
             catch(e){console.warn(e.stack);}
         }
         console.log("Got config: "+JSON.stringify(values));
+        dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
+                                                            "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
+                                                            "phost": values['proxy_host'], "pport": values['proxy_port']  });
         return values;
     }
     function parse_storage(sel, obj){
@@ -223,9 +227,6 @@ define(
                 console.log(count+" files found");
                 obj.appendChild(sel);
             }
-            get_config();
-            dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
-                                                                "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"]});
             //dict.get_dbs();
         }
         cursor.onerror = function () {
@@ -302,7 +303,7 @@ define(
             if(reend.test(arr[i])) { console.log("The end "+arr[i]); return;}
             else{ 
                 var itms = arr[i].split(" ");
-                nm  = document.createElement("option");
+                var nm  = document.createElement("option");
                 nm.value = itms[0];
                 nm.textContent = itms[1];
                 sel.appendChild(nm);

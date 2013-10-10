@@ -124,7 +124,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                 if(pos==='top'){el.style.top = 0; el.style.bottom = '85%';}// db.style.display='none'; dt.style.display=disp;}
                 if(pos==='bot'){el.style.bottom = 0; el.style.top = '85%';}// dt.style.display='none'; db.style.display=disp;}
                     dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
-                                        "local_base_url": "http://"+config["proxy_host"]+":"+config["proxy_port"]+"/?", "db": config["dict_db"],
+                                        "phost": config['proxy_host'], "pport": config['proxy_port'], "db": config["dict_db"],
                                         "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});
                     dict.add_callback('got_def', function (txt) {
                         if(txt.length>1) fill_thumb(txt);
