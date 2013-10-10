@@ -5,11 +5,11 @@
   "description": "Simple epub&fb2&txt reader with dictionary support.",
   "type": "privileged",
   "icons": {
-    "128": "/A.png",
-    "120": "/A120.png",
-    "90": "/A90.png",
-    "60": "/Ab.png",
-    "16": "/b.png"
+    "128": "/images/A.png",
+    "120": "/images/A120.png",
+    "90": "/images/A90.png",
+    "60": "/images/Ab.png",
+    "16": "/images/b.png"
   },
   "developer": {
     "name": "Inferrna",
