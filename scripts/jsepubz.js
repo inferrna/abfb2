@@ -239,6 +239,7 @@ define([], function () {
                     ltag.parentNode.replaceChild(fragment, ltag);
                 }
             }
+            if (doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
     }
     function postProcessHTML(href) {
         var xml = null;
@@ -285,6 +286,7 @@ define([], function () {
         clean_tags(doc, "meta");
         clean_tags(doc, "svg");
         clean_tags(doc, "script");
+        //clean_tags(doc, "a");
         clean_tags(doc, "a");
         try { 
             var div = document.createElement('div');

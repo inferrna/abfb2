@@ -1,6 +1,6 @@
 define(
-  ['dict'],
-  function(dict){
+  ['dict', 'uitouch'],
+  function(dict, uitouch){
     /*var evo = document.createElement("br");
     var got_file_ev = new Event('got_file');
     var got_pp_ev = new Event('got_pp');*/
@@ -87,6 +87,11 @@ define(
         console.log("checked socket");
         callbacks[0](callbacks);
     }
+    function disable_prop(_el){
+        _el.addEventListener("touchstart", function(e){e.stopPropagation();}, true);
+        _el.addEventListener("touchend", function(e){e.stopPropagation();}, true);
+        _el.addEventListener("touchmove", function(e){e.stopPropagation();}, true);
+    }
     //var winstyle = element.currentStyle || window.getComputedStyle(element, null);
     function create_select(obj, name, elements, key, disp){
         var sel = document.createElement("select");
@@ -109,12 +114,11 @@ define(
                 catch(e) {console.warn("Parse storage failed, got"+e.stack);}
                 sel.addEventListener("change", 
                                 function (event){
-                                    var filename = event.target.options[event.target.selectedIndex].value;
+                                    filename = event.target.options[event.target.selectedIndex].value;
                                     console.log("Select file changed "+filename);
                                     var sdcard = navigator.getDeviceStorage('sdcard');
                                     var request = sdcard.get(filename);
                                     request.onsuccess = function () {  file = this.result;
-                                                                       filename = file.name;
                                                                        console.log("Got the file: "+filename); 
                                                                        //evo.dispatchEvent(got_file_ev);
                                                                        callbacks['got_file']();}
@@ -131,6 +135,7 @@ define(
             sel.appendChild(el);
         }
         sel.onchange = function(evt){draw_deps(evt.target); get_config();};
+        disable_prop(sel);
         sp.appendChild(sel);
         sp.style.display=disp;
         obj.appendChild(sp);
@@ -164,6 +169,7 @@ define(
         }
         //obj.appendChild(br);
         sp.appendChild(sel);
+        disable_prop(inp);
         sp.appendChild(inp);
         sp.style.display=disp;
         obj.appendChild(sp);
@@ -306,8 +312,11 @@ define(
     }
     check_params([hasgoogle, hassocket, fill_params]);
     var toc = document.createElement("div");
+    var dtoc = document.createElement("div");
+    disable_prop(dtoc);
     toc.id = "toc";
-    opts_brd_b.appendChild(toc);
+    dtoc.appendChild(toc);
+    opts_brd_b.appendChild(dtoc);
     var lbl = document.createElement("label");
     lbl.style.order = "99";
     lbl.textContent = "";
@@ -331,6 +340,7 @@ define(
                 console.log("Saved "+currentpp['percent']+"  "+currentpp['page']);
             },
             getpp:function(){
+                currentpp = {'page':0, 'percent':0};
                 var prckey = filename+"_prc", pnmkey = filename+"_pnm";
                 var ps = {};
                 ps[prckey] = 'percent';

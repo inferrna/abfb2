@@ -127,7 +127,7 @@ define(
           }
           else if( top<(-(el_rectO.height-24)) ){
               //console.log("el_rectO.height==", el_rectO.height, "; top==", top);
-              top = -(el_rectO.height - ptop/4);
+              top = (el_rectO.height>ptop/4 ? -(el_rectO.height - ptop/4) : 0);
           }
           el.style.top = top+"px";
           //console.log("el.style.top==", el.style.top);
@@ -187,7 +187,8 @@ define(
           selected_word: function() { return selected_word; },
           max_Y: function() { return max_Y; },
           handleTouchstart:function (evt, itm) {
-              evt.preventDefault();
+              if(itm!='none') evt.preventDefault();
+              else return;
               console.log("Touch start "+dictflag);
               timer = window.setTimeout(function(){dictflag=1}, 1024);
               liftflag = 1;
@@ -197,7 +198,8 @@ define(
               handleTouch(evt, 1);
           },
           handleTouchend:function (evt, itm) {
-              evt.preventDefault();
+              if(itm!='none') evt.preventDefault();
+              else return;
               console.log("Touch end "+dictflag);
               window.clearTimeout(timer);
               //evt.preventDefault();
@@ -207,7 +209,8 @@ define(
               movef = null;
           },
           handleTouch:function (evt, itm){
-              evt.preventDefault();
+              if(itm!='none') evt.preventDefault();
+              else return;
               console.log("Touch proceed "+dictflag);
               if(movef!=null) movef(evt.changedTouches, document.getElementById('pop'));
               else handleTouch(evt, 0);

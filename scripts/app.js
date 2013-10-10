@@ -67,11 +67,12 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         //console.log(html);
         var opts = document.getElementById("options_block");
         var toc = document.getElementById("toc");
-        opts.removeChild(toc)
+        var dtoc = toc.parentNode;
+        dtoc.removeChild(toc)
         var ntoc = document.createElement("div");
         ntoc.id = "toc";
         ntoc.appendChild(html);
-        opts.appendChild(ntoc);
+        dtoc.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
         //sel.style.width = window.innerWidth-16+"px";
         sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; 

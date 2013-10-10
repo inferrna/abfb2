@@ -45,11 +45,14 @@ function(stuff){
                 }
                 ltag.parentNode.replaceChild(fragment, ltag);
             }
+            if(doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
     }
     function get_indexed_page(index){
         if(index>-1){
             var ch = divs[index];//document.getElementById(pages[index]);
-            var html = srlzr.serializeToString(ch);
+            try { 
+                var html = srlzr.serializeToString(ch);
+            } catch (e) { console.log(ch, '\n', e.stack); }
             //console.log("html== "+html+" id=="+index);
             return html;
         }else{
