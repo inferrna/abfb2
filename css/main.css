@@ -98,7 +98,7 @@
     /*max-height: 60%;*/
     border: 1px solid #555;
     border-radius: 0 0 3px 3px;
-    /*background: #FFEEFF;*/
+    background-color: rgba(255,255,255,0.6666);
   }
   .spflex div > span {
     /*align-content: stretch;
@@ -120,9 +120,10 @@
   }
   .spflex > div {
     width: 100%;
+    background-color: rgba(255,255,255,0.1);
   }
   .spflex:active {
-      background: #CCCBEE;
+    background-color: rgba(200,200,255,0.5);
   }
 
   .bcol {

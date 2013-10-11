@@ -49,11 +49,15 @@ define(
               return;
           } else if (dy>64 && theitm!='pop'){
               //evt.preventDefault();
+              window.clearTimeout(timer);
+              dictflag = 0;
               options.display('show');
               sxG = x; syG = y;
               console.log("Show opts");
           } else if (dy<-64 && theitm!='pop'){
               //evt.preventDefault();
+              window.clearTimeout(timer);
+              dictflag = 0;
               options.display('hide');
               sxG = x; syG = y;
               document.getElementById('pop').style.display = 'none';
