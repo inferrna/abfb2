@@ -6,8 +6,8 @@
   "permissions": [ "app.window", "*://translate.google.com/*", "storage", {"socket": ["tcp-connect:*:2628"]}],
   "optional_permissions": [ "webRequest" ],
   "icons": {
-    "16": "b.png",
-    "128": "A.png"
+    "16": "images/b.png",
+    "128": "images/A.png"
   },
   "app": {
     "background": {
