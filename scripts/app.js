@@ -31,6 +31,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     txarea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
     txarea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
     txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
+    txarea.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
+    txarea.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
+    window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     var opt_bl = document.getElementById("options_block");
     opt_bl.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'opts');}, false);
     opt_bl.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'opts');}, false);
@@ -54,6 +57,10 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                 }
             }
         });
+    dict.add_callback('got_def', function (txt) {
+        if(txt.length>1) fill_thumb(txt);
+        else fill_thumb("Something went wrong. Please check your options.");
+    });
     //console.log(options);
     //options.button()
     options.add_callback('got_file', function () {
@@ -111,6 +118,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     function thumb_block(mY, word, disp) {
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
+        cl.innerHTML = "Sending request..";
         var pos = 0;
         if(el){
             if(disp!='none'){
@@ -126,10 +134,6 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                     dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
                                         "phost": config['proxy_host'], "pport": config['proxy_port'], "db": config["dict_db"],
                                         "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});
-                    dict.add_callback('got_def', function (txt) {
-                        if(txt.length>1) fill_thumb(txt);
-                        else fill_thumb("Something went wrong. Please check your options.");
-                    });
                     dict.get_def(word);
             }
             el.style.display = disp;

@@ -15,6 +15,8 @@ define(
       var next_ch_ev = new Event('next_chapter');*/
       var pts = document.getElementById('pts');
       var mtext = document.getElementById('maintext');
+      var pop = document.getElementById('pop');
+      pop.style.display = 'none';
       var callbacks = {'got_selection':function(){}, 'next_chapter':function(){}};
       var movef = function(){};
       function sign(x) { return x && x / Math.abs(x); }
@@ -38,9 +40,6 @@ define(
                   if(theitm!='pop'){
                       console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
-                      var el_rectO = mtext.getBoundingClientRect();
-                      options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
-                      options.savepp();
                   } else{liftcol(pts, sign(dx));}
                   liftflag = 0;
               }
@@ -60,7 +59,7 @@ define(
               dictflag = 0;
               options.display('hide');
               sxG = x; syG = y;
-              document.getElementById('pop').style.display = 'none';
+              pop.style.display = 'none';
               console.log("Hide opts");
           } else if(dictflag===1) {
               //evt.preventDefault();
@@ -70,27 +69,14 @@ define(
                   var win = chrome.app.window.current();
                   var winc = win.contentWindow;//.Document()
                   var doc = winc.Document();*/
-                  if(document.caretPositionFromPoint) {
-                      var cp = document.caretPositionFromPoint(x, y);
-                      var soffset = cp.offset;
-                      var target = cp.offsetNode;
-                  } else if(document.caretRangeFromPoint) {
-                      var cp = document.caretRangeFromPoint(x, y);
-                      var soffset = cp.startOffset;
-                      var target = cp.startContainer;
-                  } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports."); 
-                          soffset = 512;
-                          target = mtext;}
-                  //soffset = caret.offset|caret.startOffset;
-                  max_Y = y;
-                  selectword(soffset, target);
+                  selectword(x, y);
               } else {
                   sxG = x;
                   syG = y;
                   //console.log("dy== "+dy);
                   //console.log("Touch proceed");
                   //evt.preventDefault();
-                  var el = document.getElementById('pop');//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+                  var el = pop;//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
                   //console.log("Target is "+evt.target.id);
                   //if(evt.target.id==='drugtop') 
                   if(el.style.top === '0px') movef = movesbot;//(touchlists, el);
@@ -113,28 +99,25 @@ define(
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
           if( top<0 && el.id==="maintext" && top<(-(el_rectO.height-ptop/2)) ){
               el.style.top="0px";//-(el_rectO.height-ptop)+"px";
-              //evo.id = "1";
               callbacks['next_chapter'](1);//evo.dispatchEvent(next_ch_ev);
-              return;
+          } else {
+              top = top+dir*(ptop-8);
+              if(top>0){
+                  if(el.id==="maintext"){
+                      el.style.top = "0px";
+                      callbacks['next_chapter'](-1);//evo.dispatchEvent(next_ch_ev);
+                  } else { top = 0; }
+              }
+              else if( top<(-(el_rectO.height-24)) ){
+                  top = (el_rectO.height>ptop/4 ? -(el_rectO.height - ptop/4) : 0);
+              }
+              el.style.top = top+"px";
           }
-          //console.log(top, ptop, ", el_rectO.height==", el_rectO.height);
-          //console.log("elcstyle.top=="+elcstyle.top+" el.style.top=="+el.style.top+" top=="+top+" ptop=="+ptop);
-          top = top+dir*(ptop-8);
-          if(top>0){
-              if(el.id==="maintext"){
-                  //evo.id = "-1";
-                  el.style.top = "0px";
-                  callbacks['next_chapter'](-1);//evo.dispatchEvent(next_ch_ev);
-                  //el.style.bottom="0px";
-                  return;
-              } else { top = 0; }
+          if(el.id==="maintext"){
+              var el_rectO = mtext.getBoundingClientRect();
+              options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
+              options.savepp();
           }
-          else if( top<(-(el_rectO.height-24)) ){
-              //console.log("el_rectO.height==", el_rectO.height, "; top==", top);
-              top = (el_rectO.height>ptop/4 ? -(el_rectO.height - ptop/4) : 0);
-          }
-          el.style.top = top+"px";
-          //console.log("el.style.top==", el.style.top);
       }
       function movesbot(touches, el){
           var newpos = 0;
@@ -162,7 +145,20 @@ define(
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           return text.slice(loind+1, hiind);
       }
-      function selectword(off, el){
+      function selectword(x, y){
+          max_Y = y;
+          if(document.caretPositionFromPoint) {
+              var cp = document.caretPositionFromPoint(x, y);
+              var off = cp.offset;
+              var el = cp.offsetNode;
+          } else if(document.caretRangeFromPoint) {
+              var cp = document.caretRangeFromPoint(x, y);
+              var off = cp.startOffset;
+              var el = cp.startContainer;
+          } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports."); 
+                  soffset = 512;
+                  target = mtext;}
+          //soffset = caret.offset|caret.startOffset;
           var txt = el.textContent;//new String(el.textContent);
           try {
               var sel = window.getSelection();
@@ -216,13 +212,26 @@ define(
               if(itm!='none') evt.preventDefault();
               else return;
               console.log("Touch proceed "+dictflag);
-              if(movef!=null) movef(evt.changedTouches, document.getElementById('pop'));
+              if(movef!=null) movef(evt.changedTouches, pop);
               else handleTouch(evt, 0);
           },
-          handleclick:function(evt){
-              if(hold === 0) hold=1;
-              else hold = 0;
-              console.log("click makes hold "+hold);
+          handleClick:function(evt){
+              selectword(evt.clientX, evt.clientY);
+          },
+          handleKey:function(evt){
+              var Code = parseInt(evt.keyCode);
+              if([37,38,39,40].indexOf(Code)===-1) return;
+              var el = pop.style.display === 'none' ? mtext : pts;
+              if(Code===37) liftcol(el, 1);
+              else if (Code===39) liftcol(el, -1);
+              else if (Code===38) {options.display('hide'); pop.style.display='none';}
+              else if (Code===40) options.display('show');
+              console.log("Got "+Code+" code");
+          },
+          handleSelect:function(evt){
+              var sel = window.getSelection();
+              selected_word = sel.toString();
+              callbacks['got_selection']();
           },
           add_callback:function(key, fcn){
               callbacks[key] = fcn;
