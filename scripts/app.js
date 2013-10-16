@@ -53,8 +53,14 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                 if(diff===-1){
                     var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
                     var marect = marea.getBoundingClientRect();
-                    marea.style.top = (-(parseInt(marect.height) - ptop/2))+"px";
+                    var top = (-(parseInt(marect.height) - 3*ptop/4));
+                    top = top>0 ? 0 : top;
+                    console.log("Backwards, top=="+top);
+                    marea.style.top = parseInt(top)+"px";
                 }
+                var el_rectO = marea.getBoundingClientRect();
+                options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
+                options.savepp();
             }
         });
     dict.add_callback('got_def', function (txt) {

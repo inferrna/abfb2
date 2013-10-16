@@ -31,14 +31,14 @@ define(
           var y = touchlists[touchlists.length-1].clientY;
           var dx = x - sxG;
           var dy = y - syG;
-          console.log(dx, dy, x, y, sxG, syG, theitm);
+          //console.log(dx, dy, x, y, sxG, syG, theitm);
           if(Math.abs(dx)>64){
               //evt.preventDefault();
               window.clearTimeout(timer);
               dictflag = 0;
               if(liftflag===1){
                   if(theitm!='pop'){
-                      console.log("Lift mtext, target is "+evt.target);
+                      //console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
                   } else{liftcol(pts, sign(dx));}
                   liftflag = 0;
@@ -52,7 +52,7 @@ define(
               dictflag = 0;
               options.display('show');
               sxG = x; syG = y;
-              console.log("Show opts");
+              //console.log("Show opts");
           } else if (dy<-64 && theitm!='pop'){
               //evt.preventDefault();
               window.clearTimeout(timer);
@@ -60,10 +60,10 @@ define(
               options.display('hide');
               sxG = x; syG = y;
               pop.style.display = 'none';
-              console.log("Hide opts");
+              //console.log("Hide opts");
           } else if(dictflag===1) {
               //evt.preventDefault();
-              console.log("flag == "+dictflag);
+              //console.log("flag == "+dictflag);
               if(theitm!='pop'){
                   /*var touch = touchlists[0];//touches.length-1];
                   var win = chrome.app.window.current();
@@ -97,27 +97,23 @@ define(
           if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
           else top = parseInt(el.style.top);
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
-          if( top<0 && el.id==="maintext" && top<(-(el_rectO.height-ptop/2)) ){
-              el.style.top="0px";//-(el_rectO.height-ptop)+"px";
-              callbacks['next_chapter'](1);//evo.dispatchEvent(next_ch_ev);
-          } else {
-              top = top+dir*(ptop-8);
-              if(top>0){
-                  if(el.id==="maintext"){
-                      el.style.top = "0px";
-                      callbacks['next_chapter'](-1);//evo.dispatchEvent(next_ch_ev);
-                  } else { top = 0; }
-              }
-              else if( top<(-(el_rectO.height-24)) ){
-                  top = (el_rectO.height>ptop/4 ? -(el_rectO.height - ptop/4) : 0);
-              }
-              el.style.top = top+"px";
-          }
+          var pageend = parseInt(-(el_rectO.height));
+          var newtop = top+dir*(ptop-8);
           if(el.id==="maintext"){
-              var el_rectO = mtext.getBoundingClientRect();
-              options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
-              options.savepp();
+              if(newtop<pageend) {callbacks['next_chapter']( 1); newtop=0;}
+              else if (newtop>0) {
+                  if(top===0) {callbacks['next_chapter'](-1); return;}
+                  else {newtop = 0;}
+              } else {
+                  var el_rectO = mtext.getBoundingClientRect();
+                  options.setpercent(-100*parseInt(newtop)/el_rectO.height);
+                  options.savepp();
+              }
+          } else {
+              if(newtop<pageend) newtop = pageend+ptop/2;
+              if (newtop>0) newtop = 0;
           }
+          el.style.top = newtop+"px";
       }
       function movesbot(touches, el){
           var newpos = 0;
@@ -171,14 +167,14 @@ define(
                   rng.expand("word");
                   sel.addRange( rng );
                   selected_word = sel.toString();
-                  console.log("Selected by rng.expand "+sel.toString());
+                  //console.log("Selected by rng.expand "+sel.toString());
               } else {
                   sel.addRange( rng );
                   sel.modify("extend", "backward", "word");
                   sel.collapseToStart();
                   sel.modify("extend", "forward", "word");
                   selected_word = sel.toString();
-                  console.log("Selected by sel.modify "+sel.toString());
+                  //console.log("Selected by sel.modify "+sel.toString());
               }
           } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack+" using expand2w, got "+selected_word);}
          callbacks['got_selection']();// evo.dispatchEvent(got_sel_ev);
@@ -189,7 +185,7 @@ define(
           handleTouchstart:function (evt, itm) {
               if(itm!='none') evt.preventDefault();
               else return;
-              console.log("Touch start "+dictflag);
+              //console.log("Touch start "+dictflag);
               timer = window.setTimeout(function(){dictflag=1}, 1024);
               liftflag = 1;
               movef = null;
@@ -200,7 +196,7 @@ define(
           handleTouchend:function (evt, itm) {
               if(itm!='none') evt.preventDefault();
               else return;
-              console.log("Touch end "+dictflag);
+              //console.log("Touch end "+dictflag);
               window.clearTimeout(timer);
               //evt.preventDefault();
               handleTouch(evt, 0);
@@ -211,7 +207,7 @@ define(
           handleTouch:function (evt, itm){
               if(itm!='none') evt.preventDefault();
               else return;
-              console.log("Touch proceed "+dictflag);
+              //console.log("Touch proceed "+dictflag);
               if(movef!=null) movef(evt.changedTouches, pop);
               else handleTouch(evt, 0);
           },
@@ -226,7 +222,7 @@ define(
               else if (Code===39) liftcol(el, -1);
               else if (Code===38) {options.display('hide'); pop.style.display='none';}
               else if (Code===40) options.display('show');
-              console.log("Got "+Code+" code");
+              //console.log("Got "+Code+" code");
           },
           handleSelect:function(evt){
               var sel = window.getSelection();
