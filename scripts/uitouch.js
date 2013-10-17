@@ -217,6 +217,8 @@ define(
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
               if([37,38,39,40].indexOf(Code)===-1) return;
+              evt.stopPropagation();
+              evt.preventDefault();
               var el = pop.style.display === 'none' ? mtext : pts;
               if(Code===37) liftcol(el, 1);
               else if (Code===39) liftcol(el, -1);

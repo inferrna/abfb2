@@ -28,6 +28,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     dt.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'pop');}, false);
     var marea = document.getElementById("maintext");
     marea.style.top = "0px";
+    txarea.style.backgroundSize = '100%';
+    txarea.style.backgroundImage='url(../images/back.jpg)';
     txarea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
     txarea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
     txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
@@ -55,7 +57,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                     var marect = marea.getBoundingClientRect();
                     var top = (-(parseInt(marect.height) - 3*ptop/4));
                     top = top>0 ? 0 : top;
-                    console.log("Backwards, top=="+top);
+                    //console.log("Backwards, top=="+top);
                     marea.style.top = parseInt(top)+"px";
                 }
                 var el_rectO = marea.getBoundingClientRect();
@@ -70,7 +72,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     //console.log(options);
     //options.button()
     options.add_callback('got_file', function () {
-            console.log("Got file event fired");
+            //console.log("Got file event fired");
             var evo = book.init(options.bookfile());
             evo.addEventListener('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));}, false);
             book.load();
@@ -88,7 +90,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         dtoc.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
         //sel.style.width = window.innerWidth-16+"px";
-        sel.addEventListener("change", function (event){console.log("Select changed"); marea.style.top="0px"; 
+        sel.addEventListener("change", function (event){/*console.log("Select changed");*/ marea.style.top="0px"; 
                                                 fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
         options.add_callback('got_pp', function () {
                                                     fill_page(book.foliant().get_page( options.getpage() ), options.getpercent() ); 
@@ -99,14 +101,14 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         options.getpp();
     }
     function fill_page(html, percent){
-        console.log("Try load html");
+        //console.log("Try load html");
         marea.style.width = 'auto';
         marea.style.height = 'auto';
         marea.innerHTML = html;
         var cstyle = marea.getBoundingClientRect();//window.getComputedStyle(marea, null);
-        if(parseInt(cstyle.height) < parseInt(txarea.style.height)){
-            marea.style.height = txarea.style.height;
-            console.log(cstyle.height+" < "+txarea.style.height);
+        if(parseInt(cstyle.height) < (parseInt(txarea.style.height)-32)){
+            marea.style.height = txarea.style.height-32;
+            //console.log(cstyle.height+" < "+txarea.style.height);
         }
         marea.style.top = parseInt(-percent*parseInt(cstyle.height)/100)+"px";
         options.setpage(book.foliant().currentpage());
@@ -129,9 +131,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                console.log("Got config "+config);
+                //console.log("Got config "+config);
                 ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
-                console.log("mY vs ptop"+mY+" "+ptop);
+                //console.log("mY vs ptop"+mY+" "+ptop);
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";

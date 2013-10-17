@@ -52,7 +52,7 @@ function(stuff){
             var ch = divs[index];//document.getElementById(pages[index]);
             try { 
                 var html = srlzr.serializeToString(ch);
-            } catch (e) { console.log(ch, '\n', e.stack); }
+            } catch (e) { console.warn(e.stack); }
             //console.log("html== "+html+" id=="+index);
             return html;
         }else{
@@ -102,7 +102,7 @@ function(stuff){
                      return currentpage;
              },
              next_page:function(diff){
-                     console.log(currentpage+" next_page "+diff);
+                     //console.log(currentpage+" next_page "+diff);
                      var page = currentpage + diff;
                      if(pages.length>page && page>-1) {
                             currentpage += diff;

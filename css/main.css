@@ -105,7 +105,6 @@
     -moz-align-content: stretch
     -webkit-align-content: stretch;*/
     width: 16em;
-    flex 1 1 auto;
     -webkit-flex: 1 1 auto;
     flex-direction: column;
     -webkit-flex-direction: column;
@@ -133,7 +132,4 @@
     position: relative;
     margin-left: 1px;
     margin-right: 1px;
-    /*width: 100%;*/
-  
-  
   }

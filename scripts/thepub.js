@@ -60,11 +60,11 @@ function(jsepub, stuff, encod, options){
                 return i+1;
             }
         }
-        console.log(url+" not found");
+        console.warn(url+" not found");
         return id;
     }
     function get_indexed_page(index){
-        console.log("get_indexed_page "+index);
+        //console.log("get_indexed_page "+index);
         var opf = epub.opf();
         var toc = epub.toc();
         var files = epub.files();
@@ -72,26 +72,10 @@ function(jsepub, stuff, encod, options){
             var spine = opf.spine[index];
             var href = opf.manifest[spine]["href"];
             var doc = files[href];
-            /*var div = document.createElement('div');
-            //div.setAttribute
-            //div.style.height = window.innerHeight+"px";
-            div.style.width =  window.innerWidth+"px";
-            while(doc.firstChild) div.appendChild(doc.firstChild);
-            clean_tags(div, "html");
-            clean_tags(div, "head");
-            clean_tags(div, "body");
-            console.log(div);*/
             var html = srlzr.serializeToString(doc);
             return html;//decodeURIComponent( escape(resultDocument) ));
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
-            //var texts = toc.childNodes[0].getElementsByTagName("texts");
-            /*console.log(toc.childNodes[0]);
-            console.log("The TOC is: ", texts.length);
-            for(var i=0; i < texts.length; i++){
-                console.log(text);
-                texts[i].textContent = escape(texts[i].textContent);
-            }*/
             var contents = xsltp.transformToDocument(toc,doc);
             var opts = contents.getElementsByTagName("option");
 
@@ -101,15 +85,15 @@ function(jsepub, stuff, encod, options){
             for(var i = 0; i < opts.length; i++) {
                 urls.push(opts[i].getAttribute('url').replace(re, "$2"));
             }
-            console.log("urls is "+urls);
+            //console.log("urls is "+urls);
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];
                 href = opf.manifest[spine]['href'].replace(re, "$2");
-                console.log(i+" href "+href+" "+opf.manifest[spine]['href']);
+                //console.log(i+" href "+href+" "+opf.manifest[spine]['href']);
                 var idx = urls.indexOf(href);
                 pages.push(idx);
             }
-            console.log("pages is "+pages);
+            //console.log("pages is "+pages);
             var docFragment = document.createDocumentFragment();
             while(contents.firstChild) docFragment.appendChild(contents.firstChild);
             //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
@@ -138,7 +122,7 @@ function(jsepub, stuff, encod, options){
                      return currentpage;
              },
              next_page:function(diff){
-                     console.log(currentpage+" next_page "+diff);
+                     //console.log(currentpage+" next_page "+diff);
                      var page = currentpage + diff;
                      if(pages.length>page && page>-1) {
                             currentpage += diff;

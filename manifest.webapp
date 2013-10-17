@@ -1,9 +1,10 @@
 {
-  "version": "0.2",
+  "version": "0.27",
   "name": "Ab FB2 reader",
   "launch_path": "/index.html",
   "description": "Simple epub&fb2&txt reader with dictionary support.",
   "type": "privileged",
+  "default_locale": "en",
   "icons": {
     "128": "/images/A.png",
     "120": "/images/A120.png",

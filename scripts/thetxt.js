@@ -5,6 +5,7 @@ function(stuff){
     //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
     var evo = document.createElement("br");
     var got_book_ev = new Event('got_book');
+    var currentpage = 0;
     function load_txt(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
@@ -16,7 +17,7 @@ function(stuff){
     }
     function proceedtxt(txt){
         var maxlen = txt.length;
-        var strip = 4096;
+        var strip = 8192;
         var re = /\n|\./;
         var off = 0;
         var curstrip = strip;
@@ -24,7 +25,7 @@ function(stuff){
             while(re.test(txt.charAt(curstrip))===false && curstrip < maxlen-1){curstrip++;}
             curstrip++;
             text.push(txt.substring(off, curstrip));
-            console.log("Got strip "+curstrip);
+            //console.log("Got strip "+curstrip);
             off = curstrip; 
             curstrip += strip; 
         }
@@ -49,21 +50,37 @@ function(stuff){
             }
             contents.appendChild(h1);
             contents.appendChild(sel);
-            console.log(contents);
+            //console.log(contents);
             return contents;//.innerHtml;
         }
         return 0;
     }
     return {
              load:function(file, lib) {
-                        console.log("Loads txt file "+file.name);
+                        //console.log("Loads txt file "+file.name);
                         load_txt(file);
              },
              get_page:function(index){
                      return get_indexed_page(index);
              },
+             option:function(i){
+                     return currentpage;
+             },
+             get_fromopt:function(idx){
+                     currentpage = idx;
+                     return get_indexed_page(currentpage);
+             },
              currentpage:function(){
-                     return 0;
+                     return currentpage;
+             },
+             next_page:function(diff){
+                     //console.log(currentpage+" next_page "+diff);
+                     var page = currentpage + diff;
+                     if(text.length>page && page>-1) {
+                            currentpage += diff;
+                            return get_indexed_page(currentpage);
+                     }
+                     return -1;
              },
              init:function(){
                      text = [];

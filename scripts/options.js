@@ -14,7 +14,7 @@ define(
     var storage = null;// || 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
-    try{ crstorage = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available");}
+    try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available");}
     var type;
     var file = {'name':'empty'};
     var filename = 'name';
@@ -149,20 +149,22 @@ define(
         sel.textContent = name;
         inp.id = key;
         //inp.style.left="0px";
-        if(key==="file") {   inp.type = 'file';
-                             inp.addEventListener("change", function (event){
-                                                            file = event.target.files[0];
+        if(key==="file") {   inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
+                             //get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
+                             inp.addEventListener("change", function (evt){
+                                                            var input = evt.target;
+                                                            file = evt.target.files[0];
                                                             filename = file.name;
+                                                            //set_opt(input.id, input.value);
                                                             //evo.dispatchEvent(got_file_ev);
                                                             callbacks['got_file']();}, false );
-                         }
-        else {
+        } else {
             inp.value = value;
             var params = [];
             params[0] = inp.id;
             get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
             inp.type = 'text';
-            inp.onchange = function(evt){get_config(); input = evt.target; set_opt(input.id, input.value); 
+            inp.onchange = function(evt){get_config(); var input = evt.target; set_opt(input.id, input.value); 
                                         dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]),
                                               "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
                                                "phost": values['proxy_host'], "pport": values['proxy_port']  });
@@ -176,11 +178,11 @@ define(
         obj.appendChild(sp);
     }
     function display(mode){
-        console.log(mode, opts_brd_b.style.display, opts_brd.style.display);
+        //console.log(mode, opts_brd_b.style.display, opts_brd.style.display);
         if(mode==='show')
             //opts_brd.parentNode.display='block';
             if(opts_brd_b.style.display==='none') opts_brd_b.style.display='block';
-            else{console.log("go_flex"); opts_brd.parentNode.style.display='block';}
+            else{opts_brd.parentNode.style.display='block';}
         if(mode==='hide')
             //opts_brd.parentNode.display='none';
             if(opts_brd.parentNode.style.display!='none') opts_brd.parentNode.style.display='none';
@@ -193,7 +195,7 @@ define(
             try{ values[key] = document.getElementById(key).value; }
             catch(e){console.warn(e.stack);}
         }
-        console.log("Got config: "+JSON.stringify(values));
+        //console.log("Got config: "+JSON.stringify(values));
         dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
                                                             "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
                                                             "phost": values['proxy_host'], "pport": values['proxy_port']  });
@@ -205,17 +207,20 @@ define(
         var cursor = pics.enumerate();
         var count = 0;
         var self = this;
+        var filere = /.*fb2|.*epub|.*txt/i;
         window.setTimeout(function(){self.return}, 2048);
         cursor.onsuccess = function () {
             if(this.result!='undefined') var file = this.result;
             else this.continue();
             try{
-            var nm  = document.createElement("option");
-                nm.textContent = file.name;
-                count++;
-                console.log("File found: " + file.name);
-                sel.appendChild(nm);
-                obj.appendChild(sel);
+                if(filere.test(file.name)){
+                    var nm  = document.createElement("option");
+                    nm.textContent = file.name;
+                    count++;
+                    console.log("File found: " + file.name);
+                    sel.appendChild(nm);
+                    obj.appendChild(sel);
+                }
             }catch(e) { console.warn(e.stack); return;}
             //alert("File found");
             // Once we found a file we check if there is other results
@@ -225,7 +230,8 @@ define(
                 this.continue();
             } else {
                 console.log(count+" files found");
-                obj.appendChild(sel);
+                if(count>0) obj.appendChild(sel);
+                else delete sel;
             }
             //dict.get_dbs();
         }
@@ -243,7 +249,7 @@ define(
     }
     function makepos(x){
         x = x||0;
-        console.log("makepos, x==", x);
+        //console.log("makepos, x==", x);
         var re = /.+?\..+?/, result = x;
         if(re.test(x)) result = parseFloat(x);
         else result = parseInt(x);
@@ -252,10 +258,10 @@ define(
     }
     function get_cr(keys, callback, evt){
         crstorage.get(keys, function(result){
-                console.log("Got "+JSON.stringify(result)+"from storage, keys was "+keys);
-                for(var key in Object.keys(result)){
+                //console.log("Got "+JSON.stringify(result)+"from storage, keys was "+keys);
+                for(var key in result){
                     callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
-                    //console.log("Got "+result[key]+" from "+key);
+                    //console.log("Got "+result[key]+" from "+key+"  ."+keys[key]);
                 }
                 if(evt) callbacks[evt]();//evo.dispatchEvent(evt);
             });
@@ -265,7 +271,7 @@ define(
         for(var key in keys){
             //console.log("Got key "+keys[key]);
             callback( keys[key], storage.getItem(keys[key]) );//currentpp[ps[key]] = makepos(storage.getItem(key));
-            //console.log("Got "+storage.getItem(key)+" from "+key+"->"+currentpp[ps[key]]+" stored into "+ps[key]);
+            //console.log("Got "+storage.getItem(keys[key])+" from "+key+"  ."+keys[key]);
         }
         if(evt) callbacks[evt]();//evo.dispatchEvent(evt);//got_pp_ev);
     }
@@ -279,7 +285,9 @@ define(
         else if(crstorage) set_cr(key, p);
     }
     function set_cr(key, p){
-        crstorage.set({key: p}, function(){console.log(p+" saved as "+key);});
+        var pair = {};
+        pair[key] = p;
+        crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
     }
     function set_ls(key, p){
         localStorage.setItem(key, p);
@@ -300,14 +308,14 @@ define(
         while(sel.firstChild) {delete sel.removeChild(sel.firstChild);}
         sel.appendChild(_nm);
         for(var i = start; i>0; i--){
-            if(reend.test(arr[i])) { console.log("The end "+arr[i]); return;}
+            if(reend.test(arr[i])) { /*console.log("The end "+arr[i]);*/ return;}
             else{ 
                 var itms = arr[i].split(" ");
                 var nm  = document.createElement("option");
                 nm.value = itms[0];
                 nm.textContent = itms[1];
                 sel.appendChild(nm);
-                console.log(itms);
+                //console.log(itms);
             }
         }
     }
@@ -338,7 +346,7 @@ define(
                 var prckey = filename+"_prc", pnmkey = filename+"_pnm";
                 set_opt(prckey, currentpp['percent']);
                 set_opt(pnmkey, currentpp['page']);
-                console.log("Saved "+currentpp['percent']+"  "+currentpp['page']);
+                //console.log("Saved "+currentpp['percent']+"  "+currentpp['page']);
             },
             getpp:function(){
                 currentpp = {'page':0, 'percent':0};
@@ -348,7 +356,7 @@ define(
                 ps[pnmkey] = 'page';
                 get_opt(Object.keys(ps), function(key, val){
                         currentpp[ps[key]] = makepos(val);
-                        console.log(key+"=got="+val);
+                        //console.log(key+"=got="+val);
                     }, 'got_pp');
                 //callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
             },
@@ -356,7 +364,7 @@ define(
                 if(isNaN(percent)) currentpp['percent'] = 0;
                 else currentpp['percent'] = percent;
                 //this.savepp();
-                console.log("set currentpercent=="+percent);
+                //console.log("set currentpercent=="+percent);
                 lbl.textContent = parseInt(percent)+"% of current chapter";
             },
             msg:function(text){

@@ -37,7 +37,7 @@ define(
     function get_http(_text, params, baseurl, callback){
         var dreq = new XMLHttpRequest();
         dreq.onload = function (event) {
-                console.log("XMLHttpRequest done");
+                //console.log("XMLHttpRequest done");
                 resp = '';
                 var resptext = event.target.responseText;
                 //console.log(JSON.parse(resptext)["dict"]);
@@ -49,7 +49,7 @@ define(
                 }
                 else resp = resptext;
                 //alert("Got "+resp);
-                console.log("Got inner response ", resp);
+                //console.log("Got inner response ", resp);
                 callback(resp);
             }
         var l_arr = [];
@@ -63,7 +63,7 @@ define(
         dreq.open("GET", url, "true");
         dreq.send();
         //alert("Request sended, url was "+url+".");
-        console.log("Request sended, url was "+url);
+        //console.log("Request sended, url was "+url);
     }
     return {
         response:function(){
@@ -72,7 +72,7 @@ define(
         }, 
         get_def:function(word){
             lword = word.toLowerCase();
-            console.log("lword=="+lword+" dict=="+datas["dictionary"]);
+            //console.log("lword=="+lword+" dict=="+datas["dictionary"]);
             if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def']);
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def']);
             else if (datas["dictionary"] === 'socket'){
@@ -86,7 +86,7 @@ define(
             if(type === 'dictd proxy') get_http("SHOW DATABASES\n", locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_dbs']);
             else {
                 socket.check();
-                console.log("init by ", datas["host"], 2628);
+                //console.log("init by ", datas["host"], 2628);
                 socket.init(datas["host"], 2628, datas["db"]);
                 socket.get_dbs(callbacks['got_dbs']);
             }
