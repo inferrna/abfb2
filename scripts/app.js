@@ -29,7 +29,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     var marea = document.getElementById("maintext");
     marea.style.top = "0px";
     txarea.style.backgroundSize = '100%';
-    txarea.style.backgroundImage='url(../images/back.jpg)';
+    if(window.innerWidth<512) txarea.style.backgroundImage='url(../images/back_tiny.jpg)';
+    else if (window.innerWidth<1024) txarea.style.backgroundImage='url(../images/back_small.jpg)';
+    else txarea.style.backgroundImage='url(../images/back.jpg)';
     txarea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
     txarea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
     txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
