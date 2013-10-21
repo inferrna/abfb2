@@ -1,9 +1,6 @@
 define(
   ['dict', 'uitouch'],
   function(dict, uitouch){
-    /*var evo = document.createElement("br");
-    var got_file_ev = new Event('got_file');
-    var got_pp_ev = new Event('got_pp');*/
     var callbacks = {'got_file':function(){}, 'got_pp':function(){}};
     var opts_brd =    document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');

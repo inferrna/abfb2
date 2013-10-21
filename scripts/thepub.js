@@ -6,8 +6,9 @@ function(jsepub, stuff, encod, options){
     var parsr = new DOMParser();
     //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
     xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
-    var evo = document.createElement("br");
-    var got_book_ev = new Event('got_book');
+    //var evo = document.createElement("br");
+    //var got_book_ev = new Event('got_book');
+    var callbacks = { 'got_book':function(){} };
     var pages = [];
     var currentpage = 0;
     function load_jsepub(file){
@@ -35,7 +36,7 @@ function(jsepub, stuff, encod, options){
                 } else if (step === 5) {
                     msg = "Finishing";
                     console.log(msg);
-                    evo.dispatchEvent(got_book_ev);
+                    callbacks['got_book']();
                 }
                 // Render the "msg" here.
             }, options.msg);
@@ -135,7 +136,9 @@ function(jsepub, stuff, encod, options){
                      pages = [];
                      currentpage = 0;
              },
-             evo:evo
+             add_callback:function(key, fcn){
+                    callbacks[key] = fcn;
+             }
     }
 }
 );

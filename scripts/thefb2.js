@@ -6,8 +6,9 @@ function(stuff){
     var parsr = new DOMParser();
     //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
     xsltp.importStylesheet(parsr.parseFromString(stuff.fb2xsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
-    var evo = document.createElement("br");
-    var got_book_ev = new Event('got_book');
+    //var evo = document.createElement("br");
+    //var got_book_ev = new Event('got_book');
+    var callbacks = { 'got_book':function(){} };
     var pages = [];
     var divs = [];
     var currentpage = 0;
@@ -32,7 +33,7 @@ function(stuff){
             if(re.test(divlist[i].getAttribute('id'))){ 
                 divs.push(divlist[i]);//.getAttribute('id'));
         }
-        evo.dispatchEvent(got_book_ev);
+        callbacks['got_book']();
         console.log("fb2 pages is "+pages);
     }
     function clean_tags(doc, tag){
@@ -111,12 +112,14 @@ function(stuff){
                      return -1;
              },
              init:function(){
-                fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
-                pages = [];
-                divs = [];
-                currentpage = 0;
+                    fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
+                    pages = [];
+                    divs = [];
+                    currentpage = 0;
              },
-             evo:evo
+             add_callback:function(key, fcn){
+                    callbacks[key] = fcn;
+             }
     }
 }
 );

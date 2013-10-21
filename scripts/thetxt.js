@@ -6,6 +6,7 @@ function(stuff){
     var evo = document.createElement("br");
     var got_book_ev = new Event('got_book');
     var currentpage = 0;
+    var callbacks = { 'got_book':function(){} };
     function load_txt(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
@@ -30,7 +31,7 @@ function(stuff){
             curstrip += strip; 
         }
         if(curstrip<maxlen) text.push(txt.strip(curstrip, maxlen));
-        evo.dispatchEvent(got_book_ev);
+        callbacks['got_book']();
         //console.log(text[0]);
     }
     function get_indexed_page(index){
@@ -86,7 +87,9 @@ function(stuff){
                      text = [];
                      name = '';
              },
-             evo:evo
+             add_callback:function(key, fcn){
+                    callbacks[key] = fcn;
+             }
     }
 }
 );

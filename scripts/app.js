@@ -75,8 +75,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     //options.button()
     options.add_callback('got_file', function () {
             //console.log("Got file event fired");
-            var evo = book.init(options.bookfile());
-            evo.addEventListener('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));}, false);
+            book.init(options.bookfile());
+            book.foliant().add_callback('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));});
             book.load();
         });
     

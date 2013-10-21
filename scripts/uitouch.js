@@ -10,9 +10,6 @@ define(
       var max_Y = 0;
       var theitm = 'undefined';
       var selected_word = '';
-      /*var evo = document.createElement("br");
-      var got_sel_ev = new Event('got_selection');
-      var next_ch_ev = new Event('next_chapter');*/
       var pts = document.getElementById('pts');
       var mtext = document.getElementById('maintext');
       var pop = document.getElementById('pop');
