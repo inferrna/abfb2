@@ -2,43 +2,44 @@ define([], function () {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};
+    var b64blobs = {};
     var opfPath, container, mimetype, opf, toc=null;
     var notifier = null;
     var logger = function(text){console.log(text);};
-    function extract_text(blob, index, array, callback, params){
+    function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
-        reader.addEventListener("loadend", function() {
-               //console.log("DATA=="+reader.result);
-               array[index]=reader.result;
-               if(params[1]<params[0].length) callback(params);
-               else go_all();
-        });
-        reader.readAsText(blob);
-    }
-    function extract_data(blob, index, array, callback, params){
-        var reader = new FileReader();
-        reader.addEventListener("loadend", function() {
-               array[index]=reader.result;
-               if(params[1]<params[0].length) callback(params);
-               else go_all();
-        });
-        //reader.readAsBinaryString(blob);
-        reader.readAsDataURL(blob);
+        if(files[index]) console.warn("dublicated index "+index);
+        try {
+            reader.addEventListener("loadend", function() {
+                   array[index]=reader.result;
+            //       console.log(index+" extracted as "+reader.result);
+                   if(params[1]<params[0].length) callback(params);
+                   else go_all();
+                });
+            if(mtype==='blob') reader.readAsDataURL(blob);
+            else reader.readAsText(blob);
+        } catch(e) {
+            console.warn(e.stack);
+            reader.onload = function(e){
+                    array[index]=reader.result;
+              //      console.log(index+" extracted as "+reader.result);
+                    if(params[1]<params[0].length) callback(params);
+                    else go_all();
+                }
+            if(mtype==='blob') reader.readAsDataURL(blob);
+            else reader.readAsText(blob);
+        }
+        delete reader;
     }
     function fill_files(data, name, callback, params){
-        var re = /.+?\.(jpeg|jpg|gif|png)/i;
-        logger("extracting " +name+"...");
-        /*console.log("DATA=="+data);
-        if (name === "META-INF/container.xml") {
-            container = data;
-        } else if (name === "mimetype") {
-            mimetype = data;
-        } else*/ 
+        var re = /.+?\.(jpeg|jpg|gif|png|otf|ttf|bmp|wav)/i;
         params[1]++; //i
         if (re.test(name)){
-            extract_data(data, name, files, callback, params);
+            logger("extracting blob: " +name+"...");
+            extract_data(data, name, b64blobs, callback, params, 'blob');
         } else {
-            extract_text(data, name, files, callback, params);
+            logger("extracting text: " +name+"...");
+            extract_data(data, name, files, callback, params, 'text');
         }
     }
     function go_all(){
@@ -186,24 +187,35 @@ define([], function () {
 
     // Will modify all HTML and CSS files in place.
     function postProcess() {
+        var mediaType = '';
+        var href = '';
+        var result = '';
+        var tocre = /.+?\.ncx/i;
+        var xml = '';
         for (var key in opf.manifest) {
-            var mediaType = opf.manifest[key]["media-type"]
-            var href = opf.manifest[key]["href"]
-            var result;
-            var tocre = /.+?\.ncx/i;
+            mediaType = opf.manifest[key]["media-type"];
+            href = opf.manifest[key]["href"];
+            result = undefined;
             if (mediaType === "text/css") {
                 result = postProcessCSS(href);
-            } else if (mediaType === "application/xhtml+xml") {
-                result = postProcessHTML(href);
             } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
-                //console.log("/get toc"+href+"||"+Object.keys(files));
-                var xml = '';
                 try {xml = decodeURIComponent(escape(files[href]));}
                 catch(e) {xml = files[href]; console.warn(e.stack);};
                 toc = xmlDocument(xml);
-                //console.log("/got toc"+files[href]);
-            } else console.log(href, "media type is ", mediaType);
+            } else if (mediaType === "application/xhtml+xml") {
+            } else { 
+                console.log(href + " media type is " + mediaType);
+            }
 
+            if (result !== undefined) {
+                files[href] = result;
+            }
+        }
+        for (var key in opf.manifest) {
+            mediaType = opf.manifest[key]["media-type"];
+            href = opf.manifest[key]["href"];
+            result = undefined;
+            if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
             if (result !== undefined) {
                 files[href] = result;
             }
@@ -246,7 +258,6 @@ define([], function () {
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
-
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -254,6 +265,14 @@ define([], function () {
             if (/^data/.test(src)) { continue }
             image.setAttribute("src", getDataUri(src, href));
         }
+        /*var styles = doc.getElementsByTagName("style");
+        for (var i = 0, il = styles.length; i < il; i++) {
+            var style = styles[i];
+            var src = style.getAttribute("src");
+            if (/^data/.test(src)) { continue }
+            console.log("css src is: "+src);
+            style.setAttribute("src", getDataUri(src, href));
+        }*/
         images = doc.getElementsByTagName("image");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -298,12 +317,14 @@ define([], function () {
         return doc;
     }
 
-   function  getDataUri(url, href) {
+   function getDataUri(url, href) {
         var dataHref = resolvePath(url, href);
-        return files[dataHref];
-        /*var mediaType = findMediaTypeByHref(dataHref);
-        var encodedData = escape(files[dataHref]);
-        return "data:" + mediaType + "," + encodedData;*/
+        if(b64blobs[dataHref]) return b64blobs[dataHref];
+        else {
+            var mediaType = findMediaTypeByHref(dataHref);
+            var encodedData = escape(files[dataHref]);
+            return "data:" + mediaType + "," + encodedData;
+        }
     }
 
     function validate() {

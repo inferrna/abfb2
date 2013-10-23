@@ -14,6 +14,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     var txarea = document.getElementById('txtarea');
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
+    document.addEventListener('deviceready', function(e){console.log("Device ready");}, false);
     txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
     txarea.style.width = window.innerWidth+"px";
     //fl_text.style.height = window.innerHeight+"px";

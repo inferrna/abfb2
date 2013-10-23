@@ -133,3 +133,19 @@
     margin-left: 1px;
     margin-right: 1px;
   }
+  .gradient {
+    background-image: linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -o-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -moz-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -webkit-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -ms-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+
+    background-image: -webkit-gradient(
+        linear,
+        right top,
+        left top,
+        color-stop(0, rgb(222,211,165)),
+        color-stop(0.5, rgb(235,232,200)),
+        color-stop(1, rgb(209,200,148))
+    );
+  }

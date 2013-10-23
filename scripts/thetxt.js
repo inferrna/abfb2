@@ -3,8 +3,6 @@ function(stuff){
     var text = [];
     var name = '';
     //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
-    var evo = document.createElement("br");
-    var got_book_ev = new Event('got_book');
     var currentpage = 0;
     var callbacks = { 'got_book':function(){} };
     function load_txt(file){

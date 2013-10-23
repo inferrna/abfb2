@@ -262,16 +262,26 @@
 		var blob, that = this;
 
 		function init(callback) {
-			blob = new Blob([], {
-				type : contentType
-			});
+            console.log("Bloobs are here");
+			try {
+                blob = new Blob([], {type : contentType});
+            } catch(e) {
+                //console.warn(e.stack);
+                var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
+                blob = bb.getBlob(contentType);
+            }
 			callback();
 		}
 
 		function writeUint8Array(array, callback) {
-			blob = new Blob([ blob, appendABViewSupported ? array : array.buffer ], {
-				type : contentType
-			});
+			try {
+                blob = new Blob([ blob, appendABViewSupported ? array : array.buffer ], {type : contentType});
+            } catch(e) {
+                //console.warn(e.stack);
+                var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
+                bb.append(appendABViewSupported ? array : array.buffer);
+                blob = bb.getBlob(contentType);
+            }
 			callback();
 		}
 
@@ -398,7 +408,17 @@
 			worker = new Worker(obj.zip.workerScriptsPath + INFLATE_JS);
 			launchWorkerProcess(worker, reader, writer, offset, size, oninflateappend, onprogress, oninflateend, onreaderror, onwriteerror);
 		} else
-			launchProcess(new obj.zip.Inflater(), reader, writer, offset, size, oninflateappend, onprogress, oninflateend, onreaderror, onwriteerror);
+			launchProcess(
+                            new obj.zip.Inflater(), 
+                            reader, 
+                            writer, 
+                            offset, 
+                            size, 
+                            oninflateappend, 
+                            onprogress, 
+                            oninflateend, 
+                            onreaderror, 
+                            onwriteerror);
 		return worker;
 	}
 
@@ -777,7 +797,8 @@
 			}
 		};
 	}
-
+    function isworker(){try{var sock = new Worker('scripts/inflate.js'); return true} catch(e){return false;}}
+    var haveworker = isworker();
 	obj.zip = {
 		Reader : Reader,
 		Writer : Writer,
@@ -798,7 +819,7 @@
 			}, onerror);
 		},
 		workerScriptsPath : "scripts/",//"scripts/zip/",
-		useWebWorkers : true
+		useWebWorkers : haveworker
 	};
 
 })(this);
