@@ -1,5 +1,5 @@
 define(
-  ['stuff', 'encod'],
+  ['stuff', 'encod', 'cordova.js'],
   function(stuff, encod){
     var sockavail = null;
     var host = '192.168.0.2';
@@ -8,8 +8,24 @@ define(
     var resp = '';
     var db = "!";
     var callback = function(){};
-   // var evo = document.createElement("br");
-   // var got_def_ev = new Event('got_def');
+    console.log("Creating tcpecho.");
+    tcpecho = function(arr, callback){};
+    try {
+        var exec = cordova.require('cordova/exec');
+        tcpecho = function(arr, callback) {
+            exec(callback, function(err) {
+                console.log("Got error while exec echo "+err);
+            }, "Echo", "echo", arr);
+        };
+        sockavail = 'cordova';
+    } catch(e) { console.log("No cordova sockets available."); }
+    
+    function cordova_get(host, port, text){
+        tcpecho([host, port, text], function(bindata) {
+            //console.log("Got response.");
+            callback(encod.utf8b2str(bindata));
+        });
+    }
     function chromeconnect(id){  chrome.socket.connect(id, host, port, function(){
             window.setTimeout(function(){chromewrite(id, text);}, 256);
         }); 
@@ -56,23 +72,24 @@ define(
     return {
         get_def:function(word, _clbck){
             callback = _clbck;
-            text = "DEFINE "+db+" "+word+"\n";
+            text = "DEFINE "+db+" "+word+"\n\nquit\n";
             console.log(text);
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
+            else if (sockavail === 'cordova') cordova_get(host, port, text);
             else console.log("Socket still unavailiable or check first");
         },
         get_dbs:function(_clbck){
             callback = _clbck;
-            text = "SHOW DATABASES\n";
+            text = "SHOW DATABASES\n\nquit\n";
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
+            else if (sockavail === 'cordova') cordova_get(host, port, text);
             else console.log("Socket still unavailiable or check first");
         },
         check:function(){
             if(navigator.mozTCPSocket) sockavail = 'mozilla';
             else if(chrome.socket) sockavail = 'chrome';
-            else sockavail = null;
             return sockavail;
         },
         init:function(_host, _port, _db){

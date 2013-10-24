@@ -181,8 +181,13 @@ define([], function () {
         }
 
         // Best guess if it's not in the manifest. (Those bastards.)
-        var match = href.match(/\.(\w+)$/);
-        return match && "image/" + match[1];
+        var match = href.match(/\.(jpeg|jpg|gif|png|bmp)$/i);
+        var matchttf = href.match(/\.(ttf)$/);
+        var matchotf = href.match(/\.(otf)$/);
+        if(match) return "image/" + match[1];
+        else if(matchttf) return "application/x-truetype-font";
+        else if(matchotf) return "font/opentype";
+        else return "undefined";
     }
 
     // Will modify all HTML and CSS files in place.
@@ -319,12 +324,10 @@ define([], function () {
 
    function getDataUri(url, href) {
         var dataHref = resolvePath(url, href);
-        if(b64blobs[dataHref]) return b64blobs[dataHref];
-        else {
-            var mediaType = findMediaTypeByHref(dataHref);
-            var encodedData = escape(files[dataHref]);
-            return "data:" + mediaType + "," + encodedData;
-        }
+        var mediaType = findMediaTypeByHref(dataHref);
+        if(b64blobs[dataHref]) return b64blobs[dataHref].replace("data:undefined", "data:"+mediaType);
+        encodedData = escape(files[dataHref]);
+        return "data:" + mediaType + "," + encodedData;
     }
 
     function validate() {

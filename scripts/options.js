@@ -1,6 +1,6 @@
 define(
-  ['dict', 'uitouch'],
-  function(dict, uitouch){
+  ['dict', 'uitouch', 'socket'],
+  function(dict, uitouch, socket){
     var callbacks = {'got_file':function(){}, 'got_pp':function(){}};
     var opts_brd =    document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
@@ -72,11 +72,12 @@ define(
         catch(e) { datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1); callbacks[0](callbacks); }
     }
     function hassocket(callbacks){
-        var cs = 0, ms = 0;
+        //var cs = 0, ms = 0;
         callbacks.splice(0,1);
-        try{ cs = chrome.socket } catch(e) { console.warn(e.stack);}
-        try{ ms = navigator.mozTCPSocket} catch(e) { console.warn(e.stack);}
-        if(!(cs || ms)){
+        //try{ cs = chrome.socket } catch(e) { console.warn(e.stack);}
+        //try{ ms = navigator.mozTCPSocket} catch(e) { console.warn(e.stack);}
+        
+        if(socket.check()===null){
             datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('socket'),1);
             //delete datas['socket_host'];
             //delete datas['socket_port'];
