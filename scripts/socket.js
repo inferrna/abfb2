@@ -18,7 +18,7 @@ define(
             }, "Echo", "echo", arr);
         };
         sockavail = 'cordova';
-    } catch(e) { console.log("No cordova sockets available."); }
+    } catch(e) { tcpecho = function(arr, callback){}; console.log("No cordova sockets available."); }
     
     function cordova_get(host, port, text){
         tcpecho([host, port, text], function(bindata) {

@@ -135,7 +135,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
             if(disp!='none'){
                 var config = options.config();
                 //console.log("Got config "+config);
-                ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
+                var ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
                 //console.log("mY vs ptop"+mY+" "+ptop);
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';

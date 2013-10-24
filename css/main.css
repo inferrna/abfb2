@@ -1,3 +1,11 @@
+  @font-face {
+  font-family: "Frutiger LT Pro";
+  font-style: normal;
+  font-weight: bold;
+  src:url("data:font/otf;");
+  }
+
+
   #pop {
     display: none;
     /*-webkit-flex-direction: column;

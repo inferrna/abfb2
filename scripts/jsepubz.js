@@ -173,21 +173,20 @@ define([], function () {
     }
 
     function findMediaTypeByHref(href) {
+        // Best guess if it's not in the manifest. (Those bastards.)
+        var match = href.match(/\.(jpeg|jpg|gif|png|bmp)$/i);
+        var matchttf = href.match(/\.(ttf)$/);
+        var matchotf = href.match(/\.(otf)$/);
+        if(match) return "image/" + match[1];
+        else if(matchttf) return "font/ttf";
+        else if(matchotf) return "font/otf";
         for (var key in opf.manifest) {
             var item = opf.manifest[key];
             if (item["href"] === href) {
                 return item["media-type"];
             }
         }
-
-        // Best guess if it's not in the manifest. (Those bastards.)
-        var match = href.match(/\.(jpeg|jpg|gif|png|bmp)$/i);
-        var matchttf = href.match(/\.(ttf)$/);
-        var matchotf = href.match(/\.(otf)$/);
-        if(match) return "image/" + match[1];
-        else if(matchttf) return "application/x-truetype-font";
-        else if(matchotf) return "font/opentype";
-        else return "undefined";
+        return "undefined";
     }
 
     // Will modify all HTML and CSS files in place.
@@ -230,15 +229,21 @@ define([], function () {
     function postProcessCSS(href) {
         var file = files[href];
         var self = this;
-
+        var isformat = /url.*?format/;
         file = file.replace(/url\((.*?)\)/gi, function (str, url) {
+            var format = '';
             if (/^data/i.test(url)) {
                 // Don't replace data strings
                 return str;
             } else {
+                if(!isformat.test(url)){
+                    if(/\.(otf$)/.test(url)) format = " format('opentype')";
+                    if(/\.(ttf$)/.test(url)) format = " format('truetype')";
+                    if(/\.(eot$)/.test(url)) format = " format('embedded-opentype')";
+                }
                 var dataUri = getDataUri(url, href);
                 //console.log("In", href, ":", url,"->",dataUri);
-                return "url(" + dataUri + ")";
+                return "url('" + dataUri + "')"+format;
             }
         });
         //console.log(href, "->", file);
@@ -325,7 +330,7 @@ define([], function () {
    function getDataUri(url, href) {
         var dataHref = resolvePath(url, href);
         var mediaType = findMediaTypeByHref(dataHref);
-        if(b64blobs[dataHref]) return b64blobs[dataHref].replace("data:undefined", "data:"+mediaType);
+        if(b64blobs[dataHref]) return b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
         encodedData = escape(files[dataHref]);
         return "data:" + mediaType + "," + encodedData;
     }

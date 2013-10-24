@@ -71,7 +71,7 @@ define(
             return resp;
         }, 
         get_def:function(word){
-            lword = word.toLowerCase();
+            var lword = word.toLowerCase();
             //console.log("lword=="+lword+" dict=="+datas["dictionary"]);
             if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def']);
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def']);
