@@ -138,6 +138,14 @@ define(
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           return text.slice(loind+1, hiind);
       }
+      function expand2s(off, text){
+          var re = /[\.\!\?]/;
+          for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
+          for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
+          var out = text.slice(loind===0 ? loind : loind+1, hiind===text.length ? hiind : hiind+1);
+          console.log("Got sentence: "+out);
+          return out;
+      }
       function selectword(x, y){
           max_Y = y;
           if(document.caretPositionFromPoint) {
@@ -174,7 +182,7 @@ define(
                   //console.log("Selected by sel.modify "+sel.toString());
               }
           } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack+" using expand2w, got "+selected_word);}
-         callbacks['got_selection']();// evo.dispatchEvent(got_sel_ev);
+         callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
       }
       return {
           selected_word: function() { return selected_word; },
@@ -226,7 +234,7 @@ define(
           handleSelect:function(evt){
               var sel = window.getSelection();
               selected_word = sel.toString();
-              callbacks['got_selection']();
+              callbacks['got_selection']([selected_word, '']);
           },
           add_callback:function(key, fcn){
               callbacks[key] = fcn;

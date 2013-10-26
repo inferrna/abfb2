@@ -45,7 +45,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     opt_bl.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'opts');}, false);
     try { window.addEventListener("beforeunload", options.savepp);}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){options.savepp();});}
-    uitouch.add_callback('got_selection', function () { thumb_block(uitouch.max_Y(), uitouch.selected_word(), 'block'); });
+    uitouch.add_callback('got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
     uitouch.add_callback('next_chapter', function (i) {
             var sel = document.getElementById("tocselect");
             var diff = parseInt(i);
@@ -126,7 +126,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
         cl.innerHTML = dtext;
     }
-    function thumb_block(mY, word, disp) {
+    function thumb_block(mY, texts, disp) {
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
@@ -145,7 +145,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                     dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
                                         "phost": config['proxy_host'], "pport": config['proxy_port'], "db": config["dict_db"],
                                         "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});
-                    dict.get_def(word);
+                    dict.get_def(texts);
             }
             el.style.display = disp;
         }

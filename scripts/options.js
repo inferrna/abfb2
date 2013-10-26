@@ -311,7 +311,7 @@ define(
                 var itms = arr[i].split(" ");
                 var nm  = document.createElement("option");
                 nm.value = itms[0];
-                nm.textContent = itms[1];
+                nm.textContent = arr[i].replace(itms[0]+" ", '');
                 sel.appendChild(nm);
                 //console.log(itms);
             }

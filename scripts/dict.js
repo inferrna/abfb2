@@ -34,11 +34,11 @@ define(
     /*dreq.open("GET", "http://translate.google.com", true);
     try {dreq.send();}
     catch(e){console.log("XMLHttpRequest failed, got:",e);};*/
-    function get_http(_text, params, baseurl, callback){
+    function get_http(_text, params, baseurl, callback, basetxt){
         var dreq = new XMLHttpRequest();
         dreq.onload = function (event) {
                 //console.log("XMLHttpRequest done");
-                resp = '';
+                resp = basetxt;
                 var resptext = event.target.responseText;
                 //console.log(JSON.parse(resptext)["dict"]);
                 if(datas["dictionary"]==="google"){
@@ -47,7 +47,7 @@ define(
                     if( Object.keys(respj).indexOf("dict">-1) )      try{ resp += "<br>"+respj["dict"][0]["terms"].join(", ");}
                     catch(e) {console.warn(e.stack);}
                 }
-                else resp = resptext;
+                else resp += resptext;
                 //alert("Got "+resp);
                 //console.log("Got inner response ", resp);
                 callback(resp);
@@ -70,11 +70,13 @@ define(
             if (datas["dictionary"] == 'socket') resp = socket.response();
             return resp;
         }, 
-        get_def:function(word){
-            var lword = word.toLowerCase();
+        get_def:function(texts){
+            var word = texts[0];
+            var lword = word.toLowerCase().replace(" ", "");
             //console.log("lword=="+lword+" dict=="+datas["dictionary"]);
-            if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def']);
-            else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def']);
+            if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
+            else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
+                //function(rsp){ get_http(texts[1], googles, datas["google_base_url"], callbacks['got_def'], rsp+"<br>");}, '');
             else if (datas["dictionary"] === 'socket'){
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);
