@@ -39,6 +39,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     txarea.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     txarea.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
+    //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");
     opt_bl.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'opts');}, false);
     opt_bl.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'opts');}, false);
@@ -108,9 +109,18 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         marea.style.width = 'auto';
         marea.style.height = 'auto';
         marea.innerHTML = html;
+        var fs = parseInt(stuff.getStyle(marea, 'font-size'));
+        /*var nw = parseInt(stuff.getStyle(txarea, 'width'))/2;
+        var nh = parseInt(stuff.getStyle(txarea, 'height'))/2;
+        txarea.style.width  = nw+"px";
+        txarea.style.height = nh+"px";
+        console.log("Got nw == "+nw);
+        marea.style.fontSize = fs+3+"px";
+        txarea.style.transform = "scale(2)";
+        txarea.style.transformOrigin = "0 0";*/
         var cstyle = marea.getBoundingClientRect();//window.getComputedStyle(marea, null);
-        if(parseInt(cstyle.height) < (parseInt(txarea.style.height)-32)){
-            marea.style.height = txarea.style.height-32;
+        if(parseInt(cstyle.height) < (parseInt(txarea.style.height)-fs)){
+            marea.style.height = txarea.style.height-fs;
             //console.log(cstyle.height+" < "+txarea.style.height);
         }
         marea.style.top = parseInt(-percent*parseInt(cstyle.height)/100)+"px";

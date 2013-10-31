@@ -103,17 +103,16 @@ define([], function () {
     }
 
     function readOpf(xml) {
-        var doc = xmlDocument(xml);
-        
+        console.log(xml.replace(/opf\:metadata/gi, "metadata"));
+        var doc = xmlDocument(xml.replace(/opf\:metadata/gi, "metadata"));
         opf = {
             metadata: {},
             manifest: {},
             spine: []
         };
-
-        var metadataNodes = doc
-            .getElementsByTagName("metadata")[0]
-            .childNodes;
+        var metadatas = doc.getElementsByTagName("metadata")[0];
+        //if(metadatas===undefined) metadatas = doc.getElementsByTagName("opf:metadata")[0];
+        var metadataNodes = metadatas.childNodes;
 
         for (var i = 0, il = metadataNodes.length; i < il; i++) {
             var node = metadataNodes[i];
@@ -298,6 +297,7 @@ define([], function () {
         var links = head.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
             var link = links[i];
+            if(link!==undefined)
             if (link.getAttribute("type") === "text/css") {
                 var inlineStyle = document.createElement("style");
                 inlineStyle.setAttribute("type", "text/css");

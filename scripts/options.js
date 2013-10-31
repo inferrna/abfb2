@@ -234,11 +234,11 @@ define(
             //dict.get_dbs();
         }
         cursor.onerror = function () {
-          var nm  = document.createElement("option");
+          /*var nm  = document.createElement("option");
           nm.textContent = "No file found: " + this.error.textContent
           sel.appendChild(nm);
-          obj.appendChild(sel);
-          alert("No file found");
+          obj.appendChild(sel);*/
+          console.warn("No file found");
         }
         //alert("The end");
         //var nm  = document.createElement("option");

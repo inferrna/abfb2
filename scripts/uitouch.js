@@ -13,13 +13,17 @@ define(
       var pts = document.getElementById('pts');
       var mtext = document.getElementById('maintext');
       var pop = document.getElementById('pop');
+      var scale = 1.0;
+      var ispinch = 0;
+      var distG = 0;
       pop.style.display = 'none';
       var callbacks = {'got_selection':function(){}, 'next_chapter':function(){}};
       var movef = function(){};
       function sign(x) { return x && x / Math.abs(x); }
       function handleTouch(evt, start) {
           var touchlists = evt.changedTouches;
-          //console.log(type);
+
+          //console.log(touchlists.length+" touches total");
           if(start===1){
               syG = touchlists[0].clientY;
               sxG = touchlists[0].clientX;
@@ -28,6 +32,7 @@ define(
           var y = touchlists[touchlists.length-1].clientY;
           var dx = x - sxG;
           var dy = y - syG;
+          //console.log("Start: ", dx, dy, dictflag )
           //console.log(dx, dy, x, y, sxG, syG, theitm);
           if(Math.abs(dx)>64){
               //evt.preventDefault();
@@ -35,7 +40,7 @@ define(
               dictflag = 0;
               if(liftflag===1){
                   if(theitm!='pop'){
-                      //console.log("Lift mtext, target is "+evt.target);
+                      console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
                   } else{liftcol(pts, sign(dx));}
                   liftflag = 0;
@@ -59,23 +64,12 @@ define(
               pop.style.display = 'none';
               //console.log("Hide opts");
           } else if(dictflag===1) {
-              //evt.preventDefault();
-              //console.log("flag == "+dictflag);
               if(theitm!='pop'){
-                  /*var touch = touchlists[0];//touches.length-1];
-                  var win = chrome.app.window.current();
-                  var winc = win.contentWindow;//.Document()
-                  var doc = winc.Document();*/
                   selectword(x, y);
               } else {
                   sxG = x;
                   syG = y;
-                  //console.log("dy== "+dy);
-                  //console.log("Touch proceed");
-                  //evt.preventDefault();
                   var el = pop;//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-                  //console.log("Target is "+evt.target.id);
-                  //if(evt.target.id==='drugtop') 
                   if(el.style.top === '0px') movef = movesbot;//(touchlists, el);
                   else if(el.style.bottom === '0px') movef = movestop;//(touchlists, el);
                   else { console.log("No action. "+el.style.bottom+" x "+el.style.top); return; }
@@ -103,7 +97,7 @@ define(
                   else {newtop = 0;}
               } else {
                   var el_rectO = mtext.getBoundingClientRect();
-                  options.setpercent(-100*parseInt(newtop)/el_rectO.height);
+                  options.setpercent(-100*scale*parseInt(newtop)/el_rectO.height);
                   options.savepp();
               }
           } else {
@@ -182,7 +176,48 @@ define(
                   //console.log("Selected by sel.modify "+sel.toString());
               }
           } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack+" using expand2w, got "+selected_word);}
-         callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
+          callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
+      }
+      function chscale(cf){
+            scale *= cf;
+            if(scale > 8.0 || scale < 0.25){
+                console.warn("Illegal scale factor: "+scale);
+                return;
+            }
+            var txarea = document.getElementById('txtarea');
+            //var txarea = mtext.parentNode;
+            var nw = parseInt(stuff.getStyle(txarea, 'width'))/cf;
+            var nh = parseInt(stuff.getStyle(txarea, 'height'))/cf;
+            mtext.style.width = 'auto';
+            mtext.style.height = 'auto';
+            txarea.style.width  = parseInt(nw)+"px";
+            txarea.style.height = parseInt(nh)+"px";
+            var stscale = "scale("+scale+")";
+            console.log("Got nhw == "+nw+", "+nh+" | stscale=="+stscale);
+            txarea.style.transform = stscale;
+            txarea.style.transformOrigin = "0 0";
+            txarea.style.WebkitTransform = stscale;
+            txarea.style.WebkitTransformOrigin = "0 0";
+      }
+      function get_dist(x1, y1, x0, y0){
+            return Math.sqrt(Math.abs(x1-x0)^2 + Math.abs(y1-y0)^2);
+      }
+      function dopinch(evt){
+          var touchlists = evt.changedTouches;
+          console.log(touchlists.length+" touches, doing pinch.");
+          var x1 = touchlists[touchlists.length-1].clientX;
+          var y1 = touchlists[touchlists.length-1].clientY;
+          var x0 = touchlists[0].clientX;
+          var y0 = touchlists[0].clientY;
+          var dist = get_dist(x1, y1, x0, y0);
+          if(ispinch===0){
+              ispinch = 1;
+              distG = dist;
+              distG = distG < 8 ? 8 : distG;
+          } else {
+              chscale((1.0*dist)/distG);
+              distG = dist;
+          }
       }
       return {
           selected_word: function() { return selected_word; },
@@ -190,12 +225,10 @@ define(
           handleTouchstart:function (evt, itm) {
               if(itm!='none') evt.preventDefault();
               else return;
-              //console.log("Touch start "+dictflag);
-              timer = window.setTimeout(function(){dictflag=1}, 1024);
+              timer = window.setTimeout(function(){dictflag=1;}, 1024);
               liftflag = 1;
               movef = null;
               theitm = itm;
-              //evt.preventDefault();
               handleTouch(evt, 1);
           },
           handleTouchend:function (evt, itm) {
@@ -204,24 +237,34 @@ define(
               //console.log("Touch end "+dictflag);
               window.clearTimeout(timer);
               //evt.preventDefault();
-              handleTouch(evt, 0);
+              //handleTouch(evt, 0);
               dictflag=0;
               liftflag = 0;
               movef = null;
+              ispinch = 0;
           },
           handleTouch:function (evt, itm){
               if(itm!='none') evt.preventDefault();
               else return;
-              //console.log("Touch proceed "+dictflag);
-              if(movef!=null) movef(evt.changedTouches, pop);
-              else handleTouch(evt, 0);
+              if(evt.changedTouches.length>1){
+                  window.clearTimeout(timer);
+                  dictflag=0;
+                  liftflag = 0;
+                  movef = null;
+                  dopinch(evt);
+              } else {
+                  if(movef!=null) movef(evt.changedTouches, pop);
+                  else handleTouch(evt, 0);
+                  ispinch = 0;
+              }
           },
           handleClick:function(evt){
               selectword(evt.clientX, evt.clientY);
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
-              if([37,38,39,40].indexOf(Code)===-1) return;
+              console.log("Got code "+Code);
+              if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();
               var el = pop.style.display === 'none' ? mtext : pts;
@@ -229,7 +272,15 @@ define(
               else if (Code===39) liftcol(el, -1);
               else if (Code===38) {options.display('hide'); pop.style.display='none';}
               else if (Code===40) options.display('show');
+              else if ([107,109,187,189].indexOf(Code)!=-1) {
+                  var cf = Code===107||Code===187 ? 1.1 : 1.0/1.1;
+                  chscale(cf);
+              }
+
               //console.log("Got "+Code+" code");
+          },
+          handlegest:function(e){
+              chscale(e.scale);
           },
           handleSelect:function(evt){
               var sel = window.getSelection();

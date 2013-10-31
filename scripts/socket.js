@@ -9,12 +9,13 @@ define(
     var db = "!";
     var callback = function(){};
     console.log("Creating tcpecho.");
-    tcpecho = function(arr, callback){};
+    function tcpecho(arr, callback){};
     try {
         var exec = cordova.require('cordova/exec');
         tcpecho = function(arr, callback) {
             exec(callback, function(err) {
                 console.log("Got error: '"+err+"' while exec echo");
+                callback("");
             }, "Echo", "echo", arr);
         };
         sockavail = 'cordova';
