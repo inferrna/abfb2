@@ -82,22 +82,21 @@ define(
      function liftcol(el, dir) {
           //console.log(el);
           var ptop, top;
-          var par_rectO = el.parentNode.getBoundingClientRect();
-          var el_rectO = el.getBoundingClientRect();
-          var elcstyle = el.currentStyle || window.getComputedStyle(el, null);
+          var fs = parseInt(stuff.getStyle(el, 'font-size'));
+          var wh = parseInt(window.innerHeight);
           if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
           else top = parseInt(el.style.top);
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
-          var pageend = parseInt(-(el_rectO.height));
-          var newtop = top+dir*(ptop-8);
+          var pageend = -parseInt(stuff.getStyle(el, 'height')) + wh;
+          var newtop = top + dir*(ptop-fs);
+          var percent = -100*parseInt(newtop)/(parseInt( stuff.getStyle(el, 'height') ));
           if(el.id==="maintext"){
-              if(newtop<pageend) {callbacks['next_chapter']( 1); newtop=0;}
+              if(percent>110) {callbacks['next_chapter']( 1); newtop=0;}
               else if (newtop>0) {
                   if(top===0) {callbacks['next_chapter'](-1); return;}
                   else {newtop = 0;}
               } else {
-                  var el_rectO = mtext.getBoundingClientRect();
-                  options.setpercent(-100*scale*parseInt(newtop)/el_rectO.height);
+                  options.setpercent(percent);
                   options.savepp();
               }
           } else {
@@ -186,10 +185,8 @@ define(
             }
             var txarea = document.getElementById('txtarea');
             //var txarea = mtext.parentNode;
-            var nw = parseInt(stuff.getStyle(txarea, 'width'))/cf;
-            var nh = parseInt(stuff.getStyle(txarea, 'height'))/cf;
-            mtext.style.width = 'auto';
-            mtext.style.height = 'auto';
+            var nw = parseInt(window.innerWidth)/scale;
+            var nh = parseInt(window.innerHeight)/scale;
             txarea.style.width  = parseInt(nw)+"px";
             txarea.style.height = parseInt(nh)+"px";
             var stscale = "scale("+scale+")";
@@ -198,6 +195,8 @@ define(
             txarea.style.transformOrigin = "0 0";
             txarea.style.WebkitTransform = stscale;
             txarea.style.WebkitTransformOrigin = "0 0";
+            mtext.style.width = 'auto';
+            mtext.style.height = 'auto';
       }
       function get_dist(x1, y1, x0, y0){
             return Math.sqrt(Math.abs(x1-x0)^2 + Math.abs(y1-y0)^2);
@@ -242,6 +241,7 @@ define(
               liftflag = 0;
               movef = null;
               ispinch = 0;
+              distg = 0;
           },
           handleTouch:function (evt, itm){
               if(itm!='none') evt.preventDefault();
@@ -256,6 +256,7 @@ define(
                   if(movef!=null) movef(evt.changedTouches, pop);
                   else handleTouch(evt, 0);
                   ispinch = 0;
+                  distg = 0;
               }
           },
           handleClick:function(evt){
