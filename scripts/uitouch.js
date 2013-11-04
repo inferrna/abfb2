@@ -178,11 +178,12 @@ define(
           callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
       }
       function chscale(cf){
-            scale *= cf;
-            if(scale > 8.0 || scale < 0.25){
-                console.warn("Illegal scale factor: "+scale);
+            var _scale = scale*cf;
+            if(_scale > 8.0 || _scale < 0.25){
+                console.warn("Illegal scale factor: "+_scale);
                 return;
             }
+            scale = _scale;
             var txarea = document.getElementById('txtarea');
             //var txarea = mtext.parentNode;
             var nw = parseInt(window.innerWidth)/scale;
@@ -190,13 +191,25 @@ define(
             txarea.style.width  = parseInt(nw)+"px";
             txarea.style.height = parseInt(nh)+"px";
             var stscale = "scale("+scale+")";
-            console.log("Got nhw == "+nw+", "+nh+" | stscale=="+stscale);
+            console.log("Got nhw == "+nw+", "+nh+" | stscale=="+stscale+" scale=="+scale);
             txarea.style.transform = stscale;
             txarea.style.transformOrigin = "0 0";
             txarea.style.WebkitTransform = stscale;
             txarea.style.WebkitTransformOrigin = "0 0";
             mtext.style.width = 'auto';
             mtext.style.height = 'auto';
+            var pts = document.getElementById('pts');
+            var pt =  document.getElementById('pt');
+            nh = parseInt(stuff.getStyle(pt, 'height'))*cf;
+            pt.style.width  = parseInt(nw)+"px";
+            pt.style.transform = stscale;
+            pt.style.transformOrigin = "0 0";
+            pt.style.WebkitTransform = stscale;
+            pt.style.WebkitTransformOrigin = "0 0";
+            pt.style.height = 'auto';
+            pts.style.width = 'auto';
+            pts.style.height = 'auto';
+            
       }
       function get_dist(x1, y1, x0, y0){
             return Math.sqrt(Math.abs(x1-x0)^2 + Math.abs(y1-y0)^2);
@@ -241,7 +254,7 @@ define(
               liftflag = 0;
               movef = null;
               ispinch = 0;
-              distg = 0;
+              distG = 0;
           },
           handleTouch:function (evt, itm){
               if(itm!='none') evt.preventDefault();
@@ -255,8 +268,8 @@ define(
               } else {
                   if(movef!=null) movef(evt.changedTouches, pop);
                   else handleTouch(evt, 0);
-                  ispinch = 0;
-                  distg = 0;
+                  //ispinch = 0;
+                  //distg = 0;
               }
           },
           handleClick:function(evt){
