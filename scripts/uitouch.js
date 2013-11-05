@@ -1,6 +1,6 @@
 define(
-    ['options', 'stuff'],
-  function(options, stuff){
+    ['options', 'stuff', 'gestures'],
+  function(options, stuff, gest){
       var dictflag = 0;
       var liftflag = 0;
       var hold = 0;
@@ -211,41 +211,21 @@ define(
             pts.style.height = 'auto';
             
       }
-      function get_dist(x1, y1, x0, y0){
-            return Math.sqrt(Math.abs(x1-x0)^2 + Math.abs(y1-y0)^2);
-      }
-      function dopinch(evt){
-          var touchlists = evt.changedTouches;
-          console.log(touchlists.length+" touches, doing pinch.");
-          var x1 = touchlists[touchlists.length-1].clientX;
-          var y1 = touchlists[touchlists.length-1].clientY;
-          var x0 = touchlists[0].clientX;
-          var y0 = touchlists[0].clientY;
-          var dist = get_dist(x1, y1, x0, y0);
-          if(ispinch===0){
-              ispinch = 1;
-              distG = dist;
-              distG = distG < 8 ? 8 : distG;
-          } else {
-              chscale((1.0*dist)/distG);
-              distG = dist;
-          }
-      }
       return {
           selected_word: function() { return selected_word; },
           max_Y: function() { return max_Y; },
           handleTouchstart:function (evt, itm) {
               if(itm!='none') evt.preventDefault();
-              else return;
+              else return false;
               timer = window.setTimeout(function(){dictflag=1;}, 1024);
               liftflag = 1;
               movef = null;
               theitm = itm;
-              handleTouch(evt, 1);
+              if(!gest.ispinch(evt))  handleTouch(evt, 1);
           },
           handleTouchend:function (evt, itm) {
               if(itm!='none') evt.preventDefault();
-              else return;
+              else return false;
               //console.log("Touch end "+dictflag);
               window.clearTimeout(timer);
               //evt.preventDefault();
@@ -253,18 +233,17 @@ define(
               dictflag=0;
               liftflag = 0;
               movef = null;
-              ispinch = 0;
-              distG = 0;
+              gest.clear();
           },
           handleTouch:function (evt, itm){
               if(itm!='none') evt.preventDefault();
-              else return;
-              if(evt.changedTouches.length>1){
+              else return false;
+              if(gest.ispinch(evt)){
                   window.clearTimeout(timer);
                   dictflag=0;
                   liftflag = 0;
                   movef = null;
-                  dopinch(evt);
+                  chscale(gest.coeff());
               } else {
                   if(movef!=null) movef(evt.changedTouches, pop);
                   else handleTouch(evt, 0);
