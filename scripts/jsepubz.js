@@ -103,7 +103,7 @@ define([], function () {
     }
 
     function readOpf(xml) {
-        console.log(xml.replace(/opf\:metadata/gi, "metadata"));
+        //console.log(xml.replace(/opf\:metadata/gi, "metadata"));
         var doc = xmlDocument(xml.replace(/opf\:metadata/gi, "metadata"));
         opf = {
             metadata: {},

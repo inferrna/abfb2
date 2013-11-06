@@ -58,8 +58,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                 sel.options[newsel].selected = true;
                 if(diff===-1){
                     var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
-                    var marect = marea.getBoundingClientRect();
-                    var top = (-(parseInt(marect.height) - 3*ptop/4));
+                    var top = (-(parseInt(stuff.getStyle(marea, 'height')) - 3*ptop/4));
                     top = top>0 ? 0 : top;
                     //console.log("Backwards, top=="+top);
                     marea.style.top = parseInt(top)+"px";
@@ -78,7 +77,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     options.add_callback('got_file', function () {
             //console.log("Got file event fired");
             book.init(options.bookfile());
-            book.foliant().add_callback('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1));});
+            book.foliant().add_callback('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
             book.load();
         });
     

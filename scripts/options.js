@@ -340,6 +340,14 @@ define(
             bookfile:function(){
                 return file;//document.getElementById('file').files[0];
             },
+            set_opt:function(key, val){
+                set_opt(filename+"_"+key, val);
+            },
+            get_opt:function(key, callback){
+                var ps = [];
+                ps.push(filename+"_"+key);
+                get_opt(ps, function(ky, vl){callback(vl);}, null);
+            },
             savepp:function(){
                 var prckey = filename+"_prc", pnmkey = filename+"_pnm";
                 set_opt(prckey, currentpp['percent']);
@@ -366,7 +374,8 @@ define(
                 lbl.textContent = parseInt(percent)+"% of current chapter";
             },
             msg:function(text){
-                lbl.textContent = text;
+                if(text) lbl.textContent = text;
+                else return lbl.textContent;
             },
             getpercent:function(){
                 return currentpp['percent'];
@@ -382,8 +391,10 @@ define(
             },
             add_callback:function(key, fcn){
                 callbacks[key] = fcn;
+            },
+            filename:function(){
+                return filename;
             }
-            //evo:evo
     };
   }
 );

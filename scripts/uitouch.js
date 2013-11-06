@@ -15,7 +15,6 @@ define(
       var pop = document.getElementById('pop');
       var scale = 1.0;
       var ispinch = 0;
-      var distG = 0;
       pop.style.display = 'none';
       var callbacks = {'got_selection':function(){}, 'next_chapter':function(){}};
       var movef = function(){};
@@ -62,6 +61,8 @@ define(
               options.display('hide');
               sxG = x; syG = y;
               pop.style.display = 'none';
+              var sel = window.getSelection();
+              sel.collapse(sel.anchorNode, 0);
               //console.log("Hide opts");
           } else if(dictflag===1) {
               if(theitm!='pop'){
@@ -84,14 +85,15 @@ define(
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
+          var elh = parseInt( stuff.getStyle(el, 'height') );
           if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
           else top = parseInt(el.style.top);
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
           var pageend = -parseInt(stuff.getStyle(el, 'height')) + wh;
           var newtop = top + dir*(ptop-fs);
-          var percent = -100*parseInt(newtop)/(parseInt( stuff.getStyle(el, 'height') ));
+          var percent = -100*parseInt(newtop)/elh;
           if(el.id==="maintext"){
-              if(percent>110) {callbacks['next_chapter']( 1); newtop=0;}
+              if(percent>100+(100*ptop/elh)) {callbacks['next_chapter']( 1); newtop=0;}
               else if (newtop>0) {
                   if(top===0) {callbacks['next_chapter'](-1); return;}
                   else {newtop = 0;}
@@ -177,17 +179,21 @@ define(
           } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack+" using expand2w, got "+selected_word);}
           callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
       }
-      function chscale(cf){
+      function chscale(cf, apply){
             var _scale = scale*cf;
-            if(_scale > 8.0 || _scale < 0.25){
+            if(_scale > 8.0 || _scale < 0.25 || isNaN(_scale)){
                 console.warn("Illegal scale factor: "+_scale);
                 return;
             }
-            scale = _scale;
+            options.msg("Current scale factor = "+_scale);
+            if(apply===1) scale = _scale;
+      }
+      function apply_scale(){
             var txarea = document.getElementById('txtarea');
             //var txarea = mtext.parentNode;
             var nw = parseInt(window.innerWidth)/scale;
             var nh = parseInt(window.innerHeight)/scale;
+            var cf = (1.0*nh)/parseInt(stuff.getStyle(txarea, 'height'));
             txarea.style.width  = parseInt(nw)+"px";
             txarea.style.height = parseInt(nh)+"px";
             var stscale = "scale("+scale+")";
@@ -208,8 +214,10 @@ define(
             pt.style.WebkitTransformOrigin = "0 0";
             pt.style.height = 'auto';
             pts.style.width = 'auto';
-            pts.style.height = 'auto';
-            
+            pts.style.height = 'auto'; 
+            options.set_opt('scale', scale);
+            var cp = options.getpercent();
+            options.setpercent(cp);
       }
       return {
           selected_word: function() { return selected_word; },
@@ -233,6 +241,8 @@ define(
               dictflag=0;
               liftflag = 0;
               movef = null;
+              chscale(gest.coeff(), 1);
+              apply_scale();
               gest.clear();
           },
           handleTouch:function (evt, itm){
@@ -243,7 +253,7 @@ define(
                   dictflag=0;
                   liftflag = 0;
                   movef = null;
-                  chscale(gest.coeff());
+                  chscale(gest.coeff(), 0);
               } else {
                   if(movef!=null) movef(evt.changedTouches, pop);
                   else handleTouch(evt, 0);
@@ -266,8 +276,9 @@ define(
               else if (Code===38) {options.display('hide'); pop.style.display='none';}
               else if (Code===40) options.display('show');
               else if ([107,109,187,189].indexOf(Code)!=-1) {
-                  var cf = Code===107||Code===187 ? 1.1 : 1.0/1.1;
-                  chscale(cf);
+                  var cf = Code===107||Code===187 ? 1.075 : 1.0/1.075;
+                  chscale(cf, 1);
+                  apply_scale();
               }
 
               //console.log("Got "+Code+" code");
@@ -282,6 +293,21 @@ define(
           },
           add_callback:function(key, fcn){
               callbacks[key] = fcn;
+          },
+          init_scale:function(){
+              console.log("Init scale");
+              options.get_opt('scale', function(sc){
+                      console.log("Got saved scale "+sc);
+                      var _scale = parseFloat(sc);
+                      if(_scale > 0.25 && _scale < 8.0 || !isNaN(_scale) ){
+                          scale = _scale;
+                          chscale(1.0);
+                          apply_scale();
+                      } else {
+                          scale = 1.0;
+                      }
+                  });
+
           }
       }
   }
