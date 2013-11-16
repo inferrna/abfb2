@@ -25,8 +25,8 @@ define(
         socket_port: ['2628', "dictd port", 'none'],
         proxy_host: ['192.168.0.2', "proxy host", 'none'],
         proxy_port: ['8082', "proxy port", 'none'],
-        dsfile: [[], 'Select a file', 'list-item'],
-        file: ['', "", 'list-item']
+        dsfile: [[], "Or choose it from list", 'list-item'],
+        file: ['',  'Select a book', 'list-item']
     };
     var showdeps = {
         'google':/lang_f|lang_t/,
@@ -144,9 +144,10 @@ define(
         var inp = document.createElement("input");
         var br  = document.createElement("br");
         var sp  = document.createElement("span");
+        sp.style.width = "100%";
         sel.textContent = name;
         inp.id = key;
-        //inp.style.left="0px";
+        inp.style.left="4px";
         if(key==="file") {   inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
                              //get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
                              inp.addEventListener("change", function (evt){
@@ -204,9 +205,9 @@ define(
         // Let's browse all the images available
         var cursor = pics.enumerate();
         var count = 0;
-        var self = this;
+        var slf = this;
         var filere = /.*fb2|.*epub|.*txt/i;
-        window.setTimeout(function(){self.return}, 2048);
+        window.setTimeout(function(){slf.return}, 2048);
         cursor.onsuccess = function () {
             if(this.result!='undefined') var file = this.result;
             else this.continue();
@@ -234,16 +235,8 @@ define(
             //dict.get_dbs();
         }
         cursor.onerror = function () {
-          /*var nm  = document.createElement("option");
-          nm.textContent = "No file found: " + this.error.textContent
-          sel.appendChild(nm);
-          obj.appendChild(sel);*/
           console.warn("No file found");
         }
-        //alert("The end");
-        //var nm  = document.createElement("option");
-        //nm.textContent = "The end."
-        //sel.appendChild(nm);
     }
     function makepos(x){
         x = x||0;

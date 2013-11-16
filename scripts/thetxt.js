@@ -20,15 +20,19 @@ function(stuff){
         var re = /\n|\./;
         var off = 0;
         var curstrip = strip;
-        while(curstrip < maxlen){
-            while(re.test(txt.charAt(curstrip))===false && curstrip < maxlen-1){curstrip++;}
-            curstrip++;
-            text.push(txt.substring(off, curstrip));
-            //console.log("Got strip "+curstrip);
-            off = curstrip; 
-            curstrip += strip; 
+        if(maxlen<strip){
+            text.push(txt)
+        }else {
+            while(curstrip < maxlen){
+                while(re.test(txt.charAt(curstrip))===false && curstrip < maxlen-1){curstrip++;}
+                curstrip++;
+                text.push(txt.substring(off, curstrip));
+                //console.log("Got strip "+curstrip);
+                off = curstrip; 
+                curstrip += strip; 
+            }
+            if(curstrip<maxlen) text.push(txt.strip(curstrip, maxlen));
         }
-        if(curstrip<maxlen) text.push(txt.strip(curstrip, maxlen));
         callbacks['got_book']();
         //console.log(text[0]);
     }

@@ -37,7 +37,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     txarea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
     txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);
     txarea.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
-    txarea.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
+    txarea.addEventListener("click", uitouch.handleClick, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");

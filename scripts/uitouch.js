@@ -39,7 +39,7 @@ define(
               dictflag = 0;
               if(liftflag===1){
                   if(theitm!='pop'){
-                      console.log("Lift mtext, target is "+evt.target);
+                      //console.log("Lift mtext, target is "+evt.target);
                       liftcol(mtext, sign(dx));
                   } else{liftcol(pts, sign(dx));}
                   liftflag = 0;
@@ -85,15 +85,16 @@ define(
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
-          var elh = parseInt( stuff.getStyle(el, 'height') );
+          var elh = parseInt(stuff.getStyle(el, 'height'));
           if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
-          else top = parseInt(el.style.top);
+          else top = parseInt(stuff.getStyle(el, 'top'));
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
-          var pageend = -parseInt(stuff.getStyle(el, 'height')) + wh;
+          var pageend = -parseInt(stuff.getStyle(el, 'height'));
           var newtop = top + dir*(ptop-fs);
+          var oldpercent = -100*parseInt(top)/elh;
           var percent = -100*parseInt(newtop)/elh;
           if(el.id==="maintext"){
-              if(percent>100+(100*ptop/elh)) {callbacks['next_chapter']( 1); newtop=0;}
+              if(percent>100) {callbacks['next_chapter']( 1); newtop=0;}
               else if (newtop>0) {
                   if(top===0) {callbacks['next_chapter'](-1); return;}
                   else {newtop = 0;}
@@ -105,7 +106,8 @@ define(
               if(newtop<pageend) newtop = pageend+ptop/2;
               if (newtop>0) newtop = 0;
           }
-          el.style.top = newtop+"px";
+          //console.log("top=="+top+"  pageend=="+pageend+"  newtop=="+newtop+"  oldpercent="+oldpercent+"  el=="+el.id);
+          el.style.top = parseInt(newtop)+"px";
       }
       function movesbot(touches, el){
           var newpos = 0;
@@ -138,7 +140,7 @@ define(
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           var out = text.slice(loind===0 ? loind : loind+1, hiind===text.length ? hiind : hiind+1);
-          console.log("Got sentence: "+out);
+          //console.log("Got sentence: "+out);
           return out;
       }
       function selectword(x, y){
@@ -197,7 +199,7 @@ define(
             txarea.style.width  = parseInt(nw)+"px";
             txarea.style.height = parseInt(nh)+"px";
             var stscale = "scale("+scale+")";
-            console.log("Got nhw == "+nw+", "+nh+" | stscale=="+stscale+" scale=="+scale);
+            //console.log("Got nhw == "+nw+", "+nh+" | stscale=="+stscale+" scale=="+scale);
             txarea.style.transform = stscale;
             txarea.style.transformOrigin = "0 0";
             txarea.style.WebkitTransform = stscale;
@@ -266,11 +268,12 @@ define(
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
-              console.log("Got code "+Code);
+              //console.log("Got code "+Code);
               if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();
               var el = pop.style.display === 'none' ? mtext : pts;
+              console.log("el=="+el.id+" code=="+Code);
               if(Code===37) liftcol(el, 1);
               else if (Code===39) liftcol(el, -1);
               else if (Code===38) {options.display('hide'); pop.style.display='none';}
@@ -295,9 +298,9 @@ define(
               callbacks[key] = fcn;
           },
           init_scale:function(){
-              console.log("Init scale");
+              //console.log("Init scale");
               options.get_opt('scale', function(sc){
-                      console.log("Got saved scale "+sc);
+                      //console.log("Got saved scale "+sc);
                       var _scale = parseFloat(sc);
                       if(_scale > 0.25 && _scale < 8.0 || !isNaN(_scale) ){
                           scale = _scale;
