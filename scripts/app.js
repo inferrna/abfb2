@@ -41,9 +41,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");
-    opt_bl.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'opts');}, false);
-    opt_bl.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'opts');}, false);
-    opt_bl.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'opts');}, false);
+    //opt_bl.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'opts');}, false);
+    //opt_bl.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'opts');}, false);
+    //opt_bl.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'opts');}, false);
     try { window.addEventListener("beforeunload", options.savepp);}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){options.savepp();});}
     uitouch.add_callback('got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
