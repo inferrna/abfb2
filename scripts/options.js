@@ -132,7 +132,7 @@ define(
             el.value = elements[eln];
             sel.appendChild(el);
         }
-        sel.onchange = function(evt){get_config(); draw_deps(evt.target); };
+        sel.addEventListener("change", function(evt){get_config(); draw_deps(evt.target); }, false);
         disable_prop(sel);
         sp.appendChild(sel);
         sp.style.display=disp;
@@ -163,11 +163,12 @@ define(
             params[0] = inp.id;
             get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
             inp.type = 'text';
-            inp.onchange = function(evt){get_config(); var input = evt.target; set_opt(input.id, input.value); 
-                                        dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]),
-                                              "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
+            inp.addEventListener("change",
+                function(evt){get_config(); var input = evt.target; set_opt(input.id, input.value); 
+                              dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]),
+                                               "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
                                                "phost": values['proxy_host'], "pport": values['proxy_port']  });
-                                        dict.get_dbs(values["dict_src"]);};
+                               dict.get_dbs(values["dict_src"]);}, false);
         }
         //obj.appendChild(br);
         sp.appendChild(sel);
