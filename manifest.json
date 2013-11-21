@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Ab fb2 reader",
-  "version": "0.29",
+  "version": "0.30",
   "minimum_chrome_version": "25",
   "permissions": [ "app.window", "*://translate.google.com/*", "storage", {"socket": ["tcp-connect:*:2628"]}],
   "optional_permissions": [ "webRequest" ],

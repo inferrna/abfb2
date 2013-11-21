@@ -2,12 +2,18 @@ define(
   ['dict', 'uitouch', 'socket'],
   function(dict, uitouch, socket){
     var callbacks = {'got_file':function(){}, 'got_pp':function(){}};
-    var opts_brd =    document.getElementById('options');
+    var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
-    //opts_brd_b.style.border = "1px";
-    //opts_brd.style.width = "100%";
-   // opts_brd.style.display = 'none';
+    var lbl = document.createElement("label");
+    lbl.style.order = "99";
     opts_brd.textContent = '';
+    var toc = document.createElement("div");
+    var dtoc = document.createElement("div");
+    disable_prop(dtoc);
+    toc.id = "toc";
+    dtoc.appendChild(toc);
+    opts_brd_b.appendChild(dtoc);
+    opts_brd_b.appendChild(lbl);
     var storage = null;// || 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
@@ -101,7 +107,7 @@ define(
         nm.disabled = 1;
         sel.appendChild(nm);
         sel.id = key;
-        sel.style.width = "75%";
+        sel.style.width = "80%";
         //<device storage
         if(key==="dict_db"){
             dict.add_callback('got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
@@ -207,21 +213,38 @@ define(
         var cursor = pics.enumerate();
         var count = 0;
         var slf = this;
+        var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
         var filere = /.*fb2|.*epub|.*txt/i;
         window.setTimeout(function(){slf.return}, 2048);
         cursor.onsuccess = function () {
-            if(this.result!='undefined') var file = this.result;
-            else this.continue();
+            if(this.result!=undefined) var file = this.result;
+            else { 
+                if(count>0) {
+                    obj.appendChild(sel);
+                    lbl.textContent = count+" files found on SD card";
+                } else {
+                    delete sel;
+                    lbl.textContent = badtext+" (err: file undefined)";
+                }
+                return;
+            }
             try{
                 if(filere.test(file.name)){
                     var nm  = document.createElement("option");
                     nm.textContent = file.name;
                     count++;
-                    console.log("File found: " + file.name);
+                    lbl.textContent = "File found: " + file.name;
                     sel.appendChild(nm);
-                    obj.appendChild(sel);
                 }
-            }catch(e) { console.warn(e.stack); return;}
+            }catch(e) {
+                if(count===0) lbl.textContent = badtext+" (err: unknown)";
+                else {
+                    obj.appendChild(sel);
+                    lbl.textContent = count+" files found on SD card";
+                }
+                console.warn("\n"+e.stack); 
+                return;
+            }
             //alert("File found");
             // Once we found a file we check if there is other results
             if (!this.done) {
@@ -230,13 +253,19 @@ define(
                 this.continue();
             } else {
                 console.log(count+" files found");
-                if(count>0) obj.appendChild(sel);
-                else delete sel;
+                if(count>0) {
+                    obj.appendChild(sel);
+                    lbl.textContent = count+" files found on SD card";
+                } else { 
+                    delete sel;
+                    lbl.textContent = badtext;
+                }
             }
             //dict.get_dbs();
         }
         cursor.onerror = function () {
-          console.warn("No file found");
+          console.warn("No file found "+this.error);
+          lbl.textContent = badtext;
         }
     }
     function makepos(x){
@@ -312,16 +341,6 @@ define(
         }
     }
     check_params([hasgoogle, hassocket, fill_params]);
-    var toc = document.createElement("div");
-    var dtoc = document.createElement("div");
-    disable_prop(dtoc);
-    toc.id = "toc";
-    dtoc.appendChild(toc);
-    opts_brd_b.appendChild(dtoc);
-    var lbl = document.createElement("label");
-    lbl.style.order = "99";
-    lbl.textContent = "";
-    opts_brd_b.appendChild(lbl);
         //sp.className = "spflex";
 
     return{

@@ -5,8 +5,11 @@
   src:url("data:font/otf;");
   }
 
-  input[type=file] { width: 50%; border: 2px solid orange; border-radius: 2px;}
+  input { padding: 2px; }
+  input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}
   label { padding: 2px; }
+  select { padding: 2px; }
+
   #pop {
     display: none;
     /*-webkit-flex-direction: column;
