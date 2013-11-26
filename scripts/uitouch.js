@@ -62,7 +62,7 @@ define(
               sxG = x; syG = y;
               pop.style.display = 'none';
               var sel = window.getSelection();
-              sel.collapse(sel.anchorNode, 0);
+              if(sel.anchorNode) sel.collapse(sel.anchorNode, 0);
               //console.log("Hide opts");
           } else if(dictflag===1) {
               if(theitm!='pop'){
@@ -85,7 +85,7 @@ define(
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
-          var elh = parseInt(stuff.getStyle(el, 'height'));
+          var elh = Math.max(parseInt(stuff.getStyle(el, 'height')), wh);
           if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
           else top = parseInt(stuff.getStyle(el, 'top'));
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);

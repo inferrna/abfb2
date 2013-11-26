@@ -20,7 +20,7 @@ define(
     try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available");}
     var type;
     var file = {'name':'empty'};
-    var filename = 'name';
+    var filename = '';
     var currentpp = {'page':0, 'percent':0};
     var datas = {
         dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source", 'list-item'],
@@ -114,8 +114,6 @@ define(
             //dict.get_dbs();
         }else if(key==="dsfile"){
             if (navigator.getDeviceStorage) {
-                try { parse_storage(sel, obj);}
-                catch(e) {console.warn("Parse storage failed, got"+e.stack);}
                 sel.addEventListener("change", 
                                 function (event){
                                     filename = event.target.options[event.target.selectedIndex].value;
@@ -124,10 +122,12 @@ define(
                                     var request = sdcard.get(filename);
                                     request.onsuccess = function () {  file = this.result;
                                                                        console.log("Got the file: "+filename); 
-                                                                       //evo.dispatchEvent(got_file_ev);
+                                                                       set_opt('last_file', filename);
                                                                        callbacks['got_file']();}
                                     request.onerror = function () { console.warn("Unable to get the file: " + this.error); }
                                 }, false);
+                try { parse_storage(sel, obj);}
+                catch(e) {console.warn("Parse storage failed, got"+e.stack); delete sel; return;}
             } else { console.log("No navigator.getDeviceStorage api found"); delete datas[key];}
             return;
         }
@@ -160,8 +160,7 @@ define(
                                                             var input = evt.target;
                                                             file = evt.target.files[0];
                                                             filename = file.name;
-                                                            //set_opt(input.id, input.value);
-                                                            //evo.dispatchEvent(got_file_ev);
+                                                            set_opt('last_file', filename);
                                                             callbacks['got_file']();}, false );
         } else {
             inp.value = value;
@@ -217,15 +216,26 @@ define(
         var filere = /.*fb2|.*epub|.*txt/i;
         window.setTimeout(function(){slf.return}, 2048);
         cursor.onsuccess = function () {
-            if(this.result!=undefined) var file = this.result;
-            else { 
+            function g_or_b(err){
                 if(count>0) {
                     obj.appendChild(sel);
                     lbl.textContent = count+" files found on SD card";
+                    get_opt(['last_file'], 
+                        function(ky, vl){ for(var i = 0; i < sel.options.length; i++){
+                                              if(sel.options[i].value === vl){
+                                                  sel.selectedIndex = i;
+                                                  var evt = new Event('change');
+                                                  sel.dispatchEvent(evt);
+                                              }
+                                          } }, null);
                 } else {
                     delete sel;
-                    lbl.textContent = badtext+" (err: file undefined)";
+                    lbl.textContent = badtext+" (err: "+err+")";
                 }
+            }
+            if(this.result!=undefined) var file = this.result;
+            else { 
+                g_or_b("file undefined");
                 return;
             }
             try{
@@ -237,12 +247,7 @@ define(
                     sel.appendChild(nm);
                 }
             }catch(e) {
-                if(count===0) lbl.textContent = badtext+" (err: unknown)";
-                else {
-                    obj.appendChild(sel);
-                    lbl.textContent = count+" files found on SD card";
-                }
-                console.warn("\n"+e.stack); 
+                g_or_b("unknown");
                 return;
             }
             //alert("File found");
@@ -252,14 +257,8 @@ define(
             // success with the next file as result.
                 this.continue();
             } else {
-                console.log(count+" files found");
-                if(count>0) {
-                    obj.appendChild(sel);
-                    lbl.textContent = count+" files found on SD card";
-                } else { 
-                    delete sel;
-                    lbl.textContent = badtext;
-                }
+                g_or_b("unknown");
+                return;
             }
             //dict.get_dbs();
         }
