@@ -100,7 +100,7 @@ define(
                   else {newtop = 0;}
               } else {
                   options.setpercent(percent);
-                  options.savepp();
+                  console.log("saving.."); options.savepp();
               }
           } else {
               if(newtop<pageend) newtop = pageend+ptop/2;

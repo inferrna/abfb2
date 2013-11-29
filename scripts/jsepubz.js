@@ -203,9 +203,10 @@ define([], function () {
                 result = postProcessCSS(href);
             } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
                 try {xml = decodeURIComponent(escape(files[href]));}
-                catch(e) {xml = files[href]; console.warn(e.stack);};
+                catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                 toc = xmlDocument(xml);
             } else if (mediaType === "application/xhtml+xml") {
+                //Do nothing
             } else { 
                 console.log(href + " media type is " + mediaType);
             }
@@ -293,8 +294,8 @@ define([], function () {
             image.removeAttribute("height");
             image.setAttribute("src", getDataUri(src, href))
         }
-        var head = doc.getElementsByTagName("head")[0];
-        var links = head.getElementsByTagName("link");
+        //var head = doc.getElementsByTagName("head")[0];
+        var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
             var link = links[i];
             if(link!==undefined)
@@ -307,7 +308,7 @@ define([], function () {
                 //css = css.replace(/\(\.\.\//g, "(");
                 inlineStyle.appendChild(document.createTextNode(css));
 
-                head.replaceChild(inlineStyle, link);
+                link.parentNode.replaceChild(inlineStyle, link);
             }
         }
         clean_tags(doc, "head");

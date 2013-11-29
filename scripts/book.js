@@ -15,9 +15,9 @@ define(
                          else if(filename.match(retxt)) foliant = thetxt;
                          else if(filename.match(refb2)) foliant = thefb2;
                          else { console.warn(filename+" not matched any type"); return ''; } 
+                         foliant.init();
                          thefile = file;
                          evo = foliant.evo;
-                         foliant.init();
                          return evo;
                  },
                  load:function() {

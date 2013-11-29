@@ -70,11 +70,16 @@ function(jsepub, stuff, encod, options){
         var toc = epub.toc();
         var files = epub.files();
         if(index>-1){
-            var spine = opf.spine[index];
-            var href = opf.manifest[spine]["href"];
-            var doc = files[href];
-            var html = srlzr.serializeToString(doc);
-            return html;//decodeURIComponent( escape(resultDocument) ));
+            //console.log("index=="+index+"  spine=="+spine+"\n"+JSON.stringify(opf.manifest));
+            if(opf && toc && files){
+                if(index >= opf.spine.length) index = 0;
+                var spine = opf.spine[index];
+                var href = opf.manifest[spine]["href"];
+                var doc = files[href];
+                var html = srlzr.serializeToString(doc);
+                options.set_opt("last_html", html);
+                return html;//decodeURIComponent( escape(resultDocument) ));
+            } else { return null; }
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
             var contents = xsltp.transformToDocument(toc,doc);
@@ -101,6 +106,12 @@ function(jsepub, stuff, encod, options){
             return docFragment;//contents;
         }
     }
+    function get_true_opt(idx){
+        if(idx<=0) return 0;
+        if(pages[idx]>-1) return pages[idx];
+        else return get_true_opt(idx-1);
+    }
+
     return {
              load:function(file, lib) {
                      if(lib==='jsepub') load_jsepub(file);
@@ -110,6 +121,7 @@ function(jsepub, stuff, encod, options){
                      return get_indexed_page(index);
              },
              option:function(i){
+                     if(i==0) return get_true_opt(currentpage+0);
                      if(pages[currentpage]>-1) return pages[currentpage];
                      return i;
              },

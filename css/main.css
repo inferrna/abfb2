@@ -1,15 +1,25 @@
-  @font-face {
+/*  @font-face {
   font-family: "Frutiger LT Pro";
   font-style: normal;
   font-weight: bold;
   src:url("data:font/otf;");
-  }
+  }*/
 
   input { padding: 2px; }
   input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}
   label { padding: 2px; }
   select { padding: 2px; }
-
+  .pincher {
+    overflow: hidden;
+    position: relative;
+    align: center;
+    left: 45%;
+    height: 4px;
+    width: 10px;
+    bottom: 0px;
+    background-color: #AABBCC;
+    border-radius: 5px;
+  }
   #pop {
     display: none;
     /*-webkit-flex-direction: column;

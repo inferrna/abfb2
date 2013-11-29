@@ -53,7 +53,7 @@ function(stuff){
             var ch = divs[index];//document.getElementById(pages[index]);
             try { 
                 var html = srlzr.serializeToString(ch);
-            } catch (e) { console.warn(e.stack); }
+            } catch (e) { console.warn(e.stack); return null;}
             //console.log("html== "+html+" id=="+index);
             return html;
         }else{

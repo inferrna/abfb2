@@ -5,15 +5,19 @@ define(
     var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
     var lbl = document.createElement("label");
+    var fnmre = /(.*)?\/(.+)/;
     lbl.style.order = "99";
     opts_brd.textContent = '';
     var toc = document.createElement("div");
     var dtoc = document.createElement("div");
+    var pincher = document.getElementById('pincher').cloneNode(true);
+    pincher.style.order = "100";
     disable_prop(dtoc);
     toc.id = "toc";
     dtoc.appendChild(toc);
     opts_brd_b.appendChild(dtoc);
     opts_brd_b.appendChild(lbl);
+    opts_brd_b.appendChild(pincher);
     var storage = null;// || 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
@@ -116,13 +120,15 @@ define(
             if (navigator.getDeviceStorage) {
                 sel.addEventListener("change", 
                                 function (event){
-                                    filename = event.target.options[event.target.selectedIndex].value;
+                                    var fnm = event.target.options[event.target.selectedIndex].value;
                                     console.log("Select file changed "+filename);
                                     var sdcard = navigator.getDeviceStorage('sdcard');
-                                    var request = sdcard.get(filename);
+                                    var request = sdcard.get(fnm);
+                                    filename = fnm.replace(fnmre, "$2");
                                     request.onsuccess = function () {  file = this.result;
                                                                        console.log("Got the file: "+filename); 
                                                                        set_opt('last_file', filename);
+                                                                       set_opt(filename+"_time", Date.now());
                                                                        callbacks['got_file']();}
                                     request.onerror = function () { console.warn("Unable to get the file: " + this.error); }
                                 }, false);
@@ -159,8 +165,9 @@ define(
                              inp.addEventListener("change", function (evt){
                                                             var input = evt.target;
                                                             file = evt.target.files[0];
-                                                            filename = file.name;
+                                                            filename = file.name.replace(fnmre, "$2");
                                                             set_opt('last_file', filename);
+                                                            set_opt(filename+"_time", Date.now());
                                                             callbacks['got_file']();}, false );
         } else {
             inp.value = value;
@@ -222,7 +229,7 @@ define(
                     lbl.textContent = count+" files found on SD card";
                     get_opt(['last_file'], 
                         function(ky, vl){ for(var i = 0; i < sel.options.length; i++){
-                                              if(sel.options[i].value === vl){
+                                              if(sel.options[i].value.replace(fnmre, "$2") === vl){
                                                   sel.selectedIndex = i;
                                                   var evt = new Event('change');
                                                   sel.dispatchEvent(evt);
@@ -339,6 +346,70 @@ define(
             }
         }
     }
+    function remove_key(key){
+        if(storage){
+            storage.removeItem(key);
+        } else if(crstorage) {
+            var keys = [];
+            keys.push(key);
+            crstorage.remove(keys, function(){console.log(key+" removed");}) 
+        }
+    }
+
+    function remove_old(items){
+        var keys = Object.keys(items);
+        var timekeys = keys.filter(function(str){return str.match(/.+?_time/);});
+        var time = Date.now()-259200;//0000;//Month for all
+        var badtimekeys = timekeys.filter(function(key){return items[key] < time});
+        var badprefixes = badtimekeys.map(function(item, i, arr){return item.replace(/(.+?)_time/, "$1");});
+        console.log("badprefixes == "+badprefixes);
+        var re = new RegExp("("+badprefixes.join("|")+")_(.+)");
+        var badkeys = keys.filter(function(str){return str.match(re);});
+        console.log("badkeys == "+badkeys);
+        time = Date.now()-259200;//000;     //3 days for a single page
+        badtimekeys = timekeys.filter(function(key){return items[key] < time});
+        badprefixes = badtimekeys.map(function(item, i, arr){return item.replace(/(.+?)_time/, "$1");});
+        console.log("badprefixes == "+badprefixes);
+        re = new RegExp("("+badprefixes.join("|")+")_last_html");
+        badkeys = badkeys.concat(keys.filter(function(str){return str.match(re);}));
+        re = new RegExp(filename+"_(.+?)");
+        badkeys = badkeys.filter(function(str){return !str.match(re);});
+        badkeys.map(function(item, i, arr){remove_key(item);});
+        console.log("badkeys == "+badkeys);
+    }
+
+    function get_all_itms(callback){
+        if(storage) {
+            var items = {}; var i = 0; var key = null;
+            for (;key = storage.key(i); i++) items[key] = storage.getItem(key);
+            console.log("going remove..");
+            callback(items);
+            console.log("remove done.");
+            return;
+        }
+        if(crstorage) crstorage.get(null, function(items) {
+                callback(items);
+        });
+    } 
+    function savepp(){
+        var prckey = filename+"_prc", pnmkey = filename+"_pnm", timekey = filename+"_time";
+        set_opt(prckey, currentpp['percent']);
+        set_opt(pnmkey, currentpp['page']);
+        set_opt(timekey, Date.now());
+        console.log("Saved "+prckey+" as "+currentpp['percent']+pnmkey+" as "+currentpp['page']);
+    }
+    function getpp(){
+        currentpp = {'page':0, 'percent':0};
+        var prckey = filename+"_prc", pnmkey = filename+"_pnm";
+        var ps = {};
+        ps[prckey] = 'percent';
+        ps[pnmkey] = 'page';
+        get_opt(Object.keys(ps), function(key, val){
+                currentpp[ps[key]] = makepos(val);
+                console.log(key+"=got="+val);
+            }, 'got_pp');
+    }
+
     check_params([hasgoogle, hassocket, fill_params]);
         //sp.className = "spflex";
 
@@ -352,8 +423,14 @@ define(
             bookfile:function(){
                 return file;//document.getElementById('file').files[0];
             },
+            remove_opt:function(key){
+                remove_key(filename+"_"+key);
+            },
             set_opt:function(key, val){
                 set_opt(filename+"_"+key, val);
+            },
+            remove_old:function(){
+                get_all_itms(remove_old);
             },
             get_opt:function(key, callback){
                 var ps = [];
@@ -361,21 +438,10 @@ define(
                 get_opt(ps, function(ky, vl){callback(vl);}, null);
             },
             savepp:function(){
-                var prckey = filename+"_prc", pnmkey = filename+"_pnm";
-                set_opt(prckey, currentpp['percent']);
-                set_opt(pnmkey, currentpp['page']);
-                //console.log("Saved "+currentpp['percent']+"  "+currentpp['page']);
+                savepp();
             },
             getpp:function(){
-                currentpp = {'page':0, 'percent':0};
-                var prckey = filename+"_prc", pnmkey = filename+"_pnm";
-                var ps = {};
-                ps[prckey] = 'percent';
-                ps[pnmkey] = 'page';
-                get_opt(Object.keys(ps), function(key, val){
-                        currentpp[ps[key]] = makepos(val);
-                        //console.log(key+"=got="+val);
-                    }, 'got_pp');
+                getpp();
                 //callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
             },
             setpercent:function(percent){

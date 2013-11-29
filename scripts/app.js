@@ -44,8 +44,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
     //opt_bl.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'opts');}, false);
     //opt_bl.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'opts');}, false);
     //opt_bl.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'opts');}, false);
-    try { window.addEventListener("beforeunload", options.savepp);}
-    catch (e) { chrome.app.window.current().onClosed.addListener(function(){options.savepp();});}
+    try { window.addEventListener("beforeunload", function(){ console.log("saving.."); options.savepp();});}
+    catch (e) { chrome.app.window.current().onClosed.addListener(function(){console.log("saving.."); options.savepp();});}
     uitouch.add_callback('got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
     uitouch.add_callback('next_chapter', function (i) {
             var sel = document.getElementById("tocselect");
@@ -65,7 +65,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
                 }
                 var el_rectO = marea.getBoundingClientRect();
                 options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
-                options.savepp();
+                console.log("saving.."); options.savepp();
             }
         });
     dict.add_callback('got_def', function (txt) {
@@ -73,13 +73,32 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         else fill_thumb("Something went wrong. Please check your options.");
     });
     //console.log(options);
-    //options.button()
     options.add_callback('got_file', function () {
             //console.log("Got file event fired");
+            options.remove_old();
+            options.getpp();
+            options.get_opt("prc", function(prc){
+                                       console.log("load saved prc == "+prc);
+                                       options.get_opt("last_html", function(html){
+                                           console.log("load saved html");
+                                           fill_page(html, prc, 1);
+                                           uitouch.init_scale();
+                                       });
+                                    });
             book.init(options.bookfile());
             book.foliant().add_callback('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
             book.load();
         });
+    options.add_callback('got_pp', function () {
+                                                var html = null;
+                                                if(book.foliant()) html = book.foliant().get_page(options.getpage());
+                                                if(html){
+                                                    fill_page(html, options.getpercent()); 
+                                                    var sel = document.getElementById("tocselect");
+                                                    var newsel = book.foliant().option(sel.selectedIndex);
+                                                    if(sel.options[newsel]) sel.options[newsel].selected = true;
+                                                }
+                                            });
     
     function fill_toc(html){
         //console.log(html);
@@ -95,15 +114,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         //sel.style.width = window.innerWidth-16+"px";
         sel.addEventListener("change", function (event){/*console.log("Select changed");*/ marea.style.top="0px"; 
                                                 fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
-        options.add_callback('got_pp', function () {
-                                                    fill_page(book.foliant().get_page( options.getpage() ), options.getpercent() ); 
-                                                    var sel = document.getElementById("tocselect");
-                                                    var newsel = book.foliant().option(sel.selectedIndex);
-                                                    if(sel.options[newsel]) sel.options[newsel].selected = true;
-                                                });
         options.getpp();
     }
-    function fill_page(html, percent){
+    function fill_page(html, percent, nosave){
         //console.log("Try load html");
         marea.style.width = 'auto';
         marea.style.height = 'auto';
@@ -118,14 +131,16 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff'], function(uitouch, dict,
         txarea.style.transform = "scale(2)";
         txarea.style.transformOrigin = "0 0";*/
         var cstyle = marea.getBoundingClientRect();//window.getComputedStyle(marea, null);
-        if(parseInt(cstyle.height) < (parseInt(txarea.style.height)-fs)){
+        /*if(parseInt(cstyle.height) < (parseInt(txarea.style.height)-fs)){
             marea.style.height = txarea.style.height-fs;
             //console.log(cstyle.height+" < "+txarea.style.height);
-        }
+        }*/
         marea.style.top = parseInt(-percent*parseInt(cstyle.height)/100)+"px";
-        options.setpage(book.foliant().currentpage());
-        options.setpercent(percent);
-        options.savepp();
+        if(!nosave) {
+            options.setpage(book.foliant().currentpage());
+            options.setpercent(percent);
+            console.log("saving..");  options.savepp();
+        }
     }
     function fill_thumb(text){
         var cl = document.getElementById('pts');
