@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.apache.cordova.plugin.Echo"
+    version="3.0.0">
+	<engines>
+	    <engine name="cordova" version=">=3.0.0" />
+	</engines>
+	
+	<name>Echo</name>
+	
+	<description>This plugin lets your app access tcp sockets.</description>
+	<author>Inferrna</author>
+	<keywords>tcp,socket,network</keywords>
+	<license>GPLv3 license</license>
+	
+	<!--js-module src="www/arise.js" name="arise">
+	    <clobbers target="arise" />
+	</js-module-->
+	
+	<platform name="android">
+		<source-file src="src/android/Echo.java" target-dir="src/org/apache/cordova/plugin" />
+		
+		<config-file target="res/xml/config.xml" parent="/*">
+		            <feature name="Echo">
+					        <param name="android-package" value="org.apache.cordova.plugin.Echo"/>
+					 </feature>
+                     <plugin name="Echo" value="org.apache.cordova.plugin.Echo" />
+		</config-file>
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET"> </uses-permission>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"> </uses-permission>
+        </config-file>
+	</platform>
+    <!-- platform name="ios">
+        <framework src="libsqlite3.dylib" />
+
+		<header-file src="src/ios/ArisePlugin.h"/>
+        <source-file src="src/ios/ArisePlugin.m"/>
+
+		
+		<config-file target="config.xml" parent="/*">
+            <feature name="ArisePlugin">
+                <param name="ios-package" value="ArisePlugin"/>
+            </feature>
+		</config-file>
+	</platform -->
+</plugin>

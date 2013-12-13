@@ -1,0 +1,26 @@
+{
+  "version": "0.30b",
+  "name": "Ab FB2 reader",
+  "launch_path": "/index.html",
+  "description": "Simple epub&fb2&txt reader with dictionary support.",
+  "type": "privileged",
+  "default_locale": "en",
+  "icons": {
+    "128": "/images/A.png",
+    "120": "/images/A120.png",
+    "90": "/images/A90.png",
+    "60": "/images/Ab.png",
+    "16": "/images/b.png"
+  },
+  "developer": {
+    "name": "Inferrna",
+    "url": "http://borgu.org"
+  },
+  "permissions": {
+      "systemXHR": {"description":"For access to translate.google.com"},
+      "device-storage:sdcard": {"access":"readonly", "description":"For access to books in storage"},
+      "tcp-socket":{"description":"For requesting dictd servers"}
+  },
+  "installs_allowed_from": ["*"]
+}
+
