@@ -5,6 +5,7 @@ define(
     var callbacks = {'got_def':function(){}, 'got_dbs':function(){}}; 
     //var got_def_ev = new Event('got_def');
     var gsocketid = 0;
+    var cache = {};
     var datas = {
         google_base_url: 'http://translate.google.com/translate_a/t?client=Firefox&',
         local_base_url: "http://192.168.0.2:8082/?",//?text=+"value"+"&dict="+"!"+"&host="+"localhost"+"&port="+"2628";
@@ -70,12 +71,18 @@ define(
         response:function(){
             if (datas["dictionary"] == 'socket') resp = socket.response();
             return resp;
-        }, 
+        },
+        push_cache:function(def){
+            cache[lword] = def;
+            var keys = Object.keys(cache);
+            if(keys.length>64) delete cache[keys[0]];
+        },
         get_def:function(texts){
             var word = texts[0];
-            var lword = word.toLowerCase().replace(" ", "");
+            lword = word.toLowerCase().replace(/[\s\.\!\?\,\;\:]/g, "");
             //console.log("lword=="+lword+" dict=="+datas["dictionary"]);
-            if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
+            if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword]);}
+            else if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
                 //function(rsp){ get_http(texts[1], googles, datas["google_base_url"], callbacks['got_def'], rsp+"<br>");}, '');
             else if (datas["dictionary"] === 'socket'){
@@ -101,6 +108,7 @@ define(
                 locals[key] = datas[key];
                 //l_arr.push(key+"="+datas[key]);
             }
+            cache = {};
             //locals_get_str = l_arr.join("&");
         },
         add_callback:function(key, fcn){

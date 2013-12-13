@@ -1,6 +1,5 @@
 require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'hammer'], function(uitouch, dict, options, book, stuff, require){
     console.log("app.js loads");
-    //var ongoingTouches = new Array;
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -16,19 +15,14 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
-    //document.addEventListener('deviceready', function(e){console.log("Device ready");}, false);
     txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
     txarea.style.width = window.innerWidth+"px";
-    //fl_text.style.height = window.innerHeight+"px";
     fl_text.style.width =  "auto";
     var style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
     document.getElementsByTagName('head')[0].appendChild(style);
     var dt = document.getElementById("pop");
-    /*dt.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'pop');}, false);
-    dt.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'pop');}, false);
-    dt.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'pop');}, false);*/
     var marea = document.getElementById("maintext");
     marea.style.top = "0px";
     txarea.style.backgroundSize = '100%';
@@ -42,11 +36,12 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         else if (window.innerWidth<1024) txarea.style.backgroundImage='url(../images/back_small.jpg)';
         else txarea.style.backgroundImage='url(../images/back.jpg)';
     }
-    //txarea.style.order=999;
-    hammer(txarea).on("dragleft", function(evt){uitouch.liftcol(mtext, -1);});
-    hammer(txarea).on("dragright", function(evt){uitouch.liftcol(mtext, 1);});
-    hammer(txarea).on("dragup", function(evt){options.display('hide'); dt.style.display='none';});
-    hammer(txarea).on("dragdown", function(evt){options.display('show');});
+    var drvds = parseInt(window.innerHeight/4);
+    var drhds = parseInt(window.innerWidth/4);
+    hammer(txarea, {"drag_min_distance": drhds}).on("dragleft", function(evt){uitouch.liftcol(mtext, -1);});
+    hammer(txarea, {"drag_min_distance": drhds}).on("dragright", function(evt){uitouch.liftcol(mtext, 1);});
+    hammer(txarea, {"drag_min_distance": drvds}).on("dragup", function(evt){options.display('hide'); dt.style.display='none';});
+    hammer(txarea, {"drag_min_distance": drvds}).on("dragdown", function(evt){options.display('show');});
     /*hammer(txarea).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1);});
     hammer(txarea).on("swiperight", function(evt){uitouch.liftcol(mtext, 1);});
     hammer(txarea).on("swipeup", function(evt){options.display('hide'); dt.style.display='none';});
@@ -56,20 +51,10 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     hammer(dt,{"prevent_default": true}).on("swipeleft", function(evt){uitouch.liftcol(dt, -1);});
     hammer(dt,{"prevent_default": true}).on("swiperight", function(evt){uitouch.liftcol(dt, 1);});
     hammer(mtext, {"prevent_default": false}).on("tap", function(evt){uitouch.handleClick(evt.gesture.srcEvent);});
-    //txarea.addEventListener("click", function(evt){evt.target.style.order=999; uitouch.handleClick(evt); evt.target.style.order=0;}, false);
-    //hammer(mtext).on("tap", function(evt){});
-    //txarea.addEventListener("click", function(evt){}, true);
-
-    /*txarea.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'body');}, false);
-    txarea.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'body');}, false);
-    txarea.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'body');}, false);*/
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");
-    //opt_bl.addEventListener("touchstart", function(e){uitouch.handleTouchstart(e,'opts');}, false);
-    //opt_bl.addEventListener("touchend", function(e){uitouch.handleTouchend(e,'opts');}, false);
-    //opt_bl.addEventListener("touchmove", function(e){uitouch.handleTouch(e,'opts');}, false);
     try { window.addEventListener("beforeunload", function(){ console.log("saving.."); options.savepp();});}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){console.log("saving.."); options.savepp();});}
     uitouch.add_callback('got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
@@ -95,6 +80,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
             }
         });
     dict.add_callback('got_def', function (txt) {
+        dict.push_cache(txt);
         if(txt.length>1) fill_thumb(txt);
         else fill_thumb("Something went wrong. Please check your options.");
     });
@@ -197,9 +183,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                 cl.style.top = "0px";
                 if(pos==='top'){el.style.top = 0; el.style.bottom = '85%';}// db.style.display='none'; dt.style.display=disp;}
                 if(pos==='bot'){el.style.bottom = 0; el.style.top = '85%';}// dt.style.display='none'; db.style.display=disp;}
-                    dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
+                    /*dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
                                         "phost": config['proxy_host'], "pport": config['proxy_port'], "db": config["dict_db"],
-                                        "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});
+                                        "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});*/
                     dict.get_def(texts);
             } else {el.style.display = disp;}
         }

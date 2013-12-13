@@ -19,67 +19,6 @@ define(
       var callbacks = {'got_selection':function(){}, 'next_chapter':function(){}};
       var movef = function(){};
       function sign(x) { return x && x / Math.abs(x); }
-      function handleTouch(evt, start) {
-          var touchlists = evt.changedTouches;
-
-          //console.log(touchlists.length+" touches total");
-          if(start===1){
-              syG = touchlists[0].clientY;
-              sxG = touchlists[0].clientX;
-          }
-          var x = touchlists[touchlists.length-1].clientX;
-          var y = touchlists[touchlists.length-1].clientY;
-          var dx = x - sxG;
-          var dy = y - syG;
-          //console.log("Start: ", dx, dy, dictflag )
-          //console.log(dx, dy, x, y, sxG, syG, theitm);
-          if(Math.abs(dx)>64){
-              //evt.preventDefault();
-              window.clearTimeout(timer);
-              dictflag = 0;
-              if(liftflag===1){
-                  if(theitm!='pop'){
-                      //console.log("Lift mtext, target is "+evt.target);
-                      liftcol(mtext, sign(dx));
-                  } else{liftcol(pts, sign(dx));}
-                  liftflag = 0;
-              }
-              sxG = x; syG = y;
-              //console.log(evt);
-              return;
-          } else if (dy>64 && theitm!='pop'){
-              //evt.preventDefault();
-              window.clearTimeout(timer);
-              dictflag = 0;
-              options.display('show');
-              sxG = x; syG = y;
-              //console.log("Show opts");
-          } else if (dy<-64 && theitm!='pop'){
-              //evt.preventDefault();
-              window.clearTimeout(timer);
-              dictflag = 0;
-              options.display('hide');
-              sxG = x; syG = y;
-              pop.style.display = 'none';
-              var sel = window.getSelection();
-              if(sel.anchorNode) sel.collapse(sel.anchorNode, 0);
-              //console.log("Hide opts");
-          } else if(dictflag===1) {
-              if(theitm!='pop'){
-                  selectword(x, y);
-              } else {
-                  sxG = x;
-                  syG = y;
-                  var el = pop;//evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-                  if(el.style.top === '0px') movef = movesbot;//(touchlists, el);
-                  else if(el.style.bottom === '0px') movef = movestop;//(touchlists, el);
-                  else { console.log("No action. "+el.style.bottom+" x "+el.style.top); return; }
-                  movef(touchlists, el);
-              }
-          }
-          //else if(evt.target.id==='drugbot') 
-              //movestop(touches, el);
-      }
      function liftcol(el, dir) {
           //console.log(el);
           var ptop, top;
@@ -200,25 +139,25 @@ define(
           console.log("x=="+x+" y=="+y);
           if(document.caretPositionFromPoint) {
               var cp = document.caretPositionFromPoint(x, y);
-              var off = cp.offset;
-              var el = cp.offsetNode || _el;
+              if(cp){
+                var off = cp.offset;
+                var el = cp.offsetNode || _el;
+              } else {
+                  var el = document.elementFromPoint(x,y);
+                  var goff = get_off(el, x, y);
+                  if(goff){var off = goff[0]; el = goff[1];}
+              }
           } else if(document.caretRangeFromPoint) {
               var cp = document.caretRangeFromPoint(x, y);
               if(cp){
                   var off = cp.startOffset;
                   var el = cp.commonAncestorContainer || _el;
               } else {
-                  console.log("cp target=="+document.elementFromPoint(x,y).textContent); //workaround https://bugs.webkit.org/show_bug.cgi?id=29249
                   var el = document.elementFromPoint(x,y);
                   var goff = get_off(el, x, y);
                   if(goff){var off = goff[0]; el = goff[1];}
               }
-
-
-          } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports."); 
-                  soffset = 512;
-                  target = mtext;}
-          //soffset = caret.offset|caret.startOffset;
+          } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
           if(el && off){
               var txt = el.textContent;//new String(el.textContent);
               try {
@@ -297,38 +236,6 @@ define(
               movef = null;
               theitm = itm;
               if(!gest.ispinch(evt))  handleTouch(evt, 1);
-          },
-          handleTouchend:function (evt, itm) {
-              if(itm!='none') evt.preventDefault();
-              else return false;
-              //console.log("Touch end "+dictflag);
-              window.clearTimeout(timer);
-              //evt.preventDefault();
-              //handleTouch(evt, 0);
-              dictflag=0;
-              liftflag = 0;
-              movef = null;
-              if(gest.pinch()){
-                  chscale(gest.coeff(), 1);
-                  apply_scale();
-                  gest.clear();
-              }
-          },
-          handleTouch:function (evt, itm){
-              if(itm!='none') evt.preventDefault();
-              else return false;
-              if(gest.pinch() || gest.ispinch(evt)){
-                  window.clearTimeout(timer);
-                  dictflag=0;
-                  liftflag = 0;
-                  movef = null;
-                  chscale(gest.coeff(), 0);
-              } else {
-                  if(movef!=null) movef(evt.changedTouches, pop);
-                  else handleTouch(evt, 0);
-                  //ispinch = 0;
-                  //distg = 0;
-              }
           },
           handleClick:function(evt){
               console.log("evt=="+evt.target+" evt.clientX=="+evt.clientX+" evt.clientY=="+evt.clientY);
