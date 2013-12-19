@@ -22,7 +22,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
     document.getElementsByTagName('head')[0].appendChild(style);
-    var dt = document.getElementById("pop");
+    var pts = document.getElementById("pts");
+    var pop = document.getElementById("pop");
     var marea = document.getElementById("maintext");
     marea.style.top = "0px";
     txarea.style.backgroundSize = '100%';
@@ -36,21 +37,22 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         else if (window.innerWidth<1024) txarea.style.backgroundImage='url(../images/back_small.jpg)';
         else txarea.style.backgroundImage='url(../images/back.jpg)';
     }
-    var drvds = parseInt(window.innerHeight/4);
-    var drhds = parseInt(window.innerWidth/4);
-    hammer(txarea, {"drag_min_distance": drhds}).on("dragleft", function(evt){uitouch.liftcol(mtext, -1);});
-    hammer(txarea, {"drag_min_distance": drhds}).on("dragright", function(evt){uitouch.liftcol(mtext, 1);});
-    hammer(txarea, {"drag_min_distance": drvds}).on("dragup", function(evt){options.display('hide'); dt.style.display='none';});
-    hammer(txarea, {"drag_min_distance": drvds}).on("dragdown", function(evt){options.display('show');});
-    /*hammer(txarea).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1);});
-    hammer(txarea).on("swiperight", function(evt){uitouch.liftcol(mtext, 1);});
-    hammer(txarea).on("swipeup", function(evt){options.display('hide'); dt.style.display='none';});
-    hammer(txarea).on("swipedown", function(evt){options.display('show');});*/
-    hammer(txarea).on("pinchin", function(evt){uitouch.doscale(evt.scale);});
-    hammer(txarea).on("pinchout", function(evt){uitouch.doscale(evt.scale);});
-    hammer(dt,{"prevent_default": true}).on("swipeleft", function(evt){uitouch.liftcol(dt, -1);});
-    hammer(dt,{"prevent_default": true}).on("swiperight", function(evt){uitouch.liftcol(dt, 1);});
-    hammer(mtext, {"prevent_default": false}).on("tap", function(evt){uitouch.handleClick(evt.gesture.srcEvent);});
+    var drvds = Math.floor(window.innerHeight/4);
+    var drhds = Math.floor(window.innerWidth/4);
+    console.log("dists== "+drvds+" "+drhds);
+    /*hammer(txarea, {"drag_min_distance": drhds}).on("dragleft", function(evt){if(Math.abs(evt.deltaX)>drhds) uitouch.liftcol(mtext, -1);});
+    hammer(txarea, {"drag_min_distance": drhds}).on("dragright", function(evt){if(Math.abs(evt.deltaX)>drhds) uitouch.liftcol(mtext, 1);});
+    hammer(txarea, {"drag_min_distance": drvds}).on("dragup", function(evt){if(Math.abs(evt.deltaY)>drvds) options.display('hide'); dt.style.display='none';});
+    hammer(txarea, {"drag_min_distance": drvds}).on("dragdown", function(evt){if(Math.abs(evt.deltaY)>drvds) options.display('show');});*/
+    hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
+    hammer(mtext).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);});
+    hammer(txarea, {"swipe_velocity": 0.3}).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1); pop.style.display='none';});
+    hammer(txarea, {"swipe_velocity": 0.3}).on("swiperight", function(evt){uitouch.liftcol(mtext, 1); pop.style.display='none';});
+    hammer(txarea, {"swipe_velocity": 0.3}).on("swipeup", function(evt){options.display('hide'); pop.style.display='none';});
+    hammer(txarea, {"swipe_velocity": 0.3}).on("swipedown", function(evt){options.display('show'); pop.style.display='none';});
+    hammer(pop, {"swipe_velocity": 0.3}).on("swipeleft",  function(evt){uitouch.liftcol(pts,-1);});
+    hammer(pop, {"swipe_velocity": 0.3}).on("swiperight", function(evt){uitouch.liftcol(pts, 1);});
+    hammer(mtext).on("tap", function(evt){console.log("Got tap"); uitouch.handleClick(evt.gesture.srcEvent);});
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
@@ -61,7 +63,6 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     uitouch.add_callback('next_chapter', function (i) {
             var sel = document.getElementById("tocselect");
             var diff = parseInt(i);
-            //console.log('next_chapter='+idx);
             var page = book.foliant().next_page(diff); 
             if(page!=-1){
                 fill_page(page, 0);
@@ -71,7 +72,6 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                     var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
                     var top = (-(parseInt(stuff.getStyle(marea, 'height')) - 3*ptop/4));
                     top = top>0 ? 0 : top;
-                    //console.log("Backwards, top=="+top);
                     marea.style.top = parseInt(top)+"px";
                 }
                 var el_rectO = marea.getBoundingClientRect();
@@ -84,16 +84,12 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         if(txt.length>1) fill_thumb(txt);
         else fill_thumb("Something went wrong. Please check your options.");
     });
-    //console.log(options);
     options.add_callback('got_file', function () {
-            //console.log("Got file event fired");
             options.remove_old();
             options.getpp();
             options.get_opt("prc", function(prc){
-                                       console.log("load saved prc == "+prc);
                                        if(!prc) prc = options.getpercent();
                                        options.get_opt("last_html", function(html){
-                                           console.log("load saved html");
                                            uitouch.init_scale();
                                            fill_page(html, prc, 1);
                                        }, true);
@@ -114,7 +110,6 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                                             });
     
     function fill_toc(html){
-        //console.log(html);
         var opts = document.getElementById("options_block");
         var toc = document.getElementById("toc");
         var dtoc = toc.parentNode;
@@ -135,21 +130,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         marea.style.height = 'auto';
         marea.innerHTML = html;
         var fs = parseInt(stuff.getStyle(marea, 'font-size'));
-        /*var nw = parseInt(stuff.getStyle(txarea, 'width'))/2;
-        var nh = parseInt(stuff.getStyle(txarea, 'height'))/2;
-        txarea.style.width  = nw+"px";
-        txarea.style.height = nh+"px";
-        console.log("Got nw == "+nw);
-        marea.style.fontSize = fs+3+"px";
-        txarea.style.transform = "scale(2)";
-        txarea.style.transformOrigin = "0 0";*/
         var cheight = parseInt(stuff.getStyle(marea, 'height'));//window.getComputedStyle(marea, null);
-        /*if(parseInt(cstyle.height) < (parseInt(txarea.style.height)-fs)){
-            marea.style.height = txarea.style.height-fs;
-            //console.log(cstyle.height+" < "+txarea.style.height);
-        }*/
         marea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
-        console.log("percent == "+percent+" |h == "+cheight+" |marea.style.top == "+marea.style.top);
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
             options.setpercent(percent);
@@ -175,9 +157,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                //console.log("Got config "+config);
                 var ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
-                //console.log("mY vs ptop"+mY+" "+ptop);
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";

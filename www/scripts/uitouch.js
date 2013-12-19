@@ -1,6 +1,6 @@
 define(
-    ['options', 'stuff', 'gestures'],
-  function(options, stuff, gest){
+    ['options', 'stuff'],
+  function(options, stuff){
       var dictflag = 0;
       var liftflag = 0;
       var hold = 0;
@@ -70,7 +70,15 @@ define(
           }
       }
       function expand2w(off, text){
-          var re = /[\s\.\;\"\,\<\>\(\)]/;
+          var re = /[\s\.\;\"\,\<\>\(\)—\-]/;
+          var spirale = [-1, 1, -2, 2, -3, 3];
+          var newoff = 0;
+          if(text.charAt(off).match(/\s/)){
+              for(var i = 0; i<spirale.length; i++){
+                  newoff = clip(off+spirale[i], 0, text.length);
+                  if(!text.charAt(newoff).match(/\s/)) {off = newoff; break;} 
+              }
+          }
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           return text.slice(loind+1, hiind);
@@ -98,66 +106,75 @@ define(
           }
           return -1;
       }
-      function get_off(el, x, y){
+      function clip(_x, min, max) {return ( _x < min ) ? min : ( _x > max ) ? max : _x};
+      function get_off(_x, _y, sidx){
+          if(!sidx) sidx=0;
+          var dpr = window.devicePixelRatio || 1.0;
+          var d = Math.max(scale*dpr, 1);
+          var spirales = [[0,0], [1,1], [-1,1], [-1, -1], [1, -1],
+                          [2, 0], [2, 2], [0, 2], [-2, 2], [-2, 0], [-2, -2], [0, -2], [2, -2],
+                          [3, 0], [3, 3], [0, 3], [-3, 3], [-3, 0], [-3, -3], [0, -3], [3, -3],
+                          [4, 0], [4, 4], [0, 4], [-4, 4], [-4, 0], [-4, -4], [0, -4], [4, -4]];
+          var x = clip(Math.round(_x+spirales[sidx][0]*d), 0, window.innerWidth);
+          var y = clip(Math.round(_y+spirales[sidx][0]*d), 0, window.innerHeigth)
+          var el = document.elementFromPoint(x,y);
           var range = document.createRange();
           var z = 0;
+          var gotit = 0;
           var retch = null;
-          for(var j = 0; j<el.childNodes.length; j++){
-              var child = el.childNodes[j];
+          var nodes = Array.prototype.slice.call(el.childNodes).filter(function(node){return node.nodeType===3;});
+          for(var j = 0; j<nodes.length; j++){
+              var child = nodes[j];
               if(child.nodeType===3){
                   var clone = range.cloneRange();
                   clone.selectNodeContents(child);
                   for(var k = Math.floor(child.textContent.length/2); k>0; k = Math.floor(k/2)){
-                      for(var i = z+k; i<child.textContent.length && clone.endContainer.nodeType===3; i+=k){
+                      for(var i = z+k; i<child.textContent.length; i+=k){
                           try{clone.setEnd(clone.endContainer, i);}
                           catch(e){console.log(e.stack); break;}
                           if(ispointinrectlist(clone.getClientRects(), x, y)>-1){
                               //console.log(j+")"+i+") selected: "+clone.toString());
                               z = i-k;
                               retch = child;
+                              gotit++;
                               //console.log("z=="+z);
                               break;
                           }
                       }
                    }
-                  /*for(var i = 0; i<child.textContent.length && clone.endContainer.nodeType===3; i++){
-                      try{clone.setEnd(clone.endContainer, i);}
-                      catch(e){console.log(e.stack); break;}
-                      //console.log(j+")"+i+") selected: "+clone.toString());
-                      if(ispointinrectlist(clone.getClientRects(), x, y)>-1){
-                          var el = child;
-                          return [i, el];
-                      }
-                  }*/
                   clone.detach();
               }
           }
-          return [z, retch];
+          sidx++;
+          if((gotit && retch.textContent.replace(/\s/g, '')!='') || sidx>=spirales.length){
+              if(retch) {
+                console.log("All ok, got \""+retch.textContent.replace(/\s/g, '')+"\".");
+                return [z, retch];
+              }
+          } else {
+              console.log("d=="+d+". Got bad. \""+(retch ? retch.textContent : '')+"\" Going new - "+sidx);
+              return get_off(_x, _y, sidx);
+          }
       }
-      function selectword(x, y, _el){
+      function selectword(x, y, rec){
           max_Y = y;
-          console.log("x=="+x+" y=="+y);
           if(document.caretPositionFromPoint) {
               var cp = document.caretPositionFromPoint(x, y);
               if(cp){
                 var off = cp.offset;
-                var el = cp.offsetNode || _el;
-              } else {
-                  var el = document.elementFromPoint(x,y);
-                  var goff = get_off(el, x, y);
-                  if(goff){var off = goff[0]; el = goff[1];}
+                var el = cp.offsetNode;
               }
           } else if(document.caretRangeFromPoint) {
               var cp = document.caretRangeFromPoint(x, y);
               if(cp){
                   var off = cp.startOffset;
-                  var el = cp.commonAncestorContainer || _el;
-              } else {
-                  var el = document.elementFromPoint(x,y);
-                  var goff = get_off(el, x, y);
-                  if(goff){var off = goff[0]; el = goff[1];}
+                  var el = cp.commonAncestorContainer;
               }
           } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
+          if(!cp && document.elementFromPoint){
+              var goff = get_off(x, y);
+              if(goff){var off = goff[0]; el = goff[1];}
+          }
           if(el && off){
               var txt = el.textContent;//new String(el.textContent);
               try {
@@ -173,7 +190,7 @@ define(
                       selected_word = sel.toString();
                       //console.log("Selected by rng.expand "+sel.toString());
                   } else {
-                      sel.addRange( rng );
+                      sel.addRange(rng);
                       sel.modify("extend", "backward", "word");
                       sel.collapseToStart();
                       sel.modify("extend", "forward", "word");
@@ -181,17 +198,26 @@ define(
                       //console.log("Selected by sel.modify "+sel.toString());
                   }
               } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
-                                +" using expand2w, got "+selected_word+" off=="+off+"txt=="+txt);}
+                                +" using expand2w, got "+selected_word+" off=="+off);}
+              if(selected_word && selected_word.length){                  
+                  var rng = document.createRange();
+                  rng.setStart(el, off);
+                  rng.setEnd(el, off+selected_word.length);
+                  var sel = window.getSelection();
+                  sel.addRange(rng);
+                  callbacks['got_selection']([selected_word, '']);
+              }
               callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
           }
       }
       function chscale(cf, apply){
-            var _scale = scale*cf;
+            if(isNaN(scale) || !scale) scale = 1.0;
+            var _scale = cf;
             if(_scale > 8.0 || _scale < 0.25 || isNaN(_scale)){
-                console.warn("Illegal scale factor: "+_scale);
+                console.warn("Illegal scale factor: "+_scale+". cf is "+cf);
                 return;
             }
-            options.msg("Current scale factor = "+_scale);
+            options.msg("Current scale factor = "+scale);
             if(apply===1) scale = _scale;
       }
       function apply_scale(){
@@ -238,10 +264,7 @@ define(
               if(!gest.ispinch(evt))  handleTouch(evt, 1);
           },
           handleClick:function(evt){
-              console.log("evt=="+evt.target+" evt.clientX=="+evt.clientX+" evt.clientY=="+evt.clientY);
-              //evt.stopPropagation();
-              //evt.preventDefault();
-              selectword(evt.clientX, evt.clientY, evt.target);
+              selectword(evt.clientX, evt.clientY);
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
@@ -250,7 +273,6 @@ define(
               evt.stopPropagation();
               evt.preventDefault();
               var el = pop.style.display === 'none' ? mtext : pts;
-              console.log("el=="+el.id+" code=="+Code);
               if(Code===37) liftcol(el, 1);
               else if (Code===39) liftcol(el, -1);
               else if (Code===38) {options.display('hide'); pop.style.display='none';}
@@ -260,8 +282,6 @@ define(
                   chscale(cf, 1);
                   apply_scale();
               }
-
-              //console.log("Got "+Code+" code");
           },
           liftcol:function(el, id){
               liftcol(el, id);
@@ -278,13 +298,11 @@ define(
               callbacks[key] = fcn;
           },
           doscale:function(cf){
-              chscale(cf, 1);
+              chscale(Math.sqrt(Math.sqrt(cf)), 1);
               apply_scale();
           },
           init_scale:function(){
-              //console.log("Init scale");
               options.get_opt('scale', function(sc){
-                      //console.log("Got saved scale "+sc);
                       var _scale = parseFloat(sc);
                       if(_scale > 0.25 && _scale < 8.0 || !isNaN(_scale) ){
                           scale = _scale;

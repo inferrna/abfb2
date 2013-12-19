@@ -2,14 +2,14 @@
 <widget id="com.example.abread" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Ab fb2 reader</name>
     <description>
-        A sample application that helps you to learn languages.
+        A simple application that helps you to learn languages.
     </description>
     <author email="inferrna@gmail.com" href="http://borgu.org">
         Inferrna
     </author>
     <content src="index.html" />
     <access origin="*" />
-    <icon src="images/A.png" />
+    <icon src="icon.png" />
     <preference name="fullscreen" value="true" />
     <!-- plugin name="Echo" value="org.apache.cordova.plugin.Echo" / -->
     <preference name="webviewbounce" value="true" />

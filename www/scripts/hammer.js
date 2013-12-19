@@ -542,7 +542,7 @@ Hammer.utils = {
     getDistance: function getDistance(touch1, touch2) {
         var x = touch2.pageX - touch1.pageX,
             y = touch2.pageY - touch1.pageY;
-        return Math.sqrt((x*x) + (y*y));
+        return Math.sqrt(parseFloat((x*x) + (y*y)));
     },
 
 
@@ -556,10 +556,12 @@ Hammer.utils = {
     getScale: function getScale(start, end) {
         // need two fingers...
         if(start.length >= 2 && end.length >= 2) {
-            return this.getDistance(end[0], end[1]) /
-                this.getDistance(start[0], start[1]);
+            var cf1 = this.getDistance(end[0], end[1]);
+            var cf2 = this.getDistance(start[0], start[1]);
+            var cf3 = cf1/cf2;
+            return cf3;
         }
-        return 1;
+        return 1.0;
     },
 
 

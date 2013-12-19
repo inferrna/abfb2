@@ -32,9 +32,7 @@ define(
                             options.get_opt('last_file', 
                                 function(vl){ for(var i = 1; i < sel.options.length; i++){
                                                       var currentname = sel.options[i].value.replace(fnmre, "$2");
-                                                      console.log("currentname == "+currentname+" vl == "+vl);
                                                       if(currentname === vl){
-                                                          console.log("currentname == "+currentname+" == vl == "+vl);
                                                           sel.selectedIndex = i;
                                                           try { var evt = new Event('change');}
                                                           catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }

@@ -262,7 +262,6 @@
 		var blob, that = this;
 
 		function init(callback) {
-            console.log("Bloobs are here");
 			try {
                 blob = new Blob([], {type : contentType});
             } catch(e) {
@@ -404,7 +403,6 @@
 		}
 
 		if (obj.zip.useWebWorkers) {
-            console.log("Getting an worjer by path "+obj.zip.workerScriptsPath + INFLATE_JS);
 			worker = new Worker(obj.zip.workerScriptsPath + INFLATE_JS);
 			launchWorkerProcess(worker, reader, writer, offset, size, oninflateappend, onprogress, oninflateend, onreaderror, onwriteerror);
 		} else

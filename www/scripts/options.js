@@ -46,10 +46,9 @@ define(
     };
     function draw_deps(el){
         if(el.id!='dict_src') return;
-        console.log("selected "+el.value);
         var ex = showdeps['excepts'];
         var shows = showdeps[el.value];
-        if(el.value==='dictd proxy' || el.value==='socket') {console.log("Getting dbs"); dict.get_dbs(el.value);}
+        if(el.value==='dictd proxy' || el.value==='socket') {dict.get_dbs(el.value);}
         if(!shows && !ex) return;
         for(var key in datas){
             if(!ex.test(key) && !shows.test(key)) document.getElementById(key).parentNode.style.display = 'none';
@@ -74,9 +73,9 @@ define(
     function hasgoogle(callbacks){
         callbacks.splice(0,1);
         var oReq = new XMLHttpRequest({mozSystem: true});
-        oReq.addEventListener("error", function(){console.log("g error"); datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
+        oReq.addEventListener("error", function(){datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
                                                             callbacks[0](callbacks);}, false);
-        oReq.addEventListener("abort", function(){console.log("g abrtd"); datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
+        oReq.addEventListener("abort", function(){datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
                                                             callbacks[0](callbacks);}, false);
         oReq.addEventListener("load", function(){callbacks[0](callbacks);}, false);
         try { oReq.open("GET", "http://translate.google.com/?", true); oReq.send(); }
@@ -93,7 +92,6 @@ define(
             //delete datas['socket_host'];
             //delete datas['socket_port'];
         }
-        console.log("checked socket");
         callbacks[0](callbacks);
     }
     function disable_prop(_el){
@@ -122,31 +120,17 @@ define(
                 sel.addEventListener("change", 
                                 function (event){
                                     var fnm = event.target.options[event.target.selectedIndex].value;
-                                    console.log("Select file changed "+filename);
                                     filename = fnm.replace(fnmre, "$2");
-                                    /*var sdcard = navigator.getDeviceStorage('sdcard');
-                                    var request = sdcard.get(fnm);
-                                    request.onsuccess = function () {  file = this.result;
-                                                                       console.log("Got the file: "+filename); 
-                                                                       set_opt('last_file', filename);
-                                                                       set_opt(filename+"_time", Date.now());
-                                                                       callbacks['got_file']();}
-                                    request.onerror = function () { console.warn("Unable to get the file: " + this.error); }*/
                                     sdstorage.get(fnm, function (_file) {
                                                                        file = _file;
-                                                                       console.log("Got the file: "+filename); 
                                                                        set_opt('last_file', filename);
                                                                        set_opt(filename+"_time", Date.now());
                                                                        callbacks['got_file']();} );
                                 }, false);
                 sdstorage.parse(sel, obj);
-                //try { sdstorage.parse(sel, obj);}
-                //catch(e) {console.warn("Parse storage failed, got\n"+e.stack); delete sel; return;}
-            //} else { console.log("No navigator.getDeviceStorage api found"); delete datas[key];}
             return sel;
         } 
         sel.addEventListener("change", function(evt){get_config(); draw_deps(evt.target);
-                                    console.log("Saving "+sel.id);
                                     set_opt("sel_"+sel.id, evt.target.options[evt.target.selectedIndex].value); }, false);
         //device storage>
         for(var eln in elements){
@@ -171,7 +155,6 @@ define(
         inp.id = key;
         inp.style.left="4px";
         if(key==="file") {   inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
-                             //get_opt(params, function(key, value){console.log(key+"=got="+value); if(value) inp.value = value;},null);
                              inp.addEventListener("change", function (evt){
                                                             var input = evt.target;
                                                             file = evt.target.files[0];
@@ -206,7 +189,6 @@ define(
         obj.appendChild(sp);
     }
     function display(mode){
-        //console.log(mode, opts_brd_b.style.display, opts_brd.style.display);
         if(mode==='show')
             //opts_brd.parentNode.display='block';
             if(opts_brd_b.style.display==='none') opts_brd_b.style.display='block';
@@ -223,20 +205,15 @@ define(
             if(elem){ values[key] = elem.value; }
             else{console.warn("No "+key+" found.");}
         }
-        //console.log("Got config: "+JSON.stringify(values));
         dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
                                                             "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
                                                             "phost": values['proxy_host'], "pport": values['proxy_port']  });
         return values;
     }
     function set_sel_vl(sel){
-        console.log("Getting opt for "+sel.id);
         get_opt(["sel_"+sel.id], function(ky, vl){
-                //console.log("Got opt for "+sel.id+" -> "+vl+" / "+ky);
                 var opts = Array.prototype.slice.call(sel.options);
-                //console.log("Got opt for "+sel.id+". opts == "+opts);
-                var id = opts.map(function(el){console.log("el.value==="+el.value); return (el.value===vl);}).indexOf(true);
-                console.log("Got opt for "+sel.id+" -> "+vl+". id=="+id+" opts=="+opts);
+                var id = opts.map(function(el){return (el.value===vl);}).indexOf(true);
                 if(id!=-1) { sel.selectedIndex = id;
                              draw_deps(sel); 
                              get_config(); }
@@ -244,7 +221,6 @@ define(
     }
     function makepos(x){
         x = x||0;
-        //console.log("makepos, x==", x);
         var re = /.+?\..+?/, result = x;
         if(re.test(x)) result = parseFloat(x);
         else result = parseInt(x);
@@ -253,20 +229,15 @@ define(
     }
     function get_cr(keys, callback, evt){
         crstorage.get(keys, function(result){
-                //console.log("Got "+JSON.stringify(result)+"from storage, keys was "+keys);
                 for(var key in result){
                     callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
-                    //console.log("Got "+result[key]+" from "+key+"  ."+keys[key]);
                 }
                 if(evt) callbacks[evt]();//evo.dispatchEvent(evt);
             });
     }
     function get_ls(keys, callback, evt){
-        //console.log("Got keys "+keys);
         for(var key in keys){
-            //console.log("Got key "+keys[key]);
             callback( keys[key], storage.getItem(keys[key]) );//currentpp[ps[key]] = makepos(storage.getItem(key));
-            console.log("Got "+storage.getItem(keys[key])+" from "+key+"  ."+keys[key]);
         }
         if(evt) callbacks[evt]();//evo.dispatchEvent(evt);//got_pp_ev);
     }
@@ -291,7 +262,6 @@ define(
         var sels = [];
         for(var key in datas){
             type = typeof(datas[key][0]);
-            //console.log(type);
             if(type=="object") sels.push(create_select(opts_brd, datas[key][1], datas[key][0], key, datas[key][2]));
             if(type=="string") create_input(opts_brd, datas[key][1], datas[key][0], key, datas[key][2]);
         }
@@ -299,32 +269,25 @@ define(
         sels.map(function(sl){set_sel_vl(sl);});
     }
     function add_dbs(sel, _nm, txt){
-        console.log("Got dbs");
         var _txt = txt.replace(/\ /g, "_._").replace(/(\s|\0)+/g, "\n").replace(/_\._/g, " ").replace(/\"/g, "");
         var count = parseInt(txt.replace(/\s+/g, " ").replace(/(.*110.+?)(\d*)(.+?databases present.*)/, "$2"));
         var arr = _txt.split("\n").filter(function(el){return el!='';});
         var start = arr.indexOf("250 ok")-2;
         if(isNaN(count) || start<0) { console.warn("No db count or start in "+txt); return; }
-        console.log("Going set db1 "+arr);
-        console.log("start == "+start+" count == "+count+" arr[start]=="+arr[start]);
         var itms = [];
         Array.prototype.slice.call(sel.options).map(function(el){sel.removeChild(el);});
         sel.appendChild(_nm);
         for(var i = start; i>(start-count) && i>0; i--){
-                console.log("Going set db1.1 "+arr[i]);
                 var itms = arr[i].split(" ");
                 var nm  = document.createElement("option");
                 nm.value = itms[0];
                 nm.textContent = arr[i].replace(itms[0]+" ", '');
                 sel.appendChild(nm);
         }
-        console.log("Going set db2");
         sel.addEventListener("change", function(evt){
                             var p = {};
                             p['dict'] = evt.target.options[evt.target.selectedIndex].value;
-                            console.log("p=="+p);
                             dict.init_params(p);}, true);
-        console.log("Going set db3");
         set_sel_vl(sel);
     }
     function remove_key(key){
@@ -341,34 +304,27 @@ define(
         var keys = Object.keys(items);
         var timekeys = keys.filter(function(str){return str.match(/.+?_time/);});
         var time = Date.now()-2592000000;//Month for all
-        console.log("time=="+time+" timekeys=="+timekeys+" timeval = "+items[timekeys[0]]);
         var badtimekeys = timekeys.filter(function(key){return items[key] < time});
         var badprefixes = badtimekeys.map(function(item, i, arr){return item.replace(/(.+?)_time/, "$1");});
         if(badprefixes.length==0) return; 
-        console.log("badprefixes == "+badprefixes);
         var re = new RegExp("("+badprefixes.join("|")+")_(.+)");
         var badkeys = keys.filter(function(str){return str.match(re);});
-        console.log("badkeys == "+badkeys);
         time = Date.now()-259200000;     //3 days for a single page
         badtimekeys = timekeys.filter(function(key){return items[key] < time});
         badprefixes = badtimekeys.map(function(item, i, arr){return item.replace(/(.+?)_time/, "$1");});
         if(badprefixes.length==0) return; 
-        console.log("badprefixes == "+badprefixes);
         re = new RegExp("("+badprefixes.join("|")+")_last_html");
         badkeys = badkeys.concat(keys.filter(function(str){return str.match(re);}));
         re = new RegExp(filename+"_(.+?)");
         badkeys = badkeys.filter(function(str){return !str.match(re);});
         badkeys.map(function(item, i, arr){remove_key(item);});
-        console.log("badkeys == "+badkeys);
     }
 
     function get_all_itms(callback){
         if(storage) {
             var items = {}; var i = 0; var key = null;
             for (;key = storage.key(i); i++) items[key] = storage.getItem(key);
-            console.log("going remove..");
             callback(items);
-            console.log("remove done.");
             return;
         }
         if(crstorage) crstorage.get(null, function(items) {
@@ -380,7 +336,6 @@ define(
         set_opt(prckey, currentpp['percent']);
         set_opt(pnmkey, currentpp['page']);
         set_opt(timekey, Date.now());
-        console.log("Saved "+prckey+" as "+currentpp['percent']+pnmkey+" as "+currentpp['page']);
     }
     function getpp(){
         currentpp = {'page':0, 'percent':0};
@@ -390,7 +345,6 @@ define(
         ps[pnmkey] = 'page';
         get_opt(Object.keys(ps), function(key, val){
                 currentpp[ps[key]] = makepos(val);
-                console.log(key+"=got="+val);
             }, 'got_pp');
     }
 
@@ -436,7 +390,6 @@ define(
                 if(isNaN(percent)) currentpp['percent'] = 0;
                 else currentpp['percent'] = percent;
                 //this.savepp();
-                //console.log("set currentpercent=="+percent);
                 lbl.textContent = parseInt(percent)+"% of current chapter";
             },
             msg:function(text){
@@ -450,7 +403,6 @@ define(
                 if(isNaN(page)) currentpp['page'] = 0;
                 else currentpp['page'] = page;
                 //this.savepp();
-                console.log("set currentpage=="+page);
             },
             getpage:function(){
                 return currentpp['page'];
