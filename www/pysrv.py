@@ -8,6 +8,7 @@ from http.cookiejar import CookieJar, DefaultCookiePolicy
 try: from lxml import etree
 except: import xml.etree.ElementTree as etree
 from xml.sax.saxutils import escape
+import urllib.request
 
 def get_def(text, host, port):
     #HOST = 'localhost'    # The remote host
@@ -36,10 +37,17 @@ def get_def(text, host, port):
     except: print("already closed")
     return data
 
+def get_google(req, opener):
+    baseurl = "http://translate.google.com/translate_a/t?"
+    url = baseurl + req
+    u = opener.open(url)
+    return u.read()
 
 
 class Handler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
+        self.opener = urllib.request.build_opener()
+        self.opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0) Gecko/20100101 Firefox/17.0'), ('Referer', 'http://www.google.ru/')]
         BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
         
     def do_POST(self):
@@ -60,10 +68,18 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*");
         self.end_headers()
-        get_data = urllib.parse.parse_qs(self.path.split('?')[1])
-        self.do_smth(get_data)
+        if self.path.split('?')[0]=="/t":
+            self.wfile.write(get_google(self.path.split('?')[1], self.opener))
+            if not self.wfile.closed:
+                self.wfile.flush()
+                self.wfile.close()
+            self.rfile.close()
+        else:
+            get_data = urllib.parse.parse_qs(self.path.split('?')[1])
+            self.do_smth(get_data)
 
     def do_smth(self, data):
+        print(data)
         try: word = data['text'][0]
         except:
             self.wfile.write('{error: no word given}'.encode('utf-8'))

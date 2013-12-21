@@ -27,7 +27,7 @@ define(
     var filename = '';
     var currentpp = {'page':0, 'percent':0};
     var datas = {
-        dict_src: [['google', 'dictd proxy', 'socket'], "Select dictionary source", 'list-item'],
+        dict_src: [['google', 'socket', 'google proxy', 'socket proxy'], "Select dictionary source", 'list-item'],
         dict_db: [['!'], "Dict db (! means all)", 'none'],
         lang_f: ['en', "Translate from", 'none'],
         lang_t: ['ru', "Translate to", 'none'],
@@ -40,6 +40,7 @@ define(
     };
     var showdeps = {
         'google':/lang_f|lang_t/,
+        'google proxy':/proxy_host|proxy_port|lang_f|lang_t/,
         'dictd proxy':/socket_host|socket_port|proxy_host|proxy_port|dict_db/,
         'socket':/socket_host|socket_port|dict_db/,
         'excepts':/dsfile|file|dict_src/

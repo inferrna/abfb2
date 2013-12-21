@@ -52,7 +52,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     hammer(txarea, {"swipe_velocity": 0.3}).on("swipedown", function(evt){options.display('show'); pop.style.display='none';});
     hammer(pop, {"swipe_velocity": 0.3}).on("swipeleft",  function(evt){uitouch.liftcol(pts,-1);});
     hammer(pop, {"swipe_velocity": 0.3}).on("swiperight", function(evt){uitouch.liftcol(pts, 1);});
-    hammer(mtext).on("tap", function(evt){console.log("Got tap"); uitouch.handleClick(evt.gesture.srcEvent);});
+    //hammer(mtext).on("tap", function(evt){console.log("Got tap"); uitouch.handleClick(evt.gesture.srcEvent);});
+    mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);

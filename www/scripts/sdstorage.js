@@ -59,8 +59,6 @@ define(
         // Let's browse all the images available
         var cursor = pics.enumerate();
         var count = 0;
-        var slf = this;
-        window.setTimeout(function(){slf.return}, 2048);
         cursor.onsuccess = function () {
             function g_or_b(err){
                 if(count>0) {

@@ -8,7 +8,8 @@ define(
     var cache = {};
     var lword = '';
     var datas = {
-        google_base_url: 'http://translate.google.com/translate_a/t?client=Firefox&',
+        google_base_url:  'http://translate.google.com/translate_a/t?client=Firefox&',
+        google_proxy_url: '/t?client=Firefox&',
         local_base_url: "http://192.168.0.2:8082/?",//?text=+"value"+"&dict="+"!"+"&host="+"localhost"+"&port="+"2628";
         dictionary: '',
         sl: 'en',
@@ -43,7 +44,7 @@ define(
                 resp = basetxt;
                 var resptext = event.target.responseText;
                 //console.log(JSON.parse(resptext)["dict"]);
-                if(datas["dictionary"]==="google"){
+                if(datas["dictionary"].match("google.+?$")){
                     resp +="<b>"+_text+"</b> -> "; 
                     var respj = JSON.parse(resptext);
                     if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
@@ -84,7 +85,8 @@ define(
             if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword]);}
             else if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
-                //function(rsp){ get_http(texts[1], googles, datas["google_base_url"], callbacks['got_def'], rsp+"<br>");}, '');
+            else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
+                                   "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], callbacks['got_def'], '');
             else if (datas["dictionary"] === 'socket'){
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);

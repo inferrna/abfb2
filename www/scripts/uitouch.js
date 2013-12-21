@@ -83,6 +83,14 @@ define(
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           return text.slice(loind+1, hiind);
       }
+      function expand23w(word, text){
+          var rew0 = new RegExp("\\S+\\s+?"+word+"\\s+?\\S+", "mg");
+          var rew1 = new RegExp("\\S+\\s+?"+word, "mg");
+          var rew2 = new RegExp(word+"\\s+?\\S+", "mg");
+          console.log(text.match(rew1));
+          console.log(text.match(rew2));
+          console.log(text.match(rew0));
+      }
       function expand2s(off, text){
           var re = /[\.\!\?]/;
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
@@ -110,13 +118,13 @@ define(
       function get_off(_x, _y, sidx){
           if(!sidx) sidx=0;
           var dpr = window.devicePixelRatio || 1.0;
-          var d = Math.max(scale*dpr, 1);
+          var d = Math.max(2*scale*dpr, 1);
           var spirales = [[0,0], [1,1], [-1,1], [-1, -1], [1, -1],
                           [2, 0], [2, 2], [0, 2], [-2, 2], [-2, 0], [-2, -2], [0, -2], [2, -2],
                           [3, 0], [3, 3], [0, 3], [-3, 3], [-3, 0], [-3, -3], [0, -3], [3, -3],
                           [4, 0], [4, 4], [0, 4], [-4, 4], [-4, 0], [-4, -4], [0, -4], [4, -4]];
           var x = clip(Math.round(_x+spirales[sidx][0]*d), 0, window.innerWidth);
-          var y = clip(Math.round(_y+spirales[sidx][0]*d), 0, window.innerHeigth)
+          var y = clip(Math.round(_y+spirales[sidx][1]*d), 0, window.innerHeigth)
           var el = document.elementFromPoint(x,y);
           var range = document.createRange();
           var z = 0;
@@ -125,25 +133,23 @@ define(
           var nodes = Array.prototype.slice.call(el.childNodes).filter(function(node){return node.nodeType===3;});
           for(var j = 0; j<nodes.length; j++){
               var child = nodes[j];
-              if(child.nodeType===3){
-                  var clone = range.cloneRange();
-                  clone.selectNodeContents(child);
-                  for(var k = Math.floor(child.textContent.length/2); k>0; k = Math.floor(k/2)){
-                      for(var i = z+k; i<child.textContent.length; i+=k){
-                          try{clone.setEnd(clone.endContainer, i);}
-                          catch(e){console.log(e.stack); break;}
-                          if(ispointinrectlist(clone.getClientRects(), x, y)>-1){
-                              //console.log(j+")"+i+") selected: "+clone.toString());
-                              z = i-k;
-                              retch = child;
-                              gotit++;
-                              //console.log("z=="+z);
-                              break;
-                          }
+              var clone = range.cloneRange();
+              clone.selectNodeContents(child);
+              for(var k = Math.floor(child.textContent.length/2); k>0; k = Math.floor(k/2)){
+                  for(var i = z+k; i<child.textContent.length; i+=k){
+                      try{clone.setEnd(clone.endContainer, i);}
+                      catch(e){console.log(e.stack); break;}
+                      if(ispointinrectlist(clone.getClientRects(), x, y)>-1){
+                          //console.log(j+")"+i+") selected: "+clone.toString());
+                          z = i-k;
+                          retch = child;
+                          gotit++;
+                          //console.log("z=="+z);
+                          break;
                       }
-                   }
-                  clone.detach();
-              }
+                  }
+               }
+              clone.detach();
           }
           sidx++;
           if((gotit && retch.textContent.replace(/\s/g, '')!='') || sidx>=spirales.length){
@@ -200,14 +206,15 @@ define(
               } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
                                 +" using expand2w, got "+selected_word+" off=="+off);}
               if(selected_word && selected_word.length){                  
-                  var rng = document.createRange();
+                  /*var rng = document.createRange();
                   rng.setStart(el, off);
                   rng.setEnd(el, off+selected_word.length);
                   var sel = window.getSelection();
-                  sel.addRange(rng);
+                  sel.addRange(rng);*/
+                  expand23w(selected_word, txt);
                   callbacks['got_selection']([selected_word, '']);
               }
-              callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
+              //callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
           }
       }
       function chscale(cf, apply){

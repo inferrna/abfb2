@@ -2,7 +2,6 @@ define(['stuff'],
 function(stuff){
     var text = [];
     var name = '';
-    //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
     var currentpage = 0;
     var callbacks = { 'got_book':function(){} };
     function load_txt(file){

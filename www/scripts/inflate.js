@@ -2068,10 +2068,12 @@
 		read_byte : function(start) {
 			var that = this;
 			return that.next_in.subarray(start, start + 1)[0];
+            //else if(that.next_in[0]) return that.next_in[start];
 		},
 		read_buf : function(start, size) {
 			var that = this;
 			return that.next_in.subarray(start, start + size);
+            //else if(that.next_in.slice) return that.next_in.slice(start, start + size);;
 		}
 	};
 
