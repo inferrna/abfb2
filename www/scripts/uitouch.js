@@ -87,9 +87,11 @@ define(
           var rew0 = new RegExp("\\S+\\s+?"+word+"\\s+?\\S+", "mg");
           var rew1 = new RegExp("\\S+\\s+?"+word, "mg");
           var rew2 = new RegExp(word+"\\s+?\\S+", "mg");
-          console.log(text.match(rew1));
-          console.log(text.match(rew2));
-          console.log(text.match(rew0));
+          var res = [];
+          if(text.match(rew0))res.push(text.match(rew0)[0]);
+          if(text.match(rew1))res.push(text.match(rew1)[0]);
+          if(text.match(rew2))res.push(text.match(rew2)[0]);
+          return res
       }
       function expand2s(off, text){
           var re = /[\.\!\?]/;
@@ -211,8 +213,7 @@ define(
                   rng.setEnd(el, off+selected_word.length);
                   var sel = window.getSelection();
                   sel.addRange(rng);*/
-                  expand23w(selected_word, txt);
-                  callbacks['got_selection']([selected_word, '']);
+                  callbacks['got_selection']([selected_word, expand23w(selected_word, txt)]);
               }
               //callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
           }

@@ -37,6 +37,7 @@ define(
     /*dreq.open("GET", "http://translate.google.com", true);
     try {dreq.send();}
     catch(e){console.log("XMLHttpRequest failed, got:",e);};*/
+    seealso = [];
     function get_http(_text, params, baseurl, callback, basetxt){
         var dreq = new XMLHttpRequest({mozSystem: true});
         dreq.onload = function (event) {
@@ -69,6 +70,22 @@ define(
         //alert("Request sended, url was "+url+".");
         //console.log("Request sended, url was "+url);
     }
+    function get_def(word){
+            lword = word.toLowerCase().replace(/(^\s)|[\.\!\?\,\;\:]|(\s$)/gm, "");
+            if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword]);}
+            else if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
+            else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
+            else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
+                                   "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], callbacks['got_def'], '');
+            else if (datas["dictionary"] === 'socket'){
+                socket.check();
+                socket.init(datas["host"], 2628, datas["db"]);
+                //socket.evo.addEventListener('got_def', function (e) { resp = socket.response(); dreq.dispatchEvent(got_def_ev); }, false);
+                socket.get_def(lword, callbacks['got_def']);
+            } else console.log("No dictionary selected");
+
+    }
+
     return {
         response:function(){
             if (datas["dictionary"] == 'socket') resp = socket.response();
@@ -81,18 +98,14 @@ define(
         },
         get_def:function(texts){
             var word = texts[0];
-            lword = word.toLowerCase().replace(/[\s\.\!\?\,\;\:]/g, "");
-            if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword]);}
-            else if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
-            else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
-            else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
-                                   "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], callbacks['got_def'], '');
-            else if (datas["dictionary"] === 'socket'){
-                socket.check();
-                socket.init(datas["host"], 2628, datas["db"]);
-                //socket.evo.addEventListener('got_def', function (e) { resp = socket.response(); dreq.dispatchEvent(got_def_ev); }, false);
-                socket.get_def(lword, callbacks['got_def']);
-            } else console.log("No dictionary selected");
+            if(texts[1] && texts.length>0) seealso = texts[1].map(function(itm){
+                    var a = document.createElement("a");
+                    a.textContent = itm;
+                    a.addEventListener("click", function(evt){get_def(evt.target.textContent);}, false);
+                    return a;
+                });
+            console.log(seealso);
+            get_def(word);
         },
         get_dbs:function(type){
             if(type === 'dictd proxy') get_http("SHOW DATABASES\n", locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_dbs']);
