@@ -84,9 +84,9 @@ define(
           return text.slice(loind+1, hiind);
       }
       function expand23w(word, text){
-          var rew0 = new RegExp("\\S+\\s+?"+word+"\\s+?\\S+", "mg");
-          var rew1 = new RegExp("\\S+\\s+?"+word, "mg");
-          var rew2 = new RegExp(word+"\\s+?\\S+", "mg");
+          var rew0 = new RegExp("\\S+[\\s\\-—]+?"+word+"[\\s\\-—]+?\\S+", "mg");
+          var rew1 = new RegExp("\\S+[\\s\\-—]+?"+word, "mg");
+          var rew2 = new RegExp(word+"[\\s\\-—]+?\\S+", "mg");
           var res = [];
           if(text.match(rew0))res.push(text.match(rew0)[0]);
           if(text.match(rew1))res.push(text.match(rew1)[0]);

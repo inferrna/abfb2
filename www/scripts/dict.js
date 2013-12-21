@@ -33,11 +33,11 @@ define(
     };
     var googles = {text:'',sl:'',tl:'',hl:'',ie:'',oe:'',multires:0,otf:0,trs:0,ssel:0,tsel:0,sc:0};
     var locals  = {text:'',host:'',port:0};
+    var seealso = [];
     //var locals_get_str = '';
     /*dreq.open("GET", "http://translate.google.com", true);
     try {dreq.send();}
     catch(e){console.log("XMLHttpRequest failed, got:",e);};*/
-    seealso = [];
     function get_http(_text, params, baseurl, callback, basetxt){
         var dreq = new XMLHttpRequest({mozSystem: true});
         dreq.onload = function (event) {
@@ -51,11 +51,13 @@ define(
                     if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
                     if( Object.keys(respj).indexOf("dict">-1) )      try{ resp += "<br>"+respj["dict"][0]["terms"].join(", ");}
                     catch(e) {console.warn(e.stack);}
+                    if(seealso.length>0)
+                        resp+="<br><b>Also look at:</b>";
                 }
                 else resp += resptext;
                 //alert("Got "+resp);
                 //console.log("Got inner response ", resp);
-                callback(resp);
+                callback(resp, seealso);
             }
         var l_arr = [];
         var params_get_str = '';
@@ -99,12 +101,13 @@ define(
         get_def:function(texts){
             var word = texts[0];
             if(texts[1] && texts.length>0) seealso = texts[1].map(function(itm){
-                    var a = document.createElement("a");
+                    var a = document.createElement("span");
                     a.textContent = itm;
-                    a.addEventListener("click", function(evt){get_def(evt.target.textContent);}, false);
+                    a.onclick = function(evt){console.log("mi clicked!"); get_def(evt.target.textContent);};
+                    //a.addEventListener("click", function(evt){get_def(evt.target.textContent);}, false);
                     return a;
                 });
-            console.log(seealso);
+            else seealso=[];
             get_def(word);
         },
         get_dbs:function(type){

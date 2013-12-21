@@ -80,9 +80,9 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                 console.log("saving.."); options.savepp();
             }
         });
-    dict.add_callback('got_def', function (txt) {
+    dict.add_callback('got_def', function (txt, els) {
         dict.push_cache(txt);
-        if(txt.length>1) fill_thumb(txt);
+        if(txt.length>1) fill_thumb(txt, els);
         else fill_thumb("Something went wrong. Please check your options.");
     });
     options.add_callback('got_file', function () {
@@ -139,7 +139,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
             console.log("saving..");  options.savepp();
         }
     }
-    function fill_thumb(text){
+    function fill_thumb(text, els){
         if(text.length > 1){
             var cl = document.getElementById('pts');
             var el = document.getElementById('pop');
@@ -148,6 +148,12 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
             dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
             cl.innerHTML = dtext;
             el.style.display = 'block';
+            if(els && els.length){
+                for(var i = 0; i<els.length; i++){
+                    cl.appendChild(document.createElement("br"));
+                    cl.appendChild(els[i]);
+                }
+            }
         } else {el.style.display = 'none';}
     }
     function thumb_block(mY, texts, disp) {
