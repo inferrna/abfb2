@@ -51,13 +51,14 @@ define(
                     if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
                     if( Object.keys(respj).indexOf("dict">-1) )      try{ resp += "<br>"+respj["dict"][0]["terms"].join(", ");}
                     catch(e) {console.warn(e.stack);}
-                    if(seealso.length>0)
+                    if(seealso.length>0){
                         resp+="<br><b>Also look at:</b>";
+                        callback(resp, seealso);
+                    } else callback(resp);
+                } else {
+                    resp += resptext;
+                    callback(resp);
                 }
-                else resp += resptext;
-                //alert("Got "+resp);
-                //console.log("Got inner response ", resp);
-                callback(resp, seealso);
             }
         var l_arr = [];
         var params_get_str = '';
@@ -75,7 +76,7 @@ define(
     function get_def(word){
             lword = word.toLowerCase().replace(/(^\s)|[\.\!\?\,\;\:]|(\s$)/gm, "");
             if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword], seealso);}
-            else if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
+            else if(datas["dictionary"] === 'socket proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
             else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
                                    "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], callbacks['got_def'], '');
@@ -111,7 +112,7 @@ define(
             get_def(word);
         },
         get_dbs:function(type){
-            if(type === 'dictd proxy') get_http("SHOW DATABASES\n", locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_dbs']);
+            if(type === 'socket proxy') get_http("SHOW DATABASES\n", locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_dbs']);
             else {
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);

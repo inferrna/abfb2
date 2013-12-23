@@ -28,6 +28,7 @@ def get_def(text, host, port):
         except:
             print("Read error")
             rv = 0;
+            break
         print("received", i)
         if not rv:
             print("recv ends")

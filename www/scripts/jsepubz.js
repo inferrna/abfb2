@@ -1,4 +1,4 @@
-define(['zip'], function (zip) {
+define([], function () {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};

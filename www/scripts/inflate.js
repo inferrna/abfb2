@@ -2068,12 +2068,10 @@
 		read_byte : function(start) {
 			var that = this;
 			return that.next_in.subarray(start, start + 1)[0];
-            //else if(that.next_in[0]) return that.next_in[start];
 		},
 		read_buf : function(start, size) {
 			var that = this;
 			return that.next_in.subarray(start, start + size);
-            //else if(that.next_in.slice) return that.next_in.slice(start, start + size);;
 		}
 	};
 
@@ -2093,7 +2091,7 @@
 		that.append = function(data, onprogress) {
 			var err, buffers = [], lastIndex = 0, bufferIndex = 0, bufferSize = 0, array;
 			if (data.length === 0)
-				return 0;
+				return;
 			z.next_in_index = 0;
 			z.next_in = data;
 			z.avail_in = data.length;
@@ -2107,10 +2105,8 @@
 				err = z.inflate(flush);
 				if (nomoreinput && (err == Z_BUF_ERROR))
 					return -1;
-				if (err != Z_OK && err != Z_STREAM_END){
+				if (err != Z_OK && err != Z_STREAM_END)
 					throw "inflating: " + z.msg;
-                    return -1;
-                }
 				if ((nomoreinput || err == Z_STREAM_END) && (z.avail_in == data.length))
 					return -1;
 				if (z.next_out_index)

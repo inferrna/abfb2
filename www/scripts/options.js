@@ -41,7 +41,7 @@ define(
     var showdeps = {
         'google':/lang_f|lang_t/,
         'google proxy':/proxy_host|proxy_port|lang_f|lang_t/,
-        'dictd proxy':/socket_host|socket_port|proxy_host|proxy_port|dict_db/,
+        'socket proxy':/socket_host|socket_port|proxy_host|proxy_port|dict_db/,
         'socket':/socket_host|socket_port|dict_db/,
         'excepts':/dsfile|file|dict_src/
     };
@@ -49,7 +49,7 @@ define(
         if(el.id!='dict_src') return;
         var ex = showdeps['excepts'];
         var shows = showdeps[el.value];
-        if(el.value==='dictd proxy' || el.value==='socket') {dict.get_dbs(el.value);}
+        if(el.value==='socket proxy' || el.value==='socket') {dict.get_dbs(el.value);}
         if(!shows && !ex) return;
         for(var key in datas){
             if(!ex.test(key) && !shows.test(key)) document.getElementById(key).parentNode.style.display = 'none';
@@ -132,7 +132,11 @@ define(
             return sel;
         } 
         sel.addEventListener("change", function(evt){get_config(); draw_deps(evt.target);
-                                    set_opt("sel_"+sel.id, evt.target.options[evt.target.selectedIndex].value); }, false);
+                                    var value = evt.target.options[evt.target.selectedIndex].value;
+                                    set_opt("sel_"+sel.id, value); 
+                                    values[evt.target.id] = value;
+                                    dict.init_params({"db": values["dict_db"], "dictionary": values["dict_src"]});
+                                    }, false);
         //device storage>
         for(var eln in elements){
             var el = document.createElement("option");
@@ -206,9 +210,10 @@ define(
             if(elem){ values[key] = elem.value; }
             else{console.warn("No "+key+" found.");}
         }
-        dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
-                                                            "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
-                                                            "phost": values['proxy_host'], "pport": values['proxy_port']  });
+        dict.init_params({"db": values["dict_db"], "dictionary": values["dict_src"], 
+                          "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
+                          "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
+                          "phost": values['proxy_host'], "pport": values['proxy_port']  });
         return values;
     }
     function set_sel_vl(sel){

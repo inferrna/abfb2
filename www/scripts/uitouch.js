@@ -91,10 +91,11 @@ define(
           var regs = [rew0, rew1, rew2];
           for(var i=0; i<regs.length; i++){
               var ms = text.match(regs[i]);
-              for(var j=0; j<ms.length; j++){
-                  console.log("ms[j]=="+ms[j]);
-                  if(text.indexOf(ms[j])<=off && (text.indexOf(ms[j])+ms[j].length)>=off)
-                      res.push(ms[j]);
+              if(ms)
+                  for(var j=0; j<ms.length; j++){
+                      console.log("ms[j]=="+ms[j]);
+                      if(text.indexOf(ms[j])<=off && (text.indexOf(ms[j])+ms[j].length)>=off)
+                          res.push(ms[j]);
               }
           }
           return res
@@ -278,6 +279,7 @@ define(
               if(!gest.ispinch(evt))  handleTouch(evt, 1);
           },
           dragpop:function(y){
+              console.log("max_Y=="+max_Y+" y=="+y);
               if(max_Y>window.innerHeight/2){
                   var newy = y<max_Y ? y : max_Y;
                   pop.style.bottom = parseInt(window.innerHeight-newy)+"px";
