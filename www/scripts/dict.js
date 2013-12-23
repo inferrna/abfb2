@@ -45,7 +45,7 @@ define(
                 resp = basetxt;
                 var resptext = event.target.responseText;
                 //console.log(JSON.parse(resptext)["dict"]);
-                if(datas["dictionary"].match("google.+?$")){
+                if(datas["dictionary"].match("google.*?$")){
                     resp +="<b>"+_text+"</b> -> "; 
                     var respj = JSON.parse(resptext);
                     if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];

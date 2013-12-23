@@ -72,10 +72,13 @@ function(jsepub, stuff, encod, options){
         if(index>-1){
             //console.log("index=="+index+"  spine=="+spine+"\n"+JSON.stringify(opf.manifest));
             if(opf && toc && files){
-                if(index >= opf.spine.length) index = 0;
-                var spine = opf.spine[index];
+                var idx = pages[index];
+                console.log("pages=="+pages+" idx=="+idx+" index=="+index);
+                if(idx >= opf.spine.length) idx = 0;
+                var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
                 var doc = files[href];
+                console.log("href: "+href);
                 var html = srlzr.serializeToString(doc);
                 options.set_opt("last_html", html, true);
                 return html;//decodeURIComponent( escape(resultDocument) ));
@@ -87,19 +90,21 @@ function(jsepub, stuff, encod, options){
 
             var hrefs = [];
             var urls = [];
-            var re = /([\w\/]+)\/(.*)/;
+            var re = /(.*\/)+?(.+?)/;
+            var re1 = /(.+?)(#.*)/;
+            var hrefs = opf.spine.map(function(sp){return opf.manifest[sp]['href'].replace(re, "$2").replace(re1, "$1");});
             for(var i = 0; i < opts.length; i++) {
-                urls.push(opts[i].getAttribute('url').replace(re, "$2"));
-            }
-            //console.log("urls is "+urls);
-            for(var i = 0; i<opf.spine.length;i++){
-                var spine = opf.spine[i];
-                href = opf.manifest[spine]['href'].replace(re, "$2");
-                //console.log(i+" href "+href+" "+opf.manifest[spine]['href']);
-                var idx = urls.indexOf(href);
+                urls.push(opts[i].getAttribute('url').replace(re, "$2").replace(re1, "$1"));
+                var idx = hrefs.indexOf(urls[i]);
+                console.log("Got url: "+opts[i].getAttribute('url')+" -> "+urls[i]+". idx=="+idx+", hrefs[idx]=="+hrefs[idx]);
                 pages.push(idx);
             }
-            //console.log("pages is "+pages);
+            console.log("urls is "+urls+" opf.spine.length=="+opf.spine.length);
+            for(var i = 0; i<opf.spine.length;i++){
+                var spine = opf.spine[i];
+                opf.manifest[spine]['href'] = opf.manifest[spine]['href'].replace(re1, "$1");
+            }
+            console.log("hrefs is "+hrefs);
             var docFragment = document.createDocumentFragment();
             while(contents.firstChild) docFragment.appendChild(contents.firstChild);
             //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
@@ -122,13 +127,13 @@ function(jsepub, stuff, encod, options){
              },
              option:function(i){
                      if(i==0) return get_true_opt(currentpage+0);
-                     if(pages[currentpage]>-1) return pages[currentpage];
+                     if(pages[currentpage]>-1) return currentpage;
                      return i;
              },
              get_fromopt:function(idx){
                      currentpage = idx;
-                     var tidx = pages.indexOf(idx);
-                     if(tidx>-1) currentpage = tidx;
+                     var tidx = pages[idx];
+                     if(tidx) currentpage = idx;
                      return get_indexed_page(currentpage);
              },
              currentpage:function(){

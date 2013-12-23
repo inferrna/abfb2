@@ -271,6 +271,15 @@ define(
               theitm = itm;
               if(!gest.ispinch(evt))  handleTouch(evt, 1);
           },
+          dragpop:function(y){
+              if(max_Y>window.innerHeight/2){
+                  var newy = y<max_Y ? y : max_Y;
+                  pop.style.bottom = parseInt(window.innerHeight-newy)+"px";
+              } else {
+                  var newy = y>max_Y ? y : max_Y;
+                  pop.style.top = parseInt(newy)+"px";
+              }
+          },
           handleClick:function(evt){
               selectword(evt.clientX, evt.clientY);
           },

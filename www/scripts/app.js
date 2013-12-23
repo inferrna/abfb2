@@ -46,12 +46,14 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     hammer(txarea, {"drag_min_distance": drvds}).on("dragdown", function(evt){if(Math.abs(evt.deltaY)>drvds) options.display('show');});*/
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
     hammer(mtext).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);});
-    hammer(txarea, {"swipe_velocity": 0.3}).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1); pop.style.display='none';});
-    hammer(txarea, {"swipe_velocity": 0.3}).on("swiperight", function(evt){uitouch.liftcol(mtext, 1); pop.style.display='none';});
-    hammer(txarea, {"swipe_velocity": 0.3}).on("swipeup", function(evt){options.display('hide'); pop.style.display='none';});
-    hammer(txarea, {"swipe_velocity": 0.3}).on("swipedown", function(evt){options.display('show'); pop.style.display='none';});
-    hammer(pop, {"swipe_velocity": 0.3}).on("swipeleft",  function(evt){uitouch.liftcol(pts,-1);});
-    hammer(pop, {"swipe_velocity": 0.3}).on("swiperight", function(evt){uitouch.liftcol(pts, 1);});
+    hammer(txarea, {"swipe_velocity": 0.1}).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1); pop.style.display='none';});
+    hammer(txarea, {"swipe_velocity": 0.1}).on("swiperight", function(evt){uitouch.liftcol(mtext, 1); pop.style.display='none';});
+    hammer(txarea, {"swipe_velocity": 0.1}).on("swipeup", function(evt){options.display('hide'); pop.style.display='none';});
+    hammer(txarea, {"swipe_velocity": 0.1}).on("swipedown", function(evt){options.display('show'); pop.style.display='none';});
+    hammer(pop, {"swipe_velocity": 0.1}).on("swipeleft",  function(evt){uitouch.liftcol(pts,-1);});
+    hammer(pop, {"swipe_velocity": 0.1}).on("swiperight", function(evt){uitouch.liftcol(pts, 1);});
+    hammer(pop).on("dragup",   function(evt){uitouch.dragpop(evt.gesture.srcEvent.clientY);});
+    hammer(pop).on("dragdown", function(evt){uitouch.dragpop(evt.gesture.srcEvent.clientY);});
     //hammer(mtext).on("tap", function(evt){console.log("Got tap"); uitouch.handleClick(evt.gesture.srcEvent);});
     mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
