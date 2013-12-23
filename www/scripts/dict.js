@@ -74,7 +74,7 @@ define(
     }
     function get_def(word){
             lword = word.toLowerCase().replace(/(^\s)|[\.\!\?\,\;\:]|(\s$)/gm, "");
-            if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword]);}
+            if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword], seealso);}
             else if(datas["dictionary"] === 'dictd proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
             else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
@@ -103,7 +103,7 @@ define(
             if(texts[1] && texts.length>0) seealso = texts[1].map(function(itm){
                     var a = document.createElement("span");
                     a.textContent = itm;
-                    a.onclick = function(evt){console.log("mi clicked!"); get_def(evt.target.textContent);};
+                    a.onclick = function(evt){get_def(evt.target.textContent);};
                     //a.addEventListener("click", function(evt){get_def(evt.target.textContent);}, false);
                     return a;
                 });

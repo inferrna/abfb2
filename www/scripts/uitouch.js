@@ -83,14 +83,20 @@ define(
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           return text.slice(loind+1, hiind);
       }
-      function expand23w(word, text){
-          var rew0 = new RegExp("\\S+[\\s\\-—]+?"+word+"[\\s\\-—]+?\\S+", "mg");
-          var rew1 = new RegExp("\\S+[\\s\\-—]+?"+word, "mg");
-          var rew2 = new RegExp(word+"[\\s\\-—]+?\\S+", "mg");
+      function expand23w(word, text, off){
+          var rew0 = new RegExp("[\\w\\S]+[\\s\\-—]+?"+word+"[\\s\\-—]+?[\\w\\S]+", "mg");
+          var rew1 = new RegExp("[\\w\\S]+[\\s\\-—]+?"+word, "mg");
+          var rew2 = new RegExp(word+"[\\s\\-—]+?[\\w\\S]+", "mg");
           var res = [];
-          if(text.match(rew0))res.push(text.match(rew0)[0]);
-          if(text.match(rew1))res.push(text.match(rew1)[0]);
-          if(text.match(rew2))res.push(text.match(rew2)[0]);
+          var regs = [rew0, rew1, rew2];
+          for(var i=0; i<regs.length; i++){
+              var ms = text.match(regs[i]);
+              for(var j=0; j<ms.length; j++){
+                  console.log("ms[j]=="+ms[j]);
+                  if(text.indexOf(ms[j])<=off && (text.indexOf(ms[j])+ms[j].length)>=off)
+                      res.push(ms[j]);
+              }
+          }
           return res
       }
       function expand2s(off, text){
@@ -213,7 +219,7 @@ define(
                   rng.setEnd(el, off+selected_word.length);
                   var sel = window.getSelection();
                   sel.addRange(rng);*/
-                  callbacks['got_selection']([selected_word, expand23w(selected_word, txt)]);
+                  callbacks['got_selection']([selected_word, expand23w(selected_word, txt, off)]);
               }
               //callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
           }
