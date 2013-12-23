@@ -126,7 +126,8 @@ function(jsepub, stuff, encod, options){
                      return get_indexed_page(index);
              },
              option:function(i){
-                     if(i==0) return get_true_opt(currentpage+0);
+                     console.log("i=="+i+" currentpage=="+currentpage+" pages[currentpage]=="+pages[currentpage])
+                     if(i==0) return currentpage;
                      if(pages[currentpage]>-1) return currentpage;
                      return i;
              },
