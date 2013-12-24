@@ -120,7 +120,12 @@ define(
             var _chrome = false;
             try{if(chrome.socket) _chrome = true;}
             catch(e){console.warn(e.stack); }
-            if(navigator.mozTCPSocket) sockavail = 'mozilla';
+            if(navigator.mozTCPSocket){
+                try{
+                    navigator.mozTCPSocket.open('8.8.8.8', 53, {binaryType: 'arraybuffer'});
+                    sockavail = 'mozilla';
+                } catch(e) {console.log("navigator.mozTCPSocket present, but unaccessible");}
+            }
             else if(_chrome) sockavail = 'chrome';
             return sockavail;
         },
