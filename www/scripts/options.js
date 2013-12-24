@@ -1,6 +1,7 @@
 define(
   ['dict', 'uitouch', 'socket', 'sdstorage'],
   function(dict, uitouch, socket, sdstorage){
+    "use strict";
     var callbacks = {'got_file':function(){}, 'got_pp':function(){}};
     var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
@@ -399,7 +400,7 @@ define(
                 lbl.textContent = parseInt(percent)+"% of current chapter";
             },
             msg:function(text){
-                if(text) lbl.textContent = text;
+                if(text) { lbl.textContent = text; return null;}
                 else return lbl.textContent;
             },
             getpercent:function(){

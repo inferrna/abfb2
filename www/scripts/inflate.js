@@ -2091,7 +2091,7 @@
 		that.append = function(data, onprogress) {
 			var err, buffers = [], lastIndex = 0, bufferIndex = 0, bufferSize = 0, array;
 			if (data.length === 0)
-				return;
+				return null;
 			z.next_in_index = 0;
 			z.next_in = data;
 			z.avail_in = data.length;

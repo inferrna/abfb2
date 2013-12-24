@@ -5,7 +5,18 @@ function(jsepub, stuff, encod, options){
     var xsltp = new XSLTProcessor();
     var parsr = new DOMParser();
     //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
-    xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
+    //xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
+    var xsl = parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml');
+    if(window.XSLTProcessor){
+        var xsltp = new XSLTProcessor();
+        xsltp.importStylesheet(xsl, 'text/xml');
+    } else {
+        //var jsxml = require('jsxml');
+    }
+    function transxsl(xml, xsl, doc){
+        if(window.XSLTProcessor) return xsltp.transformToDocument(xml, doc);
+        else return parsr.parseFromString(jsxml.transReady(xml, xsl), "text/html");
+    }
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
     var callbacks = { 'got_book':function(){} };
@@ -85,7 +96,7 @@ function(jsepub, stuff, encod, options){
             } else { return null; }
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
-            var contents = xsltp.transformToDocument(toc,doc);
+            var contents = transxsl(toc, xsl, doc);//xsltp.transformToDocument(toc,doc);
             var opts = contents.getElementsByTagName("option");
 
             var hrefs = [];

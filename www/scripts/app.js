@@ -40,8 +40,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     var drvds = Math.floor(window.innerHeight/5);
     var drhds = Math.floor(window.innerWidth/5);
     console.log("dists== "+drvds+" "+drhds);
-    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, -1);}});
-    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, 1);}});
+    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
     hammer(txarea).on("dragup", function(evt){if(evt.gesture.distance>=drvds){evt.gesture.stopDetect(); options.display('hide'); pop.style.display='none';}});
     hammer(txarea).on("dragdown", function(evt){if(evt.gesture.distance>=drvds){evt.gesture.stopDetect(); options.display('show'); pop.style.display='none';}});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});

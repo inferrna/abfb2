@@ -1,17 +1,28 @@
 define(['stuff'],
 function(stuff){
     var fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
-    var srlzr = new XMLSerializer();
-    var xsltp = new XSLTProcessor();
-    var parsr = new DOMParser();
-    //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
-    xsltp.importStylesheet(parsr.parseFromString(stuff.fb2xsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
     var callbacks = { 'got_book':function(){} };
     var pages = [];
     var divs = [];
     var currentpage = 0;
+    var srlzr = new XMLSerializer();
+    var parsr = new DOMParser();
+    console.log("window.XSLTProcessor supports is "+(window.XSLTProcessor ? true : false));
+    var xsl = parsr.parseFromString(stuff.fb2xsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml');
+    if(window.XSLTProcessor){
+        var xsltp = new XSLTProcessor();
+        xsltp.importStylesheet(xsl);
+    } else {
+        //var jsxml = require('jsxml');
+    }
+    function transxsl(xml, xsl){
+        if(window.XSLTProcessor) return xsltp.transformToFragment(xml, document);
+        else return parsr.parseFromString(jsxml.transReady(xml, xsl), "text/html");
+    }
+
+
     function load_fb2(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
@@ -22,7 +33,7 @@ function(stuff){
     }
     function proceedfb2(fb2File){
         var xml = parsr.parseFromString(fb2File,'text/xml');
-        var resultDocument = xsltp.transformToFragment(xml, document);
+        var resultDocument = transxsl(xml, xsl);//xsltp.transformToFragment(xml, document);
         fb2.appendChild(resultDocument);
         var divlist = fb2.getElementsByTagName('div');
         var re = /TOC_.+/g;

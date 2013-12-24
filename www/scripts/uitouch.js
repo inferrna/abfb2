@@ -1,6 +1,7 @@
 define(
     ['options', 'stuff'],
   function(options, stuff){
+      "use strict";
       var dictflag = 0;
       var liftflag = 0;
       var hold = 0;
@@ -20,6 +21,7 @@ define(
       var movef = function(){};
       function sign(x) { return x && x / Math.abs(x); }
      function liftcol(el, dir) {
+          "use strict";
           //console.log(el);
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
@@ -98,7 +100,7 @@ define(
                           res.push(ms[j]);
               }
           }
-          return res
+          return res;
       }
       function expand2s(off, text){
           var re = /[\.\!\?]/;
@@ -109,6 +111,7 @@ define(
           return out;
       }
       function ispointinrect(rect, x, y){
+          "use strict";
           try {
               var t = Math.max(rect.bottom, rect.top);
               var b = Math.min(rect.bottom, rect.top);
@@ -117,6 +120,7 @@ define(
           else return false;
       }
       function ispointinrectlist(rectlist, x, y){
+          "use strict";
           //console.log(JSON.stringify(rectlist));
           for(var i=0; i<rectlist.length; i++){
              if(ispointinrect(rectlist[i], x, y)) return i;
@@ -125,6 +129,7 @@ define(
       }
       function clip(_x, min, max) {return ( _x < min ) ? min : ( _x > max ) ? max : _x};
       function get_off(_x, _y, sidx){
+          "use strict";
           if(!sidx) sidx=0;
           var dpr = window.devicePixelRatio || 1.0;
           var d = Math.max(2*scale*dpr, 1);
@@ -170,8 +175,10 @@ define(
               console.log("d=="+d+". Got bad. \""+(retch ? retch.textContent : '')+"\" Going new - "+sidx);
               return get_off(_x, _y, sidx);
           }
+          return true;
       }
       function selectword(x, y, rec){
+          "use strict";
           max_Y = y;
           if(document.caretPositionFromPoint) {
               var cp = document.caretPositionFromPoint(x, y);
@@ -277,6 +284,7 @@ define(
               movef = null;
               theitm = itm;
               if(!gest.ispinch(evt))  handleTouch(evt, 1);
+              return true;
           },
           dragpop:function(y){
               console.log("max_Y=="+max_Y+" y=="+y);
