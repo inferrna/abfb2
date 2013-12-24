@@ -79,8 +79,11 @@ define(
                                                             callbacks[0](callbacks);}, false);
         oReq.addEventListener("abort", function(){datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1);
                                                             callbacks[0](callbacks);}, false);
-        oReq.addEventListener("load", function(){callbacks[0](callbacks);}, false);
-        try { oReq.open("GET", "http://translate.google.com/?", true); oReq.send(); }
+        oReq.addEventListener("load", function(){
+                  datas.dict_src[0].splice(datas['dict_src'][0].indexOf('google proxy'),1);
+                  callbacks[0](callbacks);
+            }, false);
+        try {oReq.open("GET", "http://translate.google.com/?", true); oReq.send();}
         catch(e) { datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1); callbacks[0](callbacks); }
     }
     function hassocket(callbacks){
@@ -93,6 +96,8 @@ define(
             datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('socket'),1);
             //delete datas['socket_host'];
             //delete datas['socket_port'];
+        } else {
+            datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('socket proxy'),1);
         }
         callbacks[0](callbacks);
     }
