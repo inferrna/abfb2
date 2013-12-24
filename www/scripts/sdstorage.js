@@ -1,5 +1,5 @@
 define(
-  ['require'],
+  ['require', 'sds_ff', 'sds_cr'],
   function(require){
     var options = null;
     var sds_ls = null;
@@ -9,7 +9,7 @@ define(
              parse:function(sel, obj){
                  if(sds_ls) sds_ls.parse(sel, obj);
              },
-             get:function(_fnm, callback){
+             get:function(fnm, callback){
                  if(sds_ls) sds_ls.get(fnm, callback);
              }
     }

@@ -2,7 +2,6 @@ define(['jsepubz', 'stuff', 'encod', 'options'],
 function(jsepub, stuff, encod, options){
     var epub = null;
     var srlzr = new XMLSerializer();
-    var xsltp = new XSLTProcessor();
     var parsr = new DOMParser();
     //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
     //xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
