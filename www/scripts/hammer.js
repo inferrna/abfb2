@@ -108,7 +108,7 @@ Hammer.Instance = function(element, options) {
     setup();
 
     this.element = element;
-
+    //this.event = document.createEvent('Event'); 
     // start/stop detection option
     this.enabled = true;
 
@@ -173,6 +173,7 @@ Hammer.Instance.prototype = {
      */
     trigger: function triggerEvent(gesture, eventData){
         // trigger DOM event
+        if(!this.event) this.event = document.createEvent('Event');
         var event = document.createEvent('Event');
 		event.initEvent(gesture, true, true);
 		event.gesture = eventData;

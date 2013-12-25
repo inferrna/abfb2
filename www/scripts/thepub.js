@@ -137,12 +137,11 @@ function(jsepub, stuff, encod, options){
              },
              option:function(i){
                      console.log("i=="+i+" currentpage=="+currentpage+" pages[currentpage]=="+pages[currentpage])
-                     if(i==0) return currentpage;
-                     if(pages[currentpage]>-1) return currentpage;
+                     //if(i==0) return currentpage;
+                     if(pages[currentpage]) return currentpage;
                      return i;
              },
              get_fromopt:function(idx){
-                     currentpage = idx;
                      var tidx = pages[idx];
                      if(tidx) currentpage = idx;
                      return get_indexed_page(currentpage);
@@ -152,9 +151,9 @@ function(jsepub, stuff, encod, options){
              },
              next_page:function(diff){
                      //console.log(currentpage+" next_page "+diff);
-                     var page = currentpage + diff;
-                     if(pages.length>page && page>-1) {
-                            currentpage += diff;
+                     var page = pages.indexOf(pages[currentpage] + diff);
+                     if(page>-1) {
+                            currentpage = page;
                             return get_indexed_page(currentpage);
                      }
                      return -1;

@@ -52,16 +52,19 @@ function(stuff){
             for (var i = 0, il = tags.length; i < il; i++) {
                 var fragment = document.createDocumentFragment();
                 var ltag = tags[i];
-                while(ltag.firstChild) {
-                    fragment.appendChild(ltag.firstChild);
+                if(ltag){
+                    while(ltag.firstChild) {
+                        fragment.appendChild(ltag.firstChild);
+                    }
+                    ltag.parentNode.replaceChild(fragment, ltag);
                 }
-                ltag.parentNode.replaceChild(fragment, ltag);
             }
             if(doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
     }
     function get_indexed_page(index){
         if(index>-1){
-            var ch = divs[index];//document.getElementById(pages[index]);
+            var idx = pages[index];
+            var ch = divs[idx];//document.getElementById(pages[index]);
             try { 
                 var html = srlzr.serializeToString(ch);
             } catch (e) { console.warn(e.stack); return null;}
@@ -74,10 +77,12 @@ function(stuff){
             options[0].setAttribute('disabled', '');
             options[0].setAttribute('selected', '');
             var values = [];
-            for(var i = 0; i<options.length; i++)
-                values.push(options[i].getAttribute('did'))
-            for(var i = 0; i<divs.length; i++){
-                pages.push(values.indexOf(divs[i].getAttribute('id')));
+            for(var i = 0; i<divs.length; i++)
+                values.push(divs[i].getAttribute('id'));
+            for(var i = 0; i<options.length; i++){
+                var idx  = values.indexOf(options[i].getAttribute('did'));
+                if(idx>-1) pages.push(idx);
+                else pages.push(pages[pages.length-1]);
                 //console.log(divs[i].getAttribute('id'));
             }
             //console.log("values is "+values);
@@ -101,13 +106,13 @@ function(stuff){
                      return get_indexed_page(index);
              },
              option:function(i){
-                     if(pages[currentpage]>-1) return pages[currentpage];
+                     if(pages[currentpage]) return currentpage;
                      return i;
              },
              get_fromopt:function(idx){
-                     currentpage = idx;
-                     var tidx = pages.indexOf(idx);
-                     if(tidx>-1) currentpage = tidx;
+                     var tidx = pages[idx];
+                     console.log("idx=="+idx+" tidx=="+tidx+" pages=="+pages);
+                     if(tidx) currentpage = idx;
                      return get_indexed_page(currentpage);
              },
              currentpage:function(){
@@ -115,12 +120,18 @@ function(stuff){
              },
              next_page:function(diff){
                      //console.log(currentpage+" next_page "+diff);
-                     var page = currentpage + diff;
+                     var page = pages.indexOf(pages[currentpage] + diff);
+                     if(page>-1) {
+                            currentpage = page;
+                            return get_indexed_page(currentpage);
+                     }
+                     return -1;
+                     /*var page = currentpage + diff;
                      if(pages.length>page && page>-1) {
                             currentpage += diff;
                             return get_indexed_page(currentpage);
                      }
-                     return -1;
+                     return -1;*/
              },
              init:function(){
                     fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;

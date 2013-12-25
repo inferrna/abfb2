@@ -287,13 +287,11 @@ define(
               return true;
           },
           dragpop:function(y){
-              console.log("max_Y=="+max_Y+" y=="+y);
+              //console.log("max_Y=="+max_Y+" y=="+y);
               if(max_Y>window.innerHeight/2){
-                  var newy = y<max_Y ? y : max_Y;
-                  pop.style.bottom = parseInt(window.innerHeight-newy)+"px";
+                  pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
               } else {
-                  var newy = y>max_Y ? y : max_Y;
-                  pop.style.top = parseInt(newy)+"px";
+                  pop.style.top = parseInt(y>max_Y ? y : max_Y)+"px";
               }
           },
           handleClick:function(evt){
