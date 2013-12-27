@@ -9,6 +9,7 @@ try: from lxml import etree
 except: import xml.etree.ElementTree as etree
 from xml.sax.saxutils import escape
 import urllib.request
+import sqlite3
 
 def get_def(text, host, port):
     #HOST = 'localhost'    # The remote host
@@ -44,17 +45,24 @@ def get_google(req, opener):
     u = opener.open(url)
     return u.read()
 
+def get_sound(cursor, word, lang='eng'):
+    print("Got: ", word, lang)
+    cursor.execute('''SELECT packages.path, filename, sounds.idx, SWAC_TEXT, SWAC_LANG, SWAC_SPEAK_NAME, SWAC_HOMOGRAPHIDX FROM sounds INNER JOIN packages ON sounds.packages_idx = packages.idx WHERE SWAC_TEXT=? AND SWAC_LANG=? ORDER BY SWAC_PRON_INTONATION DESC LIMIT 24;''', (word, lang,))
+    res = cursor.fetchone()
+    return str(res[0]+res[1]).encode()
 
 class Handler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0) Gecko/20100101 Firefox/17.0'), ('Referer', 'http://www.google.ru/')]
+        self.conn = sqlite3.connect('/home/inferno/.swac/swac.db')
+        self.cursor = self.conn.cursor()
         BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
         
     def do_POST(self):
         self.send_response(200)
         self.send_header("Content-type", "text/plain; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*");
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Connection", "close")
         self.end_headers()
         length = int(self.headers['Content-Length'])
@@ -67,7 +75,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.send_header("Content-type", "text/html; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*");
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         if self.path.split('?')[0]=="/t":
             self.wfile.write(get_google(self.path.split('?')[1], self.opener))
@@ -75,6 +83,10 @@ class Handler(BaseHTTPRequestHandler):
                 self.wfile.flush()
                 self.wfile.close()
             self.rfile.close()
+        elif self.path.split('?')[0]=="/sound":
+            imparam = urllib.parse.parse_qs(self.path.split('?')[1])
+            url = get_sound(self.cursor, imparam['word'][0], imparam['lang'][0])
+            self.wfile.write(url)
         else:
             get_data = urllib.parse.parse_qs(self.path.split('?')[1])
             self.do_smth(get_data)

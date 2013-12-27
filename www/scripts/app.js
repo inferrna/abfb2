@@ -22,6 +22,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
     document.getElementsByTagName('head')[0].appendChild(style);
+    var snd = document.getElementById('snd');
     var pts = document.getElementById("pts");
     var pop = document.getElementById("pop");
     var marea = document.getElementById("maintext");
@@ -37,21 +38,24 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         else if (window.innerWidth<1024) txarea.style.backgroundImage='url(../images/back_small.jpg)';
         else txarea.style.backgroundImage='url(../images/back.jpg)';
     }
-    var drvds = Math.floor(window.innerHeight/5);
-    var drhds = Math.floor(window.innerWidth/5);
-    console.log("dists== "+drvds+" "+drhds);
-    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hammer(txarea).on("dragup", function(evt){if(evt.gesture.distance>=drvds){evt.gesture.stopDetect(); options.display('hide'); pop.style.display='none';}});
-    hammer(txarea).on("dragdown", function(evt){if(evt.gesture.distance>=drvds){evt.gesture.stopDetect(); options.display('show'); pop.style.display='none';}});
+    var drvhds = Math.min(Math.floor(window.innerHeight/3), Math.floor(window.innerWidth/3));
+    var sndbt = document.getElementById('sndbt');
+    sndbt.onclick=function(){console.log("sndbt clicked");snd.play();};
+    sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
+    sndbt.style.width = sndbt.style.height;
+    sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
+    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hammer(txarea).on("dragup", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('hide'); pop.style.display='none';}});
+    hammer(txarea).on("dragdown", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('show'); pop.style.display='none';}});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
     hammer(mtext).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);});
    /*hammer(txarea, {"swipe_velocity": 0.1}).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1); pop.style.display='none';});
     hammer(txarea, {"swipe_velocity": 0.1}).on("swiperight", function(evt){uitouch.liftcol(mtext, 1); pop.style.display='none';});
     hammer(txarea, {"swipe_velocity": 0.1}).on("swipeup", function(evt){options.display('hide'); pop.style.display='none';});
     hammer(txarea, {"swipe_velocity": 0.1}).on("swipedown", function(evt){options.display('show'); pop.style.display='none';});*/
-    hammer(pop).on("dragleft",  function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(pts,-1);}});
-    hammer(pop).on("dragright", function(evt){if(evt.gesture.distance>=drhds){evt.gesture.stopDetect(); uitouch.liftcol(pts, 1);}});
+    hammer(pop).on("dragleft",  function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(pts,-1);}});
+    hammer(pop).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(pts, 1);}});
     hammer(pop).on("dragup",   function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     hammer(pop).on("dragdown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     //hammer(mtext).on("tap", function(evt){console.log("Got tap"); uitouch.handleClick(evt.gesture.srcEvent);});
@@ -156,6 +160,15 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                     cl.appendChild(els[i]);
                 }
             }
+            dict.get_sound(function(url){
+                    console.log("Got sound url: "+url);
+                    if(url.match(/http\:\/\/.*/)){
+                        sndbt.style.display = 'block';
+                        snd.src = url;
+                    } else {
+                        sndbt.style.display = 'none';
+                        }
+                });
         } else {el.style.display = 'none';}
     }
     function thumb_block(mY, texts, disp) {

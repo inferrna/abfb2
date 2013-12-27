@@ -61,13 +61,22 @@ function(stuff){
             }
             if(doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
     }
+    function clean_invalid(doc){
+        var invalids = Array.prototype.slice.call(doc.childNodes)
+                       .filter(function(node){
+                                    try{srlzr.serializeToString(node); return true;}
+                                    catch (e) { console.warn(e); return false;}
+                               });
+    }
     function get_indexed_page(index){
         if(index>-1){
             var idx = pages[index];
             var ch = divs[idx];//document.getElementById(pages[index]);
             try { 
                 var html = srlzr.serializeToString(ch);
-            } catch (e) { console.warn(e.stack); return null;}
+            } catch (e) { console.warn(ch);
+                clean_invalid(ch);
+                return null;}
             //console.log("html== "+html+" id=="+index);
             return html;
         }else{
@@ -82,7 +91,8 @@ function(stuff){
             for(var i = 0; i<options.length; i++){
                 var idx  = values.indexOf(options[i].getAttribute('did'));
                 if(idx>-1) pages.push(idx);
-                else pages.push(pages[pages.length-1]);
+                else if(pages.length>1) pages.push(pages[pages.length-1]);
+                else pages.push(0);
                 //console.log(divs[i].getAttribute('id'));
             }
             //console.log("values is "+values);
@@ -106,13 +116,13 @@ function(stuff){
                      return get_indexed_page(index);
              },
              option:function(i){
-                     if(pages[currentpage]) return currentpage;
+                     if(pages[currentpage]>-1 && !isNaN(pages[currentpage])) return currentpage;
                      return i;
              },
              get_fromopt:function(idx){
                      var tidx = pages[idx];
                      console.log("idx=="+idx+" tidx=="+tidx+" pages=="+pages);
-                     if(tidx) currentpage = idx;
+                     if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
                      return get_indexed_page(currentpage);
              },
              currentpage:function(){

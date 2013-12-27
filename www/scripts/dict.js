@@ -119,6 +119,13 @@ define(
                 socket.get_dbs(callbacks['got_dbs']);
             }
         },
+        get_sound:function(callback){
+           var url = "http://borgu.org:8082/sound?word="+lword+"&lang=eng";
+           var dreq = new XMLHttpRequest({mozSystem: true});
+           dreq.onload = function (event) {callback(event.target.responseText);};
+           dreq.open("GET", url, "true");
+           dreq.send();
+        },
         init_params:function(params){
             for (var key in params) datas[key] = (params[key] != null ? params[key] : datas[key]);
             for (var key in googles) googles[key] = datas[key];

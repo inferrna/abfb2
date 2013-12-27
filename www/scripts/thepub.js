@@ -107,7 +107,9 @@ function(jsepub, stuff, encod, options){
                 urls.push(opts[i].getAttribute('url').replace(re, "$2").replace(re1, "$1"));
                 var idx = hrefs.indexOf(urls[i]);
                 console.log("Got url: "+opts[i].getAttribute('url')+" -> "+urls[i]+". idx=="+idx+", hrefs[idx]=="+hrefs[idx]);
-                pages.push(idx);
+                if(idx>-1) pages.push(idx);
+                else if(pages.length>1) pages.push(pages[pages.length-1]);
+                else pages.push(0);
             }
             console.log("urls is "+urls+" opf.spine.length=="+opf.spine.length);
             for(var i = 0; i<opf.spine.length;i++){
@@ -138,12 +140,12 @@ function(jsepub, stuff, encod, options){
              option:function(i){
                      console.log("i=="+i+" currentpage=="+currentpage+" pages[currentpage]=="+pages[currentpage])
                      //if(i==0) return currentpage;
-                     if(pages[currentpage]) return currentpage;
+                     if(pages[currentpage]>-1 && !isNaN(pages[currentpage])) return currentpage;
                      return i;
              },
              get_fromopt:function(idx){
                      var tidx = pages[idx];
-                     if(tidx) currentpage = idx;
+                     if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
                      return get_indexed_page(currentpage);
              },
              currentpage:function(){
