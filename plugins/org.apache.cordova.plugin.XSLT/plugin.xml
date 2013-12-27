@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.apache.cordova.plugin.XSLT"
+    version="3.0.0">
+	<engines>
+	    <engine name="cordova" version=">=3.0.0" />
+	</engines>
+	
+	<name>XSLT</name>
+	
+	<description>This plugin lets your app access tcp sockets.</description>
+	<author>Inferrna</author>
+	<keywords>tcp,socket,network</keywords>
+	<license>GPLv3 license</license>
+	
+	<platform name="android">
+		<source-file src="src/android/XSLT.java" target-dir="src/org/apache/cordova/plugin" />
+		
+		<config-file target="res/xml/config.xml" parent="/*">
+		            <feature name="XSLT">
+					        <param name="android-package" value="org.apache.cordova.plugin.XSLT"/>
+					 </feature>
+                     <plugin name="XSLT" value="org.apache.cordova.plugin.XSLT" />
+		</config-file>
+	</platform>
+</plugin>
