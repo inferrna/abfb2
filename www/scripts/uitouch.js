@@ -34,9 +34,10 @@ define(
           console.log("elh == "+stuff.getStyle(el, 'height'));
           var newtop = top + dir*(ptop-fs);
           var oldpercent = -100*parseInt(top)/elh;
-          var percent = -100*parseInt(newtop)/elh;
+          var percent = -100*parseFloat(newtop)/elh;
+          console.log("percent=="+percent+" elh===wh is "+(elh===wh)+" dir=="+dir);
           if(el.id==="maintext"){
-              if(percent>100) {callbacks['next_chapter']( 1); newtop=0;}
+              if(percent>100 || (dir===-1 && elh===wh)) {callbacks['next_chapter']( 1); newtop=0;}
               else if (newtop>0) {
                   if(top===0) {callbacks['next_chapter'](-1); return;}
                   else {newtop = 0;}
