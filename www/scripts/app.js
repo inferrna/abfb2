@@ -168,6 +168,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                     } else {
                         sndbt.style.display = 'none';
                         }
+                    uitouch.dragpop(-1);
                 });
         } else {el.style.display = 'none';}
     }
@@ -183,8 +184,11 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
-                if(pos==='top'){el.style.top = 0; el.style.bottom = '85%';}// db.style.display='none'; dt.style.display=disp;}
-                if(pos==='bot'){el.style.bottom = 0; el.style.top = '85%';}// dt.style.display='none'; db.style.display=disp;}
+                if(pos==='top'){
+                      cl
+                      el.style.top = 0+"px"; el.style.bottom = '99%';
+                    }// db.style.display='none'; dt.style.display=disp;}
+                if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '99%';}// dt.style.display='none'; db.style.display=disp;}
                     /*dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
                                         "phost": config['proxy_host'], "pport": config['proxy_port'], "db": config["dict_db"],
                                         "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});*/

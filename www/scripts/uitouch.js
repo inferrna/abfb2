@@ -288,9 +288,24 @@ define(
           },
           dragpop:function(y){
               //console.log("max_Y=="+max_Y+" y=="+y);
+              if(y===-1) var ch = parseInt(stuff.getStyle(pts, 'height'))+parseInt(stuff.getStyle(pts, 'font-size'));
               if(max_Y>window.innerHeight/2){
+                  if(y===-1){
+                      console.log("top max_Y=="+max_Y+" ch=="+ch);
+                      if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch)+"px";
+                      else pop.style.bottom = "75%"
+                      pop.style.top = 0+"px";
+                      return;
+                  }
                   pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
               } else {
+                  if(y===-1){
+                      console.log("bot max_Y=="+max_Y+" ch=="+ch);
+                      if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+"px";
+                      else pop.style.top = "75%"
+                      pop.style.bottom = 0+"px";
+                      return;
+                  }
                   pop.style.top = parseInt(y>max_Y ? y : max_Y)+"px";
               }
           },
