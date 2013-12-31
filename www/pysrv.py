@@ -49,13 +49,18 @@ def get_sound(cursor, word, lang='eng'):
     print("Got: ", word, lang)
     cursor.execute('''SELECT packages.path, filename, sounds.idx, SWAC_TEXT, SWAC_LANG, SWAC_SPEAK_NAME, SWAC_HOMOGRAPHIDX FROM sounds INNER JOIN packages ON sounds.packages_idx = packages.idx WHERE SWAC_TEXT=? AND SWAC_LANG=? ORDER BY SWAC_PRON_INTONATION DESC LIMIT 24;''', (word, lang,))
     res = cursor.fetchone()
-    return str(res[0]+res[1]).encode()
+    if not res:
+        cursor.execute('''SELECT packages.path, filename, sounds.idx, SWAC_TEXT, SWAC_LANG, SWAC_SPEAK_NAME, SWAC_HOMOGRAPHIDX FROM sounds INNER JOIN packages ON sounds.packages_idx = packages.idx WHERE SWAC_TEXT=? AND SWAC_LANG like ? ORDER BY SWAC_PRON_INTONATION DESC LIMIT 24;''', (word, lang+"%",))
+    res = cursor.fetchall()
+    sres = json.dumps([i[0]+i[1] for i in res])
+    print(sres)
+    return sres.encode()
 
 class Handler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0) Gecko/20100101 Firefox/17.0'), ('Referer', 'http://www.google.ru/')]
-        self.conn = sqlite3.connect('/home/inferno/.swac/swac.db')
+        self.conn = sqlite3.connect('swac.db')
         self.cursor = self.conn.cursor()
         BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
         

@@ -31,11 +31,9 @@ define(
           else top = parseInt(stuff.getStyle(el, 'top'));
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
           var pageend = -parseInt(stuff.getStyle(el, 'height'));
-          console.log("elh == "+stuff.getStyle(el, 'height'));
           var newtop = top + dir*(ptop-fs);
           var oldpercent = -100*parseInt(top)/elh;
           var percent = -100*parseFloat(newtop)/elh;
-          console.log("percent=="+percent+" elh===wh is "+(elh===wh)+" dir=="+dir);
           if(el.id==="maintext"){
               if(percent>100 || (dir===-1 && elh===wh)) {callbacks['next_chapter']( 1); newtop=0;}
               else if (newtop>0) {
@@ -96,7 +94,6 @@ define(
               var ms = text.match(regs[i]);
               if(ms)
                   for(var j=0; j<ms.length; j++){
-                      console.log("ms[j]=="+ms[j]);
                       if(text.indexOf(ms[j])<=off && (text.indexOf(ms[j])+ms[j].length)>=off)
                           res.push(ms[j]);
               }
@@ -169,11 +166,11 @@ define(
           sidx++;
           if((gotit && retch.textContent.replace(/\s/g, '')!='') || sidx>=spirales.length){
               if(retch) {
-                console.log("All ok, got \""+retch.textContent.replace(/\s/g, '')+"\".");
+                //console.log("All ok, got \""+retch.textContent.replace(/\s/g, '')+"\".");
                 return [z, retch];
               }
           } else {
-              console.log("d=="+d+". Got bad. \""+(retch ? retch.textContent : '')+"\" Going new - "+sidx);
+              //console.log("d=="+d+". Got bad. \""+(retch ? retch.textContent : '')+"\" Going new - "+sidx);
               return get_off(_x, _y, sidx);
           }
           return true;
@@ -289,10 +286,10 @@ define(
           },
           dragpop:function(y){
               //console.log("max_Y=="+max_Y+" y=="+y);
-              if(y===-1) var ch = parseInt(stuff.getStyle(pts, 'height'))+parseInt(stuff.getStyle(pts, 'font-size'));
+              if(y===-1) var ch = parseInt(stuff.getStyle(pts, 'height'))+(parseInt(stuff.getStyle(pts, 'font-size')) | 16);
               if(max_Y>window.innerHeight/2){
                   if(y===-1){
-                      console.log("top max_Y=="+max_Y+" ch=="+ch);
+                      //console.log("top max_Y=="+max_Y+" ch=="+ch);
                       if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch)+"px";
                       else pop.style.bottom = "75%"
                       pop.style.top = 0+"px";
@@ -301,7 +298,7 @@ define(
                   pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
               } else {
                   if(y===-1){
-                      console.log("bot max_Y=="+max_Y+" ch=="+ch);
+                      //console.log("bot max_Y=="+max_Y+" ch=="+ch);
                       if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+"px";
                       else pop.style.top = "75%"
                       pop.style.bottom = 0+"px";
@@ -326,7 +323,7 @@ define(
               else if (Code===40) options.display('show');
               else if ([107,109,187,189].indexOf(Code)!=-1) {
                   var cf = Code===107||Code===187 ? 1.075 : 1.0/1.075;
-                  chscale(cf, 1);
+                  chscale(cf*scale, 1);
                   apply_scale();
               }
           },

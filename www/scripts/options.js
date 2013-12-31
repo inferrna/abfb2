@@ -15,6 +15,7 @@ define(
     //pincher.style.order = "100";
     disable_prop(dtoc);
     toc.id = "toc";
+    toc.style.width = "95%";
     dtoc.appendChild(toc);
     opts_brd_b.appendChild(dtoc);
     opts_brd_b.appendChild(lbl);

@@ -1,4 +1,5 @@
-require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'hammer'], function(uitouch, dict, options, book, stuff, require){
+require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'require', 'images', 'hammer'],
+function(uitouch, dict, options, book, stuff, sound, require){
     console.log("app.js loads");
     var ws = null;
     var dreq = null;
@@ -22,7 +23,24 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
     style.type = 'text/css';
     style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
     document.getElementsByTagName('head')[0].appendChild(style);
+    var sndcnt = document.getElementById('sndcnt');
+    var sndbt = document.getElementById('sndbt');
+    sndbt.onclick=function(){snd.load(); snd.volume=1.0; snd.play();};
+    sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
+    sndbt.style.width = sndbt.style.height;
+    sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
     var snd = document.getElementById('snd');
+    snd.addEventListener("ended", function(){
+        sound.get_sound(dict.lword(), dict.lang(), function(url, c, t){
+                //console.log("Got sound url: "+url);
+                if(url && url.match(/http\:\/\/.*/)){
+                    sndcnt.textContent = c+"/"+t;
+                    if(snd.src!=url) snd.src = url;
+                } else {
+                    //sndbt.style.display = 'none';
+                }
+            });
+    }, false);
     var pts = document.getElementById("pts");
     var pop = document.getElementById("pop");
     var marea = document.getElementById("maintext");
@@ -39,11 +57,6 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         else txarea.style.backgroundImage='url(../images/back.jpg)';
     }
     var drvhds = Math.min(Math.floor(window.innerHeight/3), Math.floor(window.innerWidth/3));
-    var sndbt = document.getElementById('sndbt');
-    sndbt.onclick=function(){console.log("sndbt clicked");snd.play();};
-    sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
-    sndbt.style.width = sndbt.style.height;
-    sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
     hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
     hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
     hammer(txarea).on("dragup", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('hide'); pop.style.display='none';}});
@@ -126,7 +139,7 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
         ntoc.appendChild(html);
         dtoc.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
-        //sel.style.width = window.innerWidth-16+"px";
+        sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
         sel.addEventListener("change", function (event){/*console.log("Select changed");*/ marea.style.top="0px"; 
                                                 fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
         options.getpp();
@@ -153,6 +166,8 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
             var width = parseInt(el.style.width, 10);
             dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
             cl.innerHTML = dtext;
+            sndbt.appendChild(sndcnt);
+            cl.appendChild(sndbt);
             el.style.display = 'block';
             if(els && els.length){
                 for(var i = 0; i<els.length; i++){
@@ -160,15 +175,18 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                     cl.appendChild(els[i]);
                 }
             }
-            dict.get_sound(function(url){
-                    console.log("Got sound url: "+url);
+            sndbt.style.display = 'block';
+            uitouch.dragpop(-1);
+            sndbt.style.display = 'none';
+            sound.get_sound(dict.lword(), dict.lang(), function(url, c, t){
+                    //console.log("Got sound url: "+url);
                     if(url.match(/http\:\/\/.*/)){
+                        sndcnt.textContent = c+"/"+t;
                         sndbt.style.display = 'block';
                         snd.src = url;
                     } else {
                         sndbt.style.display = 'none';
-                        }
-                    uitouch.dragpop(-1);
+                    }
                 });
         } else {el.style.display = 'none';}
     }
@@ -185,7 +203,6 @@ require(['uitouch', 'dict', 'options', 'book', 'stuff', 'require', 'images', 'ha
                 else pos = 'top';
                 cl.style.top = "0px";
                 if(pos==='top'){
-                      cl
                       el.style.top = 0+"px"; el.style.bottom = '99%';
                     }// db.style.display='none'; dt.style.display=disp;}
                 if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '99%';}// dt.style.display='none'; db.style.display=disp;}

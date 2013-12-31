@@ -431,8 +431,11 @@
 			onend(outputSize, crc32.get());
 		}
 
-		if (obj.zip.useWebWorkers) {
+		if (obj.zip.useWebWorkers  && !window.cordova) {
 			worker = new Worker(obj.zip.workerScriptsPath + INFLATE_JS);
+            worker.onerror = function(event){
+                    throw new Error(event.message + " (" + event.filename + ":" + event.lineno + ")");
+            };
 			launchWorkerProcess(worker, reader, writer, offset, size, oninflateappend, onprogress, oninflateend, onreaderror, onwriteerror);
 		} else
 			launchProcess(
@@ -466,7 +469,7 @@
 			launchWorkerProcess(worker, reader, writer, 0, reader.size, ondeflateappend, onprogress, ondeflateend, onreaderror, onwriteerror);
 		}
 
-		if (obj.zip.useWebWorkers) {
+		if (obj.zip.useWebWorkers && !window.cordova) {
 			worker = new Worker(obj.zip.workerScriptsPath + DEFLATE_JS);
 			worker.addEventListener(MESSAGE_EVENT, onmessage, false);
 			worker.postMessage({

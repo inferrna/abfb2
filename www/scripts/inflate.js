@@ -37,7 +37,8 @@
 
 	// Global
 	var MAX_BITS = 15;
-
+//    if(!Uint8Array.prototype.subarray) Uint8Array.prototype.subarray = Uint8Array.prototype.subset | Uint8Array.prototype.slice;
+//    if(!Uint32Array.prototype.subarray) Uint32Array.prototype.subarray = Uint32Array.prototype.subset | Uint32Array.prototype.slice;
 	var Z_OK = 0;
 	var Z_STREAM_END = 1;
 	var Z_NEED_DICT = 2;
@@ -2067,11 +2068,14 @@
 		},
 		read_byte : function(start) {
 			var that = this;
-			return that.next_in.subarray(start, start + 1)[0];
+            //if(console && console.log) console.log("that.next_in type is "+Object.prototype.toString.call(that.next_in.buffer));
+			if(that.next_in.subarray) return that.next_in.subarray(start, start + 1)[0];
+            else return new Uint8Array(that.next_in.buffer, start, start + 1)[0];
 		},
 		read_buf : function(start, size) {
 			var that = this;
-			return that.next_in.subarray(start, start + size);
+			if(that.next_in.subarray) return that.next_in.subarray(start, start + size);
+            else return new Uint8Array(that.next_in.buffer, start, start + size);
 		}
 	};
 

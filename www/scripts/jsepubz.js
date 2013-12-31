@@ -56,13 +56,10 @@ define([], function () {
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
                 entries[i].getData(new zip.BlobWriter(), function (data) {
-                        console.log("unzip "+i);
+                        //console.log("unzip "+i);
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                       // datas.push(data);
                         reader.close(function () {   });
                         i++;
-                        //if(i<entries.length) getdatas(entries, i, reader);
-                        //else go_all();
                     }, function(current, total) {
                         //logger("unzip "+current+" of total "+total);
                     });

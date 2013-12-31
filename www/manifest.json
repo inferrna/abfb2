@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
-  "version": "0.32",
+  "version": "0.33",
   "minimum_chrome_version": "25",
   "permissions": [ "app.window", "*://translate.google.com/*", "storage", {"socket": ["tcp-connect:*:2628"]}],
   "optional_permissions": [ "webRequest" ],

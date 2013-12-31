@@ -80,15 +80,14 @@ function(jsepub, stuff, encod, options){
         var toc = epub.toc();
         var files = epub.files();
         if(index>-1){
-            //console.log("index=="+index+"  spine=="+spine+"\n"+JSON.stringify(opf.manifest));
             if(opf && toc && files){
                 var idx = pages[index];
-                console.log("pages=="+pages+" idx=="+idx+" index=="+index);
+                //console.log("pages=="+pages+" idx=="+idx+" index=="+index);
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
                 var doc = files[href];
-                console.log("href: "+href);
+                //console.log("href: "+href);
                 var html = srlzr.serializeToString(doc);
                 options.set_opt("last_html", html, true);
                 return html;//decodeURIComponent( escape(resultDocument) ));
@@ -106,17 +105,17 @@ function(jsepub, stuff, encod, options){
             for(var i = 0; i < opts.length; i++) {
                 urls.push(opts[i].getAttribute('url').replace(re, "$2").replace(re1, "$1"));
                 var idx = hrefs.indexOf(urls[i]);
-                console.log("Got url: "+opts[i].getAttribute('url')+" -> "+urls[i]+". idx=="+idx+", hrefs[idx]=="+hrefs[idx]);
+                //console.log("Got url: "+opts[i].getAttribute('url')+" -> "+urls[i]+". idx=="+idx+", hrefs[idx]=="+hrefs[idx]);
                 if(idx>-1) pages.push(idx);
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
                 else pages.push(0);
             }
-            console.log("urls is "+urls+" opf.spine.length=="+opf.spine.length);
+            //console.log("urls is "+urls+" opf.spine.length=="+opf.spine.length);
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];
                 opf.manifest[spine]['href'] = opf.manifest[spine]['href'].replace(re1, "$1");
             }
-            console.log("hrefs is "+hrefs);
+            //console.log("hrefs is "+hrefs);
             var docFragment = document.createDocumentFragment();
             while(contents.firstChild) docFragment.appendChild(contents.firstChild);
             //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
@@ -138,7 +137,7 @@ function(jsepub, stuff, encod, options){
                      return get_indexed_page(index);
              },
              option:function(i){
-                     console.log("i=="+i+" currentpage=="+currentpage+" pages[currentpage]=="+pages[currentpage])
+                     //console.log("i=="+i+" currentpage=="+currentpage+" pages[currentpage]=="+pages[currentpage])
                      //if(i==0) return currentpage;
                      if(pages[currentpage]>-1 && !isNaN(pages[currentpage])) return currentpage;
                      return i;
