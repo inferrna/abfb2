@@ -25,17 +25,23 @@ function(uitouch, dict, options, book, stuff, sound, require){
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
-    sndbt.onclick=function(){snd.load(); snd.volume=1.0; snd.play();};
+    var snd = document.getElementById('snd');
+    sndbt.onclick=function(){snd.play();};
     sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
     sndbt.style.width = sndbt.style.height;
     sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
-    var snd = document.getElementById('snd');
+    snd.addEventListener("canplay", function(){sndbt.style.display = 'block';});
     snd.addEventListener("ended", function(){
+        sndbt.style.display = 'none';
         sound.get_sound(dict.lword(), dict.lang(), function(url, c, t){
                 //console.log("Got sound url: "+url);
                 if(url && url.match(/http\:\/\/.*/)){
                     sndcnt.textContent = c+"/"+t;
-                    if(snd.src!=url) snd.src = url;
+                    if(snd.src!=url) {
+                        snd.src = url;
+                        snd.load;
+                        snd.volume=1.0;
+                    } else {sndbt.style.display = 'block';}
                 } else {
                     //sndbt.style.display = 'none';
                 }
@@ -178,12 +184,15 @@ function(uitouch, dict, options, book, stuff, sound, require){
             sndbt.style.display = 'block';
             uitouch.dragpop(-1);
             sndbt.style.display = 'none';
+            //sndbt.disabled=true;
             sound.get_sound(dict.lword(), dict.lang(), function(url, c, t){
                     //console.log("Got sound url: "+url);
                     if(url.match(/http\:\/\/.*/)){
                         sndcnt.textContent = c+"/"+t;
                         sndbt.style.display = 'block';
                         snd.src = url;
+                        snd.load();
+                        snd.volume=1.0;
                     } else {
                         sndbt.style.display = 'none';
                     }
