@@ -85,22 +85,10 @@ define(
           return text.slice(loind+1, hiind);
       }
       function expand23w(word, text, off){
-          /*var rew0 = new RegExp("[\\w\\S]+[\\s\\-—]+?"+word+"[\\s\\-—]+?[\\w\\S]+", "mg");
-          var rew1 = new RegExp("[\\w\\S]+[\\s\\-—]+?"+word, "mg");
-          var rew2 = new RegExp(word+"[\\s\\-—]+?[\\w\\S]+", "mg");
+          var rep = /[\.\,\:\;\?\!—\)\(]/mg;
           var res = [];
-          var regs = [rew0, rew1, rew2];
-          for(var i=0; i<regs.length; i++){
-              var ms = text.match(regs[i]);
-              if(ms)
-                  for(var j=0; j<ms.length; j++){
-                      if(text.indexOf(ms[j])<=off && (text.indexOf(ms[j])+ms[j].length)>=off)
-                          res.push(ms[j]);
-              }
-          }*/
-          var res = [];
-          word = word.replace(/[\.\,\:\;]/mg, '');
-          var newtexts = text.split(/[\.\,\:\;]/);
+          word = word.replace(rep, '');
+          var newtexts = text.split(rep);
           var newtext = null, j=0, i=0;
           for(j=0; j<newtexts.length && i<off; j++){
                 i+=(newtexts[j].length+1);
@@ -118,7 +106,7 @@ define(
                 var nw = realwords[idx+spirale[i]];
                 if(nw && nw.length>0 && spirale[i]>0) var snt = newtext.slice(newtext.indexOf(word), newtext.indexOf(nw)+nw.length+1);
                 if(nw && nw.length>0 && spirale[i]<0) var snt = newtext.slice(newtext.indexOf(nw), newtext.indexOf(word)+word.length+1);
-                if(snt && snt.length>0) {res.push(snt); snt=null;}
+                if(snt && snt.length>0 && res.indexOf(snt)===-1) {res.push(snt); snt=null;}
           }
           if(newtext.length<99 && res.indexOf(newtext)===-1) res.push(newtext);
           console.log("res=="+res);

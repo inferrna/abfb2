@@ -127,6 +127,7 @@ define(
                 } catch(e) {console.log("navigator.mozTCPSocket present, but unaccessible");}
             }
             else if(_chrome) sockavail = 'chrome';
+            console.log("sockavail=="+sockavail);
             return sockavail;
         },
         init:function(_host, _port, _db){

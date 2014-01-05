@@ -5,6 +5,7 @@ define(
     var sds_ls = null;
     if(navigator.getDeviceStorage) sds_ls = require('sds_ff');
     if(window.cordova) sds_ls = require('sds_cr');
+    console.log("file api is"+sds_ls);
     return {
              parse:function(sel, obj){
                  if(sds_ls) sds_ls.parse(sel, obj);
