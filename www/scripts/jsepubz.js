@@ -41,6 +41,7 @@ define([], function () {
             logger("extracting text: " +name+"...");
             extract_data(data, name, files, callback, params, 'text');
         }
+        delete data;
     }
     function go_all(){
         console.log("go_all");
@@ -50,6 +51,21 @@ define([], function () {
     }
 
     function unzipBlob(notifier) {
+        if(window.cordova){
+            var exec = cordova.require('cordova/exec');
+            crunzip = function(arr, callback) {
+                exec(callback, function(err) {
+                    console.log("Got error: '"+err+"' while exec unzip");
+                }, "unzip", "unzip", arr);
+            };
+            var reader = new FileReader();
+            reader.onload = function(evt){
+                    var zblob = window.btoa(evt.target.result);
+                    crunzip([zblob], function(str){console.log("Got "+str+" while unzip");});
+                };
+            reader.readAsBinaryString(file);
+            //console.log("zblob=="+zblob);
+        }
         var filenames = [];
         var datas = [];
         function getdatas(params){

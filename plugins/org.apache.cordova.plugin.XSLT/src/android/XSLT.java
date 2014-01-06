@@ -13,8 +13,6 @@ import org.xml.sax.SAXParseException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DOMException;
 
-import org.apache.xalan.transformer;
-
 // For write operation
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
