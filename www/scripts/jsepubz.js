@@ -61,33 +61,37 @@ define([], function () {
             var reader = new FileReader();
             reader.onload = function(evt){
                     var zblob = window.btoa(evt.target.result);
-                    crunzip([zblob], function(str){console.log("Got "+str+" while unzip");});
+                    crunzip([zblob], function(itm){if(itm){
+                                                       fill_files(window.atob(itm.data), itm.name, 
+                                                                  function(nm){console.log(nm+" processed");}, itm.name);
+                                                    } else {go_all();}}); 
                 };
             reader.readAsBinaryString(file);
             //console.log("zblob=="+zblob);
+        } else {
+            var filenames = [];
+            var datas = [];
+            function getdatas(params){
+                    var entries = params[0], i = params[1], reader = params[2];
+                    filenames.push(entries[i].filename);
+                    entries[i].getData(new zip.BlobWriter(), function (data) {
+                            console.log("unzip "+i);
+                            fill_files(data, filenames[i], getdatas, [entries, i, reader]);
+                           // datas.push(data);
+                            reader.close(function () {   });
+                            i++;
+                            //if(i<entries.length) getdatas(entries, i, reader);
+                            //else go_all();
+                        }, function(current, total) {
+                            //logger("unzip "+current+" of total "+total);
+                        });
         }
-        var filenames = [];
-        var datas = [];
-        function getdatas(params){
-                var entries = params[0], i = params[1], reader = params[2];
-                filenames.push(entries[i].filename);
-                entries[i].getData(new zip.BlobWriter(), function (data) {
-                        console.log("unzip "+i);
-                        fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                       // datas.push(data);
-                        reader.close(function () {   });
-                        i++;
-                        //if(i<entries.length) getdatas(entries, i, reader);
-                        //else go_all();
-                    }, function(current, total) {
-                        //logger("unzip "+current+" of total "+total);
+            zip.createReader(new zip.BlobReader(file), function (zipReader) {
+                zipReader.getEntries(function (entries) {
+                      getdatas([entries, 0, zipReader]);
                     });
+            }, function(e){console.warn(e);});
         }
-        zip.createReader(new zip.BlobReader(file), function (zipReader) {
-            zipReader.getEntries(function (entries) {
-                  getdatas([entries, 0, zipReader]);
-                });
-        }, function(e){console.warn(e);});
 
         return true;
     }
