@@ -1,4 +1,4 @@
-define([], function () {
+define(['mimetypes'], function (mimetypes) {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};
@@ -8,13 +8,15 @@ define([], function () {
     var logger = function(text){console.log(text);};
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
+        console.log("Extracting "+index);
         if(files[index]) console.warn("dublicated index "+index);
         if(reader.addEventListener){
             reader.addEventListener("loadend", function() {
                    array[index]=reader.result;
             //       console.log(index+" extracted as "+reader.result);
-                   if(params[1]<params[0].length) callback(params);
-                   else go_all();
+                   //if(params[1]<params[0].length) 
+                   callback(params);
+                   //else go_all();
                 });
             if(mtype==='blob') reader.readAsDataURL(blob);
             else reader.readAsText(blob);
@@ -22,9 +24,11 @@ define([], function () {
             //console.warn(e.stack);
             reader.onload = function(e){
                     array[index]=reader.result;
+                    if(mtype==='text') console.log("Got text at "+index+": "+reader.result.slice(0,128));
               //      console.log(index+" extracted as "+reader.result);
-                    if(params[1]<params[0].length) callback(params);
-                    else go_all();
+                    //if(params[1]<params[0].length) 
+                    callback(params);
+                    //else go_all();
                 }
             if(mtype==='blob') reader.readAsDataURL(blob);
             else reader.readAsText(blob);
@@ -47,11 +51,23 @@ define([], function () {
         console.log("go_all");
         container = files["META-INF/container.xml"];
         mimetype = files["mimetype"];
+        console.log("container=="+container+"\nmimetype=="+mimetype);
         didUncompressAllFiles(notifier);
     }
 
     function unzipBlob(notifier) {
         if(window.cordova){
+            function fill_crdo(data, name){
+                var re = /.+?\.(jpeg|jpg|gif|png|otf|ttf|bmp|wav)/i;
+                if (re.test(name)){
+                    logger("extracting blob: " +name+"...");
+                    b64blobs[name] = "data:"+mimetypes.getMimeType(name)+";base64,"+data;
+                } else {
+                    logger("extracting text: " +name+"...");
+                    files[name] = window.atob(data);
+                    console.log("Got "+name+": "+files[name].slice(0, 256));
+                }
+            }
             var exec = cordova.require('cordova/exec');
             crunzip = function(arr, callback) {
                 exec(callback, function(err) {
@@ -59,11 +75,11 @@ define([], function () {
                 }, "unzip", "unzip", arr);
             };
             var reader = new FileReader();
+            var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
             reader.onload = function(evt){
                     var zblob = window.btoa(evt.target.result);
-                    crunzip([zblob], function(itm){if(itm){
-                                                       fill_files(window.atob(itm.data), itm.name, 
-                                                                  function(nm){console.log(nm+" processed");}, itm.name);
+                    crunzip([zblob], function(itm){if(itm!="END"){
+                                                       fill_crdo(itm.data, itm.name);
                                                     } else {go_all();}}); 
                 };
             reader.readAsBinaryString(file);
@@ -72,6 +88,7 @@ define([], function () {
             var filenames = [];
             var datas = [];
             function getdatas(params){
+                    if(params[1]>=params[0].length) go_all();
                     var entries = params[0], i = params[1], reader = params[2];
                     filenames.push(entries[i].filename);
                     entries[i].getData(new zip.BlobWriter(), function (data) {
@@ -99,6 +116,7 @@ define([], function () {
         //try {
             notifier(3);
             opfPath = getOpfPathFromContainer();
+            console.log("opfPath=="+opfPath);
             readOpf(files[opfPath]);
 
             notifier(4);
@@ -123,7 +141,7 @@ define([], function () {
     }
 
     function readOpf(xml) {
-        //console.log(xml.replace(/opf\:metadata/gi, "metadata"));
+        console.log("xml=="+xml.replace(/opf\:metadata/gi, "metadata"));
         var doc = xmlDocument(xml.replace(/opf\:metadata/gi, "metadata"));
         opf = {
             metadata: {},

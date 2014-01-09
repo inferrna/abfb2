@@ -26,7 +26,9 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-(function() {
+define(
+    [],
+  function(){
 	var table = {
 		"application" : {
 			"andrew-inset" : "ez",
@@ -992,10 +994,11 @@
 		}
 		return mimeTypes;
 	})();
+    return {
+        getMimeType : function(filename) {
+            var defaultValue = "application/octet-stream";
+            return mimeTypes[filename.split(".").pop().toLowerCase()] || defaultValue;
+        }
+    }
 
-	zip.getMimeType = function(filename) {
-		var defaultValue = "application/octet-stream";
-		return filename && mimeTypes[filename.split(".").pop().toLowerCase()] || defaultValue;
-	};
-
-})();
+});
