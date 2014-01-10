@@ -14,7 +14,33 @@ function(jsepub, stuff, encod, options){
     }
     function transxsl(xml, xsl, doc){
         if(window.XSLTProcessor) return xsltp.transformToDocument(xml, doc);
-        else return parsr.parseFromString(jsxml.transReady(xml, xsl), "text/html");
+        else {
+            return parsr.parseFromString(jsxml.transReady(
+                srlzr.serializeToString(xml),
+                srlzr.serializeToString(xsl)), "text/html");
+        }
+    }
+    function js_toc(toc){
+        //var doc = new DOMParser().parseFromString(xml, "text/xml");
+       var div = document.createElement("div");
+       var sel = document.createElement("select");
+       sel.setAttribute("id", "tocselect");
+       sel.style.width = "auto";
+       var points = toc.getElementsByTagName("navPoint");
+       for(i=0; i<points.length; i++){
+           var lbl = points[i].getElementsByTagName("navLabel")[0];
+           var cont = points[i].getElementsByTagName("content")[0];
+           console.log("points["+i+"].id=="+points[i].id+" lbl.text=="+lbl.textContent.replace(/\s+/mg, ' ')
+                        +" cont.src=="+cont.attributes['src'].value);//.replace(/\s+/mg, ' '));
+           var opt = document.createElement("option");
+           opt.style.textIndent = "32px";
+           opt.setAttribute("id", points[i].attributes['playOrder'].value);
+           opt.setAttribute('url', cont.attributes['src'].value);
+           opt.textContent = lbl.textContent.replace(/\s+/mg, ' ');
+           sel.appendChild(opt);
+       }
+       div.appendChild(sel);
+       return div;
     }
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
@@ -95,8 +121,9 @@ function(jsepub, stuff, encod, options){
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
             var contents = transxsl(toc, xsl, doc);//xsltp.transformToDocument(toc,doc);
+            if(!contents || !contents.getElementsByTagName) contents = js_toc(toc);
+            //console.log("1st:"+srlzr.serializeToString(contents)+"\n2nd:"+srlzr.serializeToString(js_toc(toc)));
             var opts = contents.getElementsByTagName("option");
-
             var hrefs = [];
             var urls = [];
             var re = /(.*\/)+?(.+?)/;
