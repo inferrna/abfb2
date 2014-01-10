@@ -1,4 +1,4 @@
-define([], function () {
+define(['mimetypes'], function (mimetypes) {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};
@@ -8,13 +8,15 @@ define([], function () {
     var logger = function(text){console.log(text);};
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
+        console.log("Extracting "+index);
         if(files[index]) console.warn("dublicated index "+index);
         if(reader.addEventListener){
             reader.addEventListener("loadend", function() {
                    array[index]=reader.result;
             //       console.log(index+" extracted as "+reader.result);
-                   if(params[1]<params[0].length) callback(params);
-                   else go_all();
+                   //if(params[1]<params[0].length) 
+                   callback(params);
+                   //else go_all();
                 });
             if(mtype==='blob') reader.readAsDataURL(blob);
             else reader.readAsText(blob);
@@ -22,9 +24,8 @@ define([], function () {
             //console.warn(e.stack);
             reader.onload = function(e){
                     array[index]=reader.result;
-              //      console.log(index+" extracted as "+reader.result);
-                    if(params[1]<params[0].length) callback(params);
-                    else go_all();
+                    //if(mtype==='text') console.log("Got text at "+index+": "+reader.result.slice(0,128));
+                    callback(params);
                 }
             if(mtype==='blob') reader.readAsDataURL(blob);
             else reader.readAsText(blob);
@@ -41,34 +42,69 @@ define([], function () {
             logger("extracting text: " +name+"...");
             extract_data(data, name, files, callback, params, 'text');
         }
+        delete data;
     }
     function go_all(){
         console.log("go_all");
         container = files["META-INF/container.xml"];
         mimetype = files["mimetype"];
+        //console.log("container=="+container+"\nmimetype=="+mimetype);
         didUncompressAllFiles(notifier);
     }
 
     function unzipBlob(notifier) {
-        var filenames = [];
-        var datas = [];
-        function getdatas(params){
-                var entries = params[0], i = params[1], reader = params[2];
-                filenames.push(entries[i].filename);
-                entries[i].getData(new zip.BlobWriter(), function (data) {
-                        //console.log("unzip "+i);
-                        fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                        reader.close(function () {   });
-                        i++;
-                    }, function(current, total) {
-                        //logger("unzip "+current+" of total "+total);
+        if(window.cordova){
+            function fill_crdo(data, name){
+                var re = /.+?\.(jpeg|jpg|gif|png|otf|ttf|bmp|wav)/i;
+                if (re.test(name)){
+                    logger("extracting blob: " +name+"...");
+                    b64blobs[name] = "data:"+mimetypes.getMimeType(name)+";base64,"+data;
+                } else {
+                    logger("extracting text: " +name+"...");
+                    files[name] = window.atob(data);
+                    //console.log("Got "+name+": "+files[name].slice(0, 256));
+                }
+            }
+            var exec = cordova.require('cordova/exec');
+            crunzip = function(arr, callback) {
+                exec(callback, function(err) {
+                    console.log("Got error: '"+err+"' while exec unzip");
+                }, "unzip", "unzip", arr);
+            };
+            var reader = new FileReader();
+            reader.onload = function(evt){
+                    var zblob = window.btoa(evt.target.result);
+                    crunzip([zblob], function(itm){if(!(itm.name==="END" && itm.data==="END")){
+                                                       fill_crdo(itm.data, itm.name);
+                                                    } else {go_all();}}); 
+                };
+            reader.readAsBinaryString(file);
+            //console.log("zblob=="+zblob);
+        } else {
+            var filenames = [];
+            var datas = [];
+            function getdatas(params){
+                    if(params[1]>=params[0].length) go_all();
+                    var entries = params[0], i = params[1], reader = params[2];
+                    filenames.push(entries[i].filename);
+                    entries[i].getData(new zip.BlobWriter(), function (data) {
+                            console.log("unzip "+i);
+                            fill_files(data, filenames[i], getdatas, [entries, i, reader]);
+                           // datas.push(data);
+                            reader.close(function () {   });
+                            i++;
+                            //if(i<entries.length) getdatas(entries, i, reader);
+                            //else go_all();
+                        }, function(current, total) {
+                            //logger("unzip "+current+" of total "+total);
+                        });
+            }
+            zip.createReader(new zip.BlobReader(file), function (zipReader) {
+                zipReader.getEntries(function (entries) {
+                      getdatas([entries, 0, zipReader]);
                     });
+            }, function(e){console.warn(e);});
         }
-        zip.createReader(new zip.BlobReader(file), function (zipReader) {
-            zipReader.getEntries(function (entries) {
-                  getdatas([entries, 0, zipReader]);
-                });
-        }, function(e){console.warn(e);});
 
         return true;
     }
@@ -76,6 +112,7 @@ define([], function () {
         //try {
             notifier(3);
             opfPath = getOpfPathFromContainer();
+            console.log("opfPath=="+opfPath);
             readOpf(files[opfPath]);
 
             notifier(4);
@@ -100,7 +137,7 @@ define([], function () {
     }
 
     function readOpf(xml) {
-        //console.log(xml.replace(/opf\:metadata/gi, "metadata"));
+        //console.log("opf xml=="+xml.replace(/opf\:metadata/gi, "metadata"));
         var doc = xmlDocument(xml.replace(/opf\:metadata/gi, "metadata"));
         opf = {
             metadata: {},
@@ -131,11 +168,11 @@ define([], function () {
 
         for (var i = 0, il = manifestEntries.length; i < il; i++) {
             var node = manifestEntries[i];
-
             opf.manifest[node.getAttribute("id")] = {
                 "href": resolvePath(node.getAttribute("href"), opfPath),
                 "media-type": node.getAttribute("media-type")
             }
+            //console.log("id=="+node.getAttribute("id")+"\nmanifest[id]=="+JSON.stringify(opf.manifest[node.getAttribute("id")]));
         }
 
         var spineEntries = doc
@@ -192,34 +229,48 @@ define([], function () {
         var result = '';
         var tocre = /.+?\.ncx/i;
         var xml = '';
-        for (var key in opf.manifest) {
-            mediaType = opf.manifest[key]["media-type"];
-            href = opf.manifest[key]["href"];
-            result = undefined;
-            if (mediaType === "text/css") {
-                result = postProcessCSS(href);
-            } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
-                try {xml = decodeURIComponent(escape(files[href]));}
-                catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                toc = xmlDocument(xml);
-            } else if (mediaType === "application/xhtml+xml") {
-                //Do nothing
-            } else { 
-                console.log(href + " media type is " + mediaType);
-            }
-
-            if (result !== undefined) {
-                files[href] = result;
-            }
+        var keys = Object.keys(opf.manifest);
+        console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));
+        var key;
+        for (var _key in keys) {
+            key = keys[_key];
+            try {
+                mediaType = opf.manifest[key]["media-type"];
+                href = opf.manifest[key]["href"];
+                result = undefined;
+                if (mediaType === "text/css") {
+                    result = postProcessCSS(href);
+                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
+                    try {xml = decodeURIComponent(escape(files[href]));}
+                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
+                    toc = xmlDocument(xml);
+                } else if (mediaType === "application/xhtml+xml") {
+                    //Do nothing
+                } else { 
+                    console.log(href + " media type is " + mediaType);
+                }
+                if (result !== undefined) {
+                    console.log(href + " media type is " + mediaType + " addedd ok");
+                    files[href] = result;
+                }
+            } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
         }
-        for (var key in opf.manifest) {
-            mediaType = opf.manifest[key]["media-type"];
-            href = opf.manifest[key]["href"];
-            result = undefined;
-            if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
-            if (result !== undefined) {
-                files[href] = result;
-            }
+        for (var _key in keys) {
+            key = keys[_key];
+            try {
+                mediaType = opf.manifest[key]["media-type"];
+                href = opf.manifest[key]["href"];
+                console.log("2nd)"+href + " media type is " + mediaType+" file exists: "+(files[href]?true:false));
+                result = undefined;
+                if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
+                if (result !== undefined) {
+                    console.log(href + " media type is " + mediaType + " addedd ok");
+                    delete files[href];
+                    files[href] = result;
+                    //try{files[href] = document.createElement('div');} catch(e){console.log("failed to create div: "+e);}
+                    //try{files[href].innerHTML = result.innerHTML; } catch(e){console.log("failed to append innerHTML: "+e);}
+                }
+            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
     }
 
@@ -250,12 +301,16 @@ define([], function () {
             var tags = doc.getElementsByTagName(tag);
             for (var i = 0, il = tags.length; i < il; i++) {
                 if(tags[i]){
-                    var fragment = document.createDocumentFragment();
                     var ltag = tags[i];
+                    /*var fragment = document.createDocumentFragment();
                     while(ltag.firstChild) {
                         fragment.appendChild(ltag.firstChild);
                     }
-                    ltag.parentNode.replaceChild(fragment, ltag);
+                    ltag.parentNode.replaceChild(fragment, ltag);*/
+                    while (ltag.childNodes.length > 0) {
+                        ltag.parentNode.appendChild(ltag.childNodes[0]);
+                    }
+                    ltag.parentNode.removeChild(ltag);
                 }
             }
             if (doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
@@ -265,6 +320,7 @@ define([], function () {
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
+        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,128));
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -272,6 +328,7 @@ define([], function () {
             if (/^data/.test(src)) { continue }
             image.setAttribute("src", getDataUri(src, href));
         }
+        console.log("postProcessHTML: images done - 1");
         /*var styles = doc.getElementsByTagName("style");
         for (var i = 0, il = styles.length; i < il; i++) {
             var style = styles[i];
@@ -291,6 +348,7 @@ define([], function () {
             image.removeAttribute("height");
             image.setAttribute("src", getDataUri(src, href))
         }
+        console.log("postProcessHTML: images done - 2");
         //var head = doc.getElementsByTagName("head")[0];
         var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
@@ -308,13 +366,17 @@ define([], function () {
                 link.parentNode.replaceChild(inlineStyle, link);
             }
         }
-        clean_tags(doc, "head");
-        clean_tags(doc, "body");
-        clean_tags(doc, "meta");
-        clean_tags(doc, "svg");
-        clean_tags(doc, "script");
-        //clean_tags(doc, "a");
-        clean_tags(doc, "a");
+        console.log("postProcessHTML: links done");
+        try{
+            clean_tags(doc, "head");
+            clean_tags(doc, "body");
+            clean_tags(doc, "meta");
+            clean_tags(doc, "svg");
+            clean_tags(doc, "script");
+            //clean_tags(doc, "a");
+            clean_tags(doc, "a");
+            console.log("postProcessHTML: clean tags done");
+        }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
             var div = document.createElement('div');
             while(doc.firstChild) div.appendChild(doc.firstChild);
@@ -353,7 +415,9 @@ define([], function () {
     }
 
     function xmlDocument(xml) {
-        var doc = new DOMParser().parseFromString(xml, "text/xml");
+        try{
+            var doc = new DOMParser().parseFromString(xml, "text/xml");
+        } catch(e) { console.warn("xml parse failed, got "+e.stack||e); }
 
         if (doc.childNodes[1] && doc.childNodes[1].nodeName === "parsererror") {
             throw doc.childNodes[1].childNodes[0].nodeValue;
