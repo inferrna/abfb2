@@ -71,7 +71,7 @@ define(
           }
       }
       function expand2w(off, text){
-          var re = /[\s\.\;\"\,\<\>\(\)—\-]/;
+          var re = /[\s\.\;\"\,\<\>\(\)—\-\“]/;
           var spirale = [-1, 1, -2, 2, -3, 3];
           var newoff = 0;
           if(text.charAt(off).match(/\s/)){
@@ -82,10 +82,10 @@ define(
           }
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
-          return text.slice(loind+1, hiind);
+          return text.slice(loind+1, hiind).replace(/(^\s)|[\.\!\?\,\;\:\"\“\)\(]|(\s$)/gm, "");
       }
       function expand23w(word, text, off){
-          var rep = /[\.\,\:\;\?\!—\)\(]/mg;
+          var rep = /[\.\,\:\;\?\!—\)\(\"\“]/mg;
           var res = [];
           word = word.replace(rep, '');
           var newtexts = text.split(rep);
@@ -101,14 +101,14 @@ define(
           if(realwords.length<4) realwords = newtext.match(/[\w\S]{2,99}/mg);
           var idx = realwords.indexOf(word);
           var spirale = [-1, 1, -2, 2, -3, 3, -4, 4];
-          console.log("newtext=\""+newtext+"\" text==\""+text+"\" realwords=="+realwords);
+          console.log("newtext=\""+newtext+"\" text==\""+text+"\" realwords=="+realwords+" word=="+word);
           for(i = 0; i<spirale.length && res.length<3; i++){
                 var nw = realwords[idx+spirale[i]];
                 if(nw && nw.length>0 && spirale[i]>0) var snt = newtext.slice(newtext.indexOf(word), newtext.indexOf(nw)+nw.length+1);
                 if(nw && nw.length>0 && spirale[i]<0) var snt = newtext.slice(newtext.indexOf(nw), newtext.indexOf(word)+word.length+1);
-                if(snt && snt.length>0 && res.indexOf(snt)===-1) {res.push(snt); snt=null;}
+                if(nw && snt && snt.length>0 && res.indexOf(snt)===-1) {res.push(snt); snt=null;}
           }
-          if(newtext.length<99 && res.indexOf(newtext)===-1) res.push(newtext);
+          if(text.length<99 && res.indexOf(text)===-1) res.push(text);
           console.log("res=="+res);
           return res;
       }
@@ -237,7 +237,7 @@ define(
                   rng.setEnd(el, off+selected_word.length);
                   var sel = window.getSelection();
                   sel.addRange(rng);*/
-                  callbacks['got_selection']([selected_word, expand23w(selected_word, txt, off)]);
+                  callbacks['got_selection']([selected_word.toLowerCase(), expand23w(selected_word, txt, off)]);
               }
               //callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
           }

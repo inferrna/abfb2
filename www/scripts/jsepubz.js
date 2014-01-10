@@ -84,7 +84,7 @@ define(['mimetypes'], function (mimetypes) {
             var filenames = [];
             var datas = [];
             function getdatas(params){
-                    if(params[1]>=params[0].length) go_all();
+                    if(params[1]>=params[0].length){ go_all(); return; }
                     var entries = params[0], i = params[1], reader = params[2];
                     filenames.push(entries[i].filename);
                     entries[i].getData(new zip.BlobWriter(), function (data) {
