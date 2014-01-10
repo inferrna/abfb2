@@ -24,11 +24,8 @@ define(['mimetypes'], function (mimetypes) {
             //console.warn(e.stack);
             reader.onload = function(e){
                     array[index]=reader.result;
-                    if(mtype==='text') console.log("Got text at "+index+": "+reader.result.slice(0,128));
-              //      console.log(index+" extracted as "+reader.result);
-                    //if(params[1]<params[0].length) 
+                    //if(mtype==='text') console.log("Got text at "+index+": "+reader.result.slice(0,128));
                     callback(params);
-                    //else go_all();
                 }
             if(mtype==='blob') reader.readAsDataURL(blob);
             else reader.readAsText(blob);
@@ -51,7 +48,7 @@ define(['mimetypes'], function (mimetypes) {
         console.log("go_all");
         container = files["META-INF/container.xml"];
         mimetype = files["mimetype"];
-        console.log("container=="+container+"\nmimetype=="+mimetype);
+        //console.log("container=="+container+"\nmimetype=="+mimetype);
         didUncompressAllFiles(notifier);
     }
 
@@ -65,7 +62,7 @@ define(['mimetypes'], function (mimetypes) {
                 } else {
                     logger("extracting text: " +name+"...");
                     files[name] = window.atob(data);
-                    console.log("Got "+name+": "+files[name].slice(0, 256));
+                    //console.log("Got "+name+": "+files[name].slice(0, 256));
                 }
             }
             var exec = cordova.require('cordova/exec');
@@ -75,10 +72,9 @@ define(['mimetypes'], function (mimetypes) {
                 }, "unzip", "unzip", arr);
             };
             var reader = new FileReader();
-            var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
             reader.onload = function(evt){
                     var zblob = window.btoa(evt.target.result);
-                    crunzip([zblob], function(itm){if(itm!="END"){
+                    crunzip([zblob], function(itm){if(!(itm.name==="END" && itm.data==="END")){
                                                        fill_crdo(itm.data, itm.name);
                                                     } else {go_all();}}); 
                 };
@@ -141,7 +137,7 @@ define(['mimetypes'], function (mimetypes) {
     }
 
     function readOpf(xml) {
-        console.log("xml=="+xml.replace(/opf\:metadata/gi, "metadata"));
+        //console.log("opf xml=="+xml.replace(/opf\:metadata/gi, "metadata"));
         var doc = xmlDocument(xml.replace(/opf\:metadata/gi, "metadata"));
         opf = {
             metadata: {},
@@ -172,11 +168,11 @@ define(['mimetypes'], function (mimetypes) {
 
         for (var i = 0, il = manifestEntries.length; i < il; i++) {
             var node = manifestEntries[i];
-
             opf.manifest[node.getAttribute("id")] = {
                 "href": resolvePath(node.getAttribute("href"), opfPath),
                 "media-type": node.getAttribute("media-type")
             }
+            //console.log("id=="+node.getAttribute("id")+"\nmanifest[id]=="+JSON.stringify(opf.manifest[node.getAttribute("id")]));
         }
 
         var spineEntries = doc
@@ -233,34 +229,48 @@ define(['mimetypes'], function (mimetypes) {
         var result = '';
         var tocre = /.+?\.ncx/i;
         var xml = '';
-        for (var key in opf.manifest) {
-            mediaType = opf.manifest[key]["media-type"];
-            href = opf.manifest[key]["href"];
-            result = undefined;
-            if (mediaType === "text/css") {
-                result = postProcessCSS(href);
-            } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
-                try {xml = decodeURIComponent(escape(files[href]));}
-                catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                toc = xmlDocument(xml);
-            } else if (mediaType === "application/xhtml+xml") {
-                //Do nothing
-            } else { 
-                console.log(href + " media type is " + mediaType);
-            }
-
-            if (result !== undefined) {
-                files[href] = result;
-            }
+        var keys = Object.keys(opf.manifest);
+        console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));
+        var key;
+        for (var _key in keys) {
+            key = keys[_key];
+            try {
+                mediaType = opf.manifest[key]["media-type"];
+                href = opf.manifest[key]["href"];
+                result = undefined;
+                if (mediaType === "text/css") {
+                    result = postProcessCSS(href);
+                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
+                    try {xml = decodeURIComponent(escape(files[href]));}
+                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
+                    toc = xmlDocument(xml);
+                } else if (mediaType === "application/xhtml+xml") {
+                    //Do nothing
+                } else { 
+                    console.log(href + " media type is " + mediaType);
+                }
+                if (result !== undefined) {
+                    console.log(href + " media type is " + mediaType + " addedd ok");
+                    files[href] = result;
+                }
+            } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
         }
-        for (var key in opf.manifest) {
-            mediaType = opf.manifest[key]["media-type"];
-            href = opf.manifest[key]["href"];
-            result = undefined;
-            if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
-            if (result !== undefined) {
-                files[href] = result;
-            }
+        for (var _key in keys) {
+            key = keys[_key];
+            try {
+                mediaType = opf.manifest[key]["media-type"];
+                href = opf.manifest[key]["href"];
+                console.log("2nd)"+href + " media type is " + mediaType+" file exists: "+(files[href]?true:false));
+                result = undefined;
+                if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
+                if (result !== undefined) {
+                    console.log(href + " media type is " + mediaType + " addedd ok");
+                    delete files[href];
+                    files[href] = result;
+                    //try{files[href] = document.createElement('div');} catch(e){console.log("failed to create div: "+e);}
+                    //try{files[href].innerHTML = result.innerHTML; } catch(e){console.log("failed to append innerHTML: "+e);}
+                }
+            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
     }
 
@@ -291,12 +301,16 @@ define(['mimetypes'], function (mimetypes) {
             var tags = doc.getElementsByTagName(tag);
             for (var i = 0, il = tags.length; i < il; i++) {
                 if(tags[i]){
-                    var fragment = document.createDocumentFragment();
                     var ltag = tags[i];
+                    /*var fragment = document.createDocumentFragment();
                     while(ltag.firstChild) {
                         fragment.appendChild(ltag.firstChild);
                     }
-                    ltag.parentNode.replaceChild(fragment, ltag);
+                    ltag.parentNode.replaceChild(fragment, ltag);*/
+                    while (ltag.childNodes.length > 0) {
+                        ltag.parentNode.appendChild(ltag.childNodes[0]);
+                    }
+                    ltag.parentNode.removeChild(ltag);
                 }
             }
             if (doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
@@ -306,6 +320,7 @@ define(['mimetypes'], function (mimetypes) {
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
+        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,128));
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -313,6 +328,7 @@ define(['mimetypes'], function (mimetypes) {
             if (/^data/.test(src)) { continue }
             image.setAttribute("src", getDataUri(src, href));
         }
+        console.log("postProcessHTML: images done - 1");
         /*var styles = doc.getElementsByTagName("style");
         for (var i = 0, il = styles.length; i < il; i++) {
             var style = styles[i];
@@ -332,6 +348,7 @@ define(['mimetypes'], function (mimetypes) {
             image.removeAttribute("height");
             image.setAttribute("src", getDataUri(src, href))
         }
+        console.log("postProcessHTML: images done - 2");
         //var head = doc.getElementsByTagName("head")[0];
         var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
@@ -349,13 +366,17 @@ define(['mimetypes'], function (mimetypes) {
                 link.parentNode.replaceChild(inlineStyle, link);
             }
         }
-        clean_tags(doc, "head");
-        clean_tags(doc, "body");
-        clean_tags(doc, "meta");
-        clean_tags(doc, "svg");
-        clean_tags(doc, "script");
-        //clean_tags(doc, "a");
-        clean_tags(doc, "a");
+        console.log("postProcessHTML: links done");
+        try{
+            clean_tags(doc, "head");
+            clean_tags(doc, "body");
+            clean_tags(doc, "meta");
+            clean_tags(doc, "svg");
+            clean_tags(doc, "script");
+            //clean_tags(doc, "a");
+            clean_tags(doc, "a");
+            console.log("postProcessHTML: clean tags done");
+        }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
             var div = document.createElement('div');
             while(doc.firstChild) div.appendChild(doc.firstChild);
@@ -394,7 +415,9 @@ define(['mimetypes'], function (mimetypes) {
     }
 
     function xmlDocument(xml) {
-        var doc = new DOMParser().parseFromString(xml, "text/xml");
+        try{
+            var doc = new DOMParser().parseFromString(xml, "text/xml");
+        } catch(e) { console.warn("xml parse failed, got "+e.stack||e); }
 
         if (doc.childNodes[1] && doc.childNodes[1].nodeName === "parsererror") {
             throw doc.childNodes[1].childNodes[0].nodeValue;
