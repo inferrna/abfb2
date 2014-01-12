@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.apache.cordova.plugin.unzip"
+    version="3.0.0">
+	<engines>
+	    <engine name="cordova" version=">=3.0.0" />
+	</engines>
+	
+	<name>unzip</name>
+	
+	<description>This plugin lets your app access tcp sockets.</description>
+	<author>Inferrna</author>
+	<keywords>tcp,socket,network</keywords>
+	<license>GPLv3 license</license>
+	
+	<platform name="android">
+		<source-file src="src/android/unzip.java" target-dir="src/org/apache/cordova/plugin" />
+		
+		<config-file target="res/xml/config.xml" parent="/*">
+		            <feature name="unzip">
+					        <param name="android-package" value="org.apache.cordova.plugin.unzip"/>
+					 </feature>
+                     <plugin name="unzip" value="org.apache.cordova.plugin.unzip" />
+		</config-file>
+	</platform>
+</plugin>

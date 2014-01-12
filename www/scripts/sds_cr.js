@@ -26,7 +26,7 @@ define(
                                 var nm  = document.createElement("option");
                                 nm.textContent = entries[i].fullPath;
                                 count++;
-                                options.msg("File found: " + file.name);
+                                options.msg("File found: " + entries[i].name);
                                 sel.appendChild(nm);
                             }
                         }
