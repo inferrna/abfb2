@@ -14,6 +14,11 @@ define(
       var pts = document.getElementById('pts');
       var mtext = document.getElementById('maintext');
       var pop = document.getElementById('pop');
+      var targimg = document.createElement("image");
+      document.body.appendChild(targimg);
+      targimg.style.display = 'none';
+      targimg.src = stuff.targetimg;
+      targimg.style.position = "absolute";
       var scale = 1.0;
       var ispinch = 0;
       pop.style.display = 'none';
@@ -108,7 +113,7 @@ define(
                 if(nw && nw.length>0 && spirale[i]<0) var snt = newtext.slice(newtext.indexOf(nw), newtext.indexOf(word)+word.length+1);
                 if(nw && snt && snt.length>0 && res.indexOf(snt)===-1) {res.push(snt); snt=null;}
           }
-          if(text.length<99 && res.indexOf(text)===-1) res.push(text);
+          if(newtext.length<99 && res.indexOf(newtext)===-1) res.push(newtext);
           console.log("res=="+res);
           return res;
       }
@@ -321,6 +326,10 @@ define(
           },
           handleClick:function(evt){
               selectword(evt.clientX, evt.clientY);
+              targimg.style.left = (evt.pageX-targimg.width/2)+"px";
+              targimg.style.top = (evt.pageY-targimg.height/2)+"px";
+              targimg.style.display = 'block';
+              window.setTimeout(function(){targimg.style.display = 'none';}, 1024);
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);

@@ -74,7 +74,7 @@ define(
         //console.log("Request sended, url was "+url);
     }
     function get_def(word){
-            lword = word.replace(/(^\s)|(\s$)/gm, "");//.toLowerCase().replace(/(^\s)|[\.\!\?\,\;\:]|(\s$)/gm, "");
+            lword = word.replace(/(^\s)|(\s$)/gm, "").replace(/(^)(\W*)(.*?)(\W*?)($)/, "$3$5");//.toLowerCase().replace(/(^\s)|[\.\!\?\,\;\:]|(\s$)/gm, "");
             if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword], seealso);}
             else if(datas["dictionary"] === 'socket proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');

@@ -25,6 +25,7 @@ function(uitouch, dict, options, book, stuff, sound, require){
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
+    var nosnd = document.getElementById('nosnd');
     /*sndbt.onclick=function(){sound.play(sndcnt);};
     sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
     sndbt.style.width = sndbt.style.height;
@@ -156,6 +157,7 @@ function(uitouch, dict, options, book, stuff, sound, require){
             cl.innerHTML = dtext;
             sndbt.appendChild(sndcnt);
             cl.appendChild(sndbt);
+            cl.appendChild(nosnd);
             el.style.display = 'block';
             if(els && els.length){
                 for(var i = 0; i<els.length; i++){
