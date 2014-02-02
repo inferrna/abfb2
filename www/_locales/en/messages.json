@@ -1,0 +1,11 @@
+{
+  "appName": {
+    "message": "Ab fb2 reader",
+    "description": "Simple fb2 and epub reader that support online dictionary."
+  },
+  "appDesc": {
+    "message": "Allows to translate words without hiding text.", 
+    "description":"At startup select fb2 or epub or txt file. For translation working select dictionary type and database for dictd (socket) variant. Dictd dictionaries uses its own dictd protocol - it why app needs access to sockets. Free dictd servers may be found on http://ccls-online.de/dictd/index.php (Use hostname without prefix, e.g. from dict://dict.bibleonline.ru you need only dict.bibleonline.ru).
+Use \"left\" and \"right\" for flipping, \"up\" for hiding elements, \"down\" for showing elements, mouse click on word for translate. Touch also supports."
+  }
+}
