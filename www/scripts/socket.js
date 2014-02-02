@@ -28,7 +28,6 @@ define(
         var l = word.length;
         var cut = Math.floor(l/5);
         text = "MATCH "+db+" re ^.{0,"+cut+"}"+word.slice(cut, l-cut)+".{0,"+cut+"}$\n";
-        console.log(text);
         if(sockavail === 'chrome') chromecreate();
         else if (sockavail === 'mozilla') mozopen();
         else if (sockavail === 'cordova') cordova_get(host, port, text);
@@ -79,7 +78,6 @@ define(
         resp = '';
         var mtext = text;
         var data = encod.str2utf8b(mtext);
-        console.log("mtext is "+mtext);
         var moz_socket = navigator.mozTCPSocket.open(host, port, {binaryType: 'arraybuffer'});//'arraybuffer''string'
         moz_socket.onopen = function(e){
                 moz_socket.send(data);
@@ -102,7 +100,6 @@ define(
             callback = _clbck;
             word = _word;
             text = "DEFINE "+db+" "+word+"\n";
-            console.log(text);
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
             else if (sockavail === 'cordova') cordova_get(host, port, text);

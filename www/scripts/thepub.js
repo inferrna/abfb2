@@ -30,8 +30,6 @@ function(jsepub, stuff, encod, options){
        for(i=0; i<points.length; i++){
            var lbl = points[i].getElementsByTagName("navLabel")[0];
            var cont = points[i].getElementsByTagName("content")[0];
-           console.log("points["+i+"].id=="+points[i].id+" lbl.text=="+lbl.textContent.replace(/\s+/mg, ' ')
-                        +" cont.src=="+cont.attributes['src'].value);//.replace(/\s+/mg, ' '));
            var opt = document.createElement("option");
            opt.style.textIndent = "32px";
            opt.setAttribute("id", points[i].attributes['playOrder'].value);

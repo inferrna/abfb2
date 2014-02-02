@@ -8,12 +8,10 @@ define(['mimetypes'], function (mimetypes) {
     var logger = function(text){console.log(text);};
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
-        console.log("Extracting "+index);
         if(files[index]) console.warn("dublicated index "+index);
         if(reader.addEventListener){
             reader.addEventListener("loadend", function() {
                    array[index]=reader.result;
-            //       console.log(index+" extracted as "+reader.result);
                    //if(params[1]<params[0].length) 
                    callback(params);
                    //else go_all();
@@ -24,7 +22,6 @@ define(['mimetypes'], function (mimetypes) {
             //console.warn(e.stack);
             reader.onload = function(e){
                     array[index]=reader.result;
-                    //if(mtype==='text') console.log("Got text at "+index+": "+reader.result.slice(0,128));
                     callback(params);
                 }
             if(mtype==='blob') reader.readAsDataURL(blob);
@@ -45,10 +42,7 @@ define(['mimetypes'], function (mimetypes) {
         delete data;
     }
     function go_all(){
-        console.log("go_all");
         container = files["META-INF/container.xml"];
-        mimetype = files["mimetype"];
-        //console.log("container=="+container+"\nmimetype=="+mimetype);
         didUncompressAllFiles(notifier);
     }
 
@@ -62,13 +56,11 @@ define(['mimetypes'], function (mimetypes) {
                 } else {
                     logger("extracting text: " +name+"...");
                     files[name] = window.atob(data);
-                    //console.log("Got "+name+": "+files[name].slice(0, 256));
                 }
             }
             var exec = cordova.require('cordova/exec');
             crunzip = function(arr, callback) {
                 exec(callback, function(err) {
-                    console.log("Got error: '"+err+"' while exec unzip");
                 }, "unzip", "unzip", arr);
             };
             var reader = new FileReader();
@@ -79,7 +71,6 @@ define(['mimetypes'], function (mimetypes) {
                                                     } else {go_all();}}); 
                 };
             reader.readAsBinaryString(file);
-            //console.log("zblob=="+zblob);
         } else {
             var filenames = [];
             var datas = [];
@@ -88,7 +79,6 @@ define(['mimetypes'], function (mimetypes) {
                     var entries = params[0], i = params[1], reader = params[2];
                     filenames.push(entries[i].filename);
                     entries[i].getData(new zip.BlobWriter(), function (data) {
-                            console.log("unzip "+i);
                             fill_files(data, filenames[i], getdatas, [entries, i, reader]);
                            // datas.push(data);
                             reader.close(function () {   });
@@ -112,7 +102,6 @@ define(['mimetypes'], function (mimetypes) {
         //try {
             notifier(3);
             opfPath = getOpfPathFromContainer();
-            console.log("opfPath=="+opfPath);
             readOpf(files[opfPath]);
 
             notifier(4);
@@ -137,7 +126,6 @@ define(['mimetypes'], function (mimetypes) {
     }
 
     function readOpf(xml) {
-        //console.log("opf xml=="+xml.replace(/opf\:metadata/gi, "metadata"));
         var doc = xmlDocument(xml.replace(/opf\:metadata/gi, "metadata"));
         opf = {
             metadata: {},
@@ -172,7 +160,6 @@ define(['mimetypes'], function (mimetypes) {
                 "href": resolvePath(node.getAttribute("href"), opfPath),
                 "media-type": node.getAttribute("media-type")
             }
-            //console.log("id=="+node.getAttribute("id")+"\nmanifest[id]=="+JSON.stringify(opf.manifest[node.getAttribute("id")]));
         }
 
         var spineEntries = doc
@@ -230,7 +217,6 @@ define(['mimetypes'], function (mimetypes) {
         var tocre = /.+?\.ncx/i;
         var xml = '';
         var keys = Object.keys(opf.manifest);
-        console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));
         var key;
         for (var _key in keys) {
             key = keys[_key];
@@ -260,15 +246,11 @@ define(['mimetypes'], function (mimetypes) {
             try {
                 mediaType = opf.manifest[key]["media-type"];
                 href = opf.manifest[key]["href"];
-                console.log("2nd)"+href + " media type is " + mediaType+" file exists: "+(files[href]?true:false));
                 result = undefined;
                 if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
                 if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");
                     delete files[href];
                     files[href] = result;
-                    //try{files[href] = document.createElement('div');} catch(e){console.log("failed to create div: "+e);}
-                    //try{files[href].innerHTML = result.innerHTML; } catch(e){console.log("failed to append innerHTML: "+e);}
                 }
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
@@ -290,11 +272,9 @@ define(['mimetypes'], function (mimetypes) {
                     if(/\.(eot$)/.test(url)) format = " format('embedded-opentype')";
                 }
                 var dataUri = getDataUri(url, href);
-                //console.log("In", href, ":", url,"->",dataUri);
                 return "url('" + dataUri + "')"+format;
             }
         });
-        //console.log(href, "->", file);
         return file;
     }
     function clean_tags(doc, tag){
@@ -320,7 +300,6 @@ define(['mimetypes'], function (mimetypes) {
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
-        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,128));
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -328,15 +307,6 @@ define(['mimetypes'], function (mimetypes) {
             if (/^data/.test(src)) { continue }
             image.setAttribute("src", getDataUri(src, href));
         }
-        console.log("postProcessHTML: images done - 1");
-        /*var styles = doc.getElementsByTagName("style");
-        for (var i = 0, il = styles.length; i < il; i++) {
-            var style = styles[i];
-            var src = style.getAttribute("src");
-            if (/^data/.test(src)) { continue }
-            console.log("css src is: "+src);
-            style.setAttribute("src", getDataUri(src, href));
-        }*/
         images = doc.getElementsByTagName("image");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -348,7 +318,6 @@ define(['mimetypes'], function (mimetypes) {
             image.removeAttribute("height");
             image.setAttribute("src", getDataUri(src, href))
         }
-        console.log("postProcessHTML: images done - 2");
         //var head = doc.getElementsByTagName("head")[0];
         var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
@@ -366,7 +335,6 @@ define(['mimetypes'], function (mimetypes) {
                 link.parentNode.replaceChild(inlineStyle, link);
             }
         }
-        console.log("postProcessHTML: links done");
         try{
             clean_tags(doc, "head");
             clean_tags(doc, "body");
@@ -375,7 +343,6 @@ define(['mimetypes'], function (mimetypes) {
             clean_tags(doc, "script");
             //clean_tags(doc, "a");
             clean_tags(doc, "a");
-            console.log("postProcessHTML: clean tags done");
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
             var div = document.createElement('div');

@@ -27,7 +27,6 @@ define(
       function sign(x) { return x && x / Math.abs(x); }
      function liftcol(el, dir) {
           "use strict";
-          //console.log(el);
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
@@ -167,13 +166,11 @@ define(
               for(var k = Math.floor(child.textContent.length/2); k>0; k = Math.floor(k/2)){
                   for(var i = z+k; i<child.textContent.length; i+=k){
                       try{clone.setEnd(clone.endContainer, i);}
-                      catch(e){console.log(e.stack); break;}
+                      catch(e){break;}
                       if(ispointinrectlist(clone.getClientRects(), x, y)>-1){
-                          //console.log(j+")"+i+") selected: "+clone.toString());
                           z = i-k;
                           retch = child;
                           gotit++;
-                          //console.log("z=="+z);
                           break;
                       }
                   }
@@ -183,11 +180,9 @@ define(
           sidx++;
           if((gotit && retch.textContent.replace(/\s/g, '')!='') || sidx>=spirales.length){
               if(retch) {
-                //console.log("All ok, got \""+retch.textContent.replace(/\s/g, '')+"\".");
                 return [z, retch];
               }
           } else {
-              //console.log("d=="+d+". Got bad. \""+(retch ? retch.textContent : '')+"\" Going new - "+sidx);
               return get_off(_x, _y, sidx);
           }
           return true;
@@ -225,14 +220,12 @@ define(
                       rng.expand("word");
                       sel.addRange( rng );
                       selected_word = sel.toString();
-                      //console.log("Selected by rng.expand "+sel.toString());
                   } else {
                       sel.addRange(rng);
                       sel.modify("extend", "backward", "word");
                       sel.collapseToStart();
                       sel.modify("extend", "forward", "word");
                       selected_word = sel.toString();
-                      //console.log("Selected by sel.modify "+sel.toString());
                   }
               } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
                                 +" using expand2w, got "+selected_word+" off=="+off);}
@@ -266,7 +259,6 @@ define(
             txarea.style.width  = parseInt(nw)+"px";
             txarea.style.height = parseInt(nh)+"px";
             var stscale = "scale("+scale+")";
-            //console.log("Got nhw == "+nw+", "+nh+" | stscale=="+stscale+" scale=="+scale);
             txarea.style.transform = stscale;
             txarea.style.transformOrigin = "0 0";
             txarea.style.WebkitTransform = stscale;
@@ -302,11 +294,9 @@ define(
               return true;
           },
           dragpop:function(y){
-              //console.log("max_Y=="+max_Y+" y=="+y);
               if(y===-1) var ch = parseInt(stuff.getStyle(pts, 'height'))+(parseInt(stuff.getStyle(pts, 'font-size')) | 16);
               if(max_Y>window.innerHeight/2){
                   if(y===-1){
-                      //console.log("top max_Y=="+max_Y+" ch=="+ch);
                       if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch)+"px";
                       else pop.style.bottom = "75%"
                       pop.style.top = 0+"px";
@@ -315,7 +305,6 @@ define(
                   pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
               } else {
                   if(y===-1){
-                      //console.log("bot max_Y=="+max_Y+" ch=="+ch);
                       if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+"px";
                       else pop.style.top = "75%"
                       pop.style.bottom = 0+"px";
@@ -333,7 +322,6 @@ define(
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
-              //console.log("Got code "+Code);
               if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();

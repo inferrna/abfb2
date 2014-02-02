@@ -10,26 +10,20 @@ function(stuff){
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
     var transavail = null;
-    console.log("window.XSLTProcessor supports is "+(window.XSLTProcessor ? true : false));
 
     function ctransform(arr, callback){};
     try {
         var exec = cordova.require('cordova/exec');
         ctransform = function(arr, callback) {
             exec(callback, function(err) {
-                console.log("Got error: '"+err+"' while exec transform");
                 callback("");
             }, "XSLT", "transform", arr);
         };
         transavail = 'cordova';
-    } catch(e) { console.log("No cordova transform available."); }
+    } catch(e) { }
 
     function cordova_trans(xslt, xml, callback){
         ctransform([xslt, xml], function(string) {
-            console.log("Got transformed:\n"+string);//.slice(0,99)+"\n...\n"+string.slice(string.length-99, string.length));
-            /*var fragment = document.createDocumentFragment();
-            fragment.innerHTML = string;
-            callback(fragment);*/
             callback(parsr.parseFromString(string));
         });
     }
@@ -61,21 +55,17 @@ function(stuff){
     function proceedfb2(fb2File){
         var serializer = new XMLSerializer();
         transxsl(fb2File, serializer.serializeToString(xsl), function(resultDocument){
-            console.log("Got resultDocument == "+resultDocument);
             fb2.appendChild(resultDocument);
             //fb2 = resultDocument;
             var divlist = fb2.getElementsByTagName('div');
             var re = /TOC_.+/g;
             clean_tags(fb2, 'script');
             clean_tags(fb2, 'a');
-            console.log("Tags cleaned");
             for(var i = 0; i < divlist.length; i++)
                 if(re.test(divlist[i].getAttribute('id'))){ 
-                    console.log("Push div id "+divlist[i].getAttribute('id'));
                     divs.push(divlist[i]);//.getAttribute('id'));
             } /*else console.log("Not push div id "+divlist[i].getAttribute('id'));*/
             callbacks['got_book']();
-            console.log("fb2 pages is "+pages);
         });
     }
     function clean_tags(doc, tag){
