@@ -1,5 +1,5 @@
 {
-  "version": "0.33",
+  "version": "0.34",
   "name": "Ab FB2 reader",
   "launch_path": "/index.html",
   "description": "Simple epub&fb2&txt reader with dictionary support.",
