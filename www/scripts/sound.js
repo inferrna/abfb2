@@ -39,9 +39,12 @@ define(
 
         return {
             get_sound:function(lword, lang){
-               
-               nosnd.style.display = 'none';
                sndbt.style.display = 'none';
+               if(lword.split(/\s/gm).length>1){
+                   nosnd.style.display = 'inline';
+                   return;
+               }
+               nosnd.style.display = 'none';
                if(word!=lword){
                    idx = 0;
                    var url = "http://borgu.org:8082/sound?word="+lword+"&lang="+lang;
