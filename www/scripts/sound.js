@@ -6,12 +6,12 @@ define(
         var word = '';
         var audios = [];
         var snd = document.createElement("audio");
-        snd.addEventListener("canplay", function(){
-                                        if(audios[1]) audios[1].load();
-                                        sndcnt.textContent = 1+"/"+urls.length;
-                                        sndbt.style.display = 'block';
-                                    });
-        audios.push(snd);
+        function canplay(){
+             if(audios[1]) audios[1].load();
+             sndcnt.textContent = 1+"/"+urls.length;
+             console.log("snd.readyState=="+snd.readyState);//NFP
+             sndbt.style.display = 'block';
+        }
         function add_audios(cnt){
             for(var i=0; i<(1+cnt-audios.length); i++){
                 var snd = document.createElement("audio");
@@ -29,6 +29,11 @@ define(
             }
         }
 
+        snd.addEventListener("canplay", canplay);
+        snd.addEventListener("loadeddata", canplay);
+        snd.addEventListener("loadstart", canplay);//Too early
+        snd.addEventListener("canplaythrough", canplay);
+        audios.push(snd);
         var sndcnt = document.getElementById('sndcnt');
         var sndbt = document.getElementById('sndbt');
         var nosnd = document.getElementById('nosnd');
@@ -52,13 +57,16 @@ define(
                    dreq.onload = function (event) {
                             urls = JSON.parse(event.target.responseText);
                             word=lword;
-                            if(urls.length>0){sndbt.style.display = 'inline'; nosnd.style.display = 'none'; sndcnt.textContent = 'Wait';}
-                            else{sndbt.style.display = 'none'; nosnd.style.display = 'inline';}
                             if(urls.length > audios.length) add_audios(urls.length);
-                            for(var i=0; i<audios.length; i++){
+                            for(var i=0; i<urls.length; i++){
                                 audios[i].src = urls[i];
                             }
-                            audios[0].load();
+                            if(urls.length>0){
+                                sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
+                                audios[0].load();
+                                if(snd.readyState<3) sndcnt.textContent = 'Wait';
+                                else sndcnt.textContent = 1+"/"+urls.length;
+                            } else {sndbt.style.display = 'none'; nosnd.style.display = 'inline';}
                        };
                    dreq.open("GET", url, "true");
                    dreq.send();
