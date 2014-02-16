@@ -7,7 +7,7 @@ function(stuff){
     function load_txt(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
-            console.log("Load input file");
+            console.log("Load input file");//NFP
             proceedtxt(new String(evt.target.result));
         };
         Reader.readAsText(file);

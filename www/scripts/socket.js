@@ -10,17 +10,13 @@ define(
     var db = "!";
     var rcl = 0;
     var callback = function(){};
-    console.log("Creating tcpecho.");
+    console.log("Creating tcpecho.");//NFP
     function parse_resp(resp){
         if(resp.match(/.*552 no match.*/)){
-            console.log(resp);
+            console.log(resp);//NFP
             if(rcl===0){rcl=1; get_matches();}
             else{rcl=0; callback("<b>"+word+"</b> not found.");}
         } else {
-            /*resp = resp.replace("/\n/gm", "<br>");
-            var reb = new RegExp(db, "gm");
-            var rew = new RegExp(word, "gm");
-            callback("<b>"+word+"</b> -> "+resp.replace(rew, "<br><b>-></b> ").replace(reb, ""));*/
             callback(resp);
         }
     }
@@ -28,7 +24,7 @@ define(
         var l = word.length;
         var cut = Math.floor(l/5);
         text = "MATCH "+db+" re ^.{0,"+cut+"}"+word.slice(cut, l-cut)+".{0,"+cut+"}$\n";
-        console.log(text);
+        console.log(text);//NFP
         if(sockavail === 'chrome') chromecreate();
         else if (sockavail === 'mozilla') mozopen();
         else if (sockavail === 'cordova') cordova_get(host, port, text);
@@ -39,7 +35,7 @@ define(
         var exec = cordova.require('cordova/exec');
         tcpecho = function(arr, callback) {
             exec(callback, function(err) {
-                console.log("Got error: '"+err+"' while exec echo");
+                console.log("Got error: '"+err+"' while exec echo");//NFP
                 callback("");
             }, "Echo", "echo", arr);
         };
@@ -48,7 +44,6 @@ define(
     
     function cordova_get(host, port, text){
         tcpecho([host, port, text], function(bindata) {
-            //console.log("Got response.");
             parse_resp(encod.utf8b2str(bindata));
         });
     }
@@ -58,12 +53,10 @@ define(
     }
     function chromewrite(id, text){
         var data = encod.str2utf8b(text);
-        //console.log(encod.utf8b2str(encod.str2utf8b("ползущий like окна")));
         chrome.socket.write(id, data, function(){window.setTimeout(function(writeInfo){chromeread(id);}, 384);});
     }
     function chromeread(id){  chrome.socket.read(id, 65536, function(readInfo){
             resp = encod.utf8b2str(readInfo.data);
-            //console.log("Got from gsocket "+resp);
             chrome.socket.disconnect(id);
             chrome.socket.destroy(id);
             parse_resp(resp);
@@ -71,7 +64,6 @@ define(
     function chromecreate(){
         chrome.socket.create('tcp', null, function(createInfo){
                 gsocketid = createInfo.socketId;
-                //console.log("gsocketid==", gsocketid, "createInfo==", createInfo);
                 chromeconnect(gsocketid);
             });
     }
@@ -79,7 +71,7 @@ define(
         resp = '';
         var mtext = text;
         var data = encod.str2utf8b(mtext);
-        console.log("mtext is "+mtext);
+        console.log("mtext is "+mtext);//NFP
         var moz_socket = navigator.mozTCPSocket.open(host, port, {binaryType: 'arraybuffer'});//'arraybuffer''string'
         moz_socket.onopen = function(e){
                 moz_socket.send(data);
@@ -102,7 +94,7 @@ define(
             callback = _clbck;
             word = _word;
             text = "DEFINE "+db+" "+word+"\n";
-            console.log(text);
+            console.log(text);//NFP
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
             else if (sockavail === 'cordova') cordova_get(host, port, text);
@@ -127,12 +119,12 @@ define(
                 } catch(e) {console.log("navigator.mozTCPSocket present, but unaccessible");}
             }
             else if(_chrome) sockavail = 'chrome';
-            console.log("sockavail=="+sockavail);
+            console.log("sockavail=="+sockavail);//NFP
             return sockavail;
         },
         init:function(_host, _port, _db){
             if(sockavail===null){
-                console.log("Socket unavailiable or check first");
+                console.log("Socket unavailiable or check first");//NFP
                 return;
             }
             host = _host;

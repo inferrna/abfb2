@@ -1,6 +1,6 @@
 require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'require', 'images', 'hammer'],
 function(uitouch, dict, options, book, stuff, sound, require){
-    console.log("app.js loads");
+    console.log("app.js loads");//NFP
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -52,15 +52,10 @@ function(uitouch, dict, options, book, stuff, sound, require){
     hammer(txarea).on("dragdown", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('show'); pop.style.display='none';}});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
     hammer(mtext).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);});
-   /*hammer(txarea, {"swipe_velocity": 0.1}).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1); pop.style.display='none';});
-    hammer(txarea, {"swipe_velocity": 0.1}).on("swiperight", function(evt){uitouch.liftcol(mtext, 1); pop.style.display='none';});
-    hammer(txarea, {"swipe_velocity": 0.1}).on("swipeup", function(evt){options.display('hide'); pop.style.display='none';});
-    hammer(txarea, {"swipe_velocity": 0.1}).on("swipedown", function(evt){options.display('show'); pop.style.display='none';});*/
     hammer(pop).on("dragleft",  function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(pts,-1);}});
     hammer(pop).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(pts, 1);}});
     hammer(pop).on("dragup",   function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     hammer(pop).on("dragdown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
-    //hammer(mtext).on("tap", function(evt){console.log("Got tap"); uitouch.handleClick(evt.gesture.srcEvent);});
     mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
@@ -134,7 +129,6 @@ function(uitouch, dict, options, book, stuff, sound, require){
         options.getpp();
     }
     function fill_page(html, percent, nosave){
-        //console.log("Try load html");
         marea.style.width = 'auto';
         marea.style.height = 'auto';
         marea.innerHTML = html;

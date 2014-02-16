@@ -24,7 +24,7 @@ define(
                          foliant.load(thefile, 'jsepub');
                  },
                  get_page:function(i){
-                         console.log("got request");
+                         console.log("got request");//NFP
                          return foliant.get_page(i);
                  },
                  evo:function(){

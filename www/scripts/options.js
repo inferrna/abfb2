@@ -185,13 +185,15 @@ define(
                                                "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
                                                "phost": values['proxy_host'], "pport": values['proxy_port']});
                               dict.get_dbs(values["dict_src"]);}, false);
-            get_opt(params, function(key, value){console.log(key+"=got="+value); if(value){ 
-                    inp.value = value;
-                    try { var evt = new Event('change');}
-                    catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
-                    inp.dispatchEvent(evt);
-                }
-            },null);
+            get_opt(params, function(key, value){
+                    console.log(key+"=got="+value);//NFP 
+                    if(value){ 
+                        inp.value = value;
+                        try { var evt = new Event('change');}
+                        catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
+                        inp.dispatchEvent(evt);
+                    }
+                },null);
         }
         //obj.appendChild(br);
         sp.appendChild(sel);
@@ -309,7 +311,9 @@ define(
         } else if(crstorage) {
             var keys = [];
             keys.push(key);
-            crstorage.remove(keys, function(){console.log(key+" removed");}) 
+            crstorage.remove(keys, function(){
+                    console.log(key+" removed");//NFP
+                }) 
         }
     }
 

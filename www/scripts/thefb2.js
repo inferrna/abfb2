@@ -10,14 +10,14 @@ function(stuff){
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
     var transavail = null;
-    console.log("window.XSLTProcessor supports is "+(window.XSLTProcessor ? true : false));
+    console.log("window.XSLTProcessor supports is "+(window.XSLTProcessor ? true : false));//NFP
 
     function ctransform(arr, callback){};
     try {
         var exec = cordova.require('cordova/exec');
         ctransform = function(arr, callback) {
             exec(callback, function(err) {
-                console.log("Got error: '"+err+"' while exec transform");
+                console.log("Got error: '"+err+"' while exec transform");//NFP
                 callback("");
             }, "XSLT", "transform", arr);
         };
@@ -26,10 +26,7 @@ function(stuff){
 
     function cordova_trans(xslt, xml, callback){
         ctransform([xslt, xml], function(string) {
-            console.log("Got transformed:\n"+string);//.slice(0,99)+"\n...\n"+string.slice(string.length-99, string.length));
-            /*var fragment = document.createDocumentFragment();
-            fragment.innerHTML = string;
-            callback(fragment);*/
+            console.log("Got transformed:\n"+string);//NFP
             callback(parsr.parseFromString(string));
         });
     }
@@ -53,7 +50,7 @@ function(stuff){
     function load_fb2(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
-            console.log("Load input file");
+            console.log("Load input file");//NFP
             proceedfb2(evt.target.result);
         };
         Reader.readAsText(file);
@@ -61,21 +58,21 @@ function(stuff){
     function proceedfb2(fb2File){
         var serializer = new XMLSerializer();
         transxsl(fb2File, serializer.serializeToString(xsl), function(resultDocument){
-            console.log("Got resultDocument == "+resultDocument);
+            console.log("Got resultDocument == "+resultDocument);//NFP
             fb2.appendChild(resultDocument);
             //fb2 = resultDocument;
             var divlist = fb2.getElementsByTagName('div');
             var re = /TOC_.+/g;
             clean_tags(fb2, 'script');
             clean_tags(fb2, 'a');
-            console.log("Tags cleaned");
+            console.log("Tags cleaned");//NFP
             for(var i = 0; i < divlist.length; i++)
                 if(re.test(divlist[i].getAttribute('id'))){ 
-                    console.log("Push div id "+divlist[i].getAttribute('id'));
+                    console.log("Push div id "+divlist[i].getAttribute('id'));//NFP
                     divs.push(divlist[i]);//.getAttribute('id'));
-            } /*else console.log("Not push div id "+divlist[i].getAttribute('id'));*/
+            } 
             callbacks['got_book']();
-            console.log("fb2 pages is "+pages);
+            console.log("fb2 pages is "+pages);//NFP
         });
     }
     function clean_tags(doc, tag){
@@ -108,7 +105,6 @@ function(stuff){
             } catch (e) { console.warn(ch);
                 clean_invalid(ch);
                 return null;}
-            //console.log("html== "+html+" id=="+index);
             return html;
         }else{
             var result = document.createElement('div');//document.createDocumentFragment();;//document.createElement('div');
@@ -124,17 +120,9 @@ function(stuff){
                 if(idx>-1) pages.push(idx);
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
                 else pages.push(0);
-                //console.log(divs[i].getAttribute('id'));
             }
-            //console.log("values is "+values);
             toc.setAttribute('id', 'tocselect');
             result.appendChild(toc);
-            //var html = srlzr.serializeToString(toc);
-            //return html;//decodeURIComponent( escape(resultDocument) ));
-            //console.log("fb2 toc is "+toc);
-            //var docFragment = document.createDocumentFragment();
-            //while(toc.firstChild) docFragment.appendChild(toc.firstChild);
-            //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
             return result;//docFragment;//contents;
         }
     }
@@ -152,7 +140,7 @@ function(stuff){
              },
              get_fromopt:function(idx){
                      var tidx = pages[idx];
-                     console.log("idx=="+idx+" tidx=="+tidx+" pages=="+pages);
+                     console.log("idx=="+idx+" tidx=="+tidx+" pages=="+pages);//NFP
                      if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
                      return get_indexed_page(currentpage);
              },
@@ -160,7 +148,6 @@ function(stuff){
                      return currentpage;
              },
              next_page:function(diff){
-                     //console.log(currentpage+" next_page "+diff);
                      var page = pages.indexOf(pages[currentpage] + diff);
                      if(page>-1) {
                             currentpage = page;

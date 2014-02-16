@@ -2068,7 +2068,6 @@
 		},
 		read_byte : function(start) {
 			var that = this;
-            //if(console && console.log) console.log("that.next_in type is "+Object.prototype.toString.call(that.next_in.buffer));
 			if(that.next_in.subarray) return that.next_in.subarray(start, start + 1)[0];
             else return new Uint8Array(that.next_in.buffer, start, start + 1)[0];
 		},

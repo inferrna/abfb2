@@ -34,17 +34,11 @@ define(
     var googles = {text:'',sl:'',tl:'',hl:'',ie:'',oe:'',multires:0,otf:0,trs:0,ssel:0,tsel:0,sc:0};
     var locals  = {text:'',host:'',port:0};
     var seealso = [];
-    //var locals_get_str = '';
-    /*dreq.open("GET", "http://translate.google.com", true);
-    try {dreq.send();}
-    catch(e){console.log("XMLHttpRequest failed, got:",e);};*/
     function get_http(_text, params, baseurl, callback, basetxt){
         var dreq = new XMLHttpRequest({mozSystem: true});
         dreq.onload = function (event) {
-                //console.log("XMLHttpRequest done");
                 resp = basetxt;
                 var resptext = event.target.responseText;
-                //console.log(JSON.parse(resptext)["dict"]);
                 if(datas["dictionary"].match("google.*?$")){
                     resp +="<b>"+_text+"</b> -> "; 
                     var respj = JSON.parse(resptext);
@@ -70,8 +64,6 @@ define(
         var url = baseurl+params_get_str;
         dreq.open("GET", url, "true");
         dreq.send();
-        //alert("Request sended, url was "+url+".");
-        //console.log("Request sended, url was "+url);
     }
     function get_def(word){
             lword = word.replace(/(^\s)|(\s$)/gm, "").replace(/(^)(\W*)(.*?)(\W*?)($)/, "$3$5");//.toLowerCase().replace(/(^\s)|[\.\!\?\,\;\:]|(\s$)/gm, "");
@@ -83,7 +75,6 @@ define(
             else if (datas["dictionary"] === 'socket'){
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);
-                //socket.evo.addEventListener('got_def', function (e) { resp = socket.response(); dreq.dispatchEvent(got_def_ev); }, false);
                 socket.get_def(lword, callbacks['got_def']);
             } else console.log("No dictionary selected");
 

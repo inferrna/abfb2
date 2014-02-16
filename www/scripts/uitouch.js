@@ -27,7 +27,6 @@ define(
       function sign(x) { return x && x / Math.abs(x); }
      function liftcol(el, dir) {
           "use strict";
-          //console.log(el);
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
@@ -52,7 +51,6 @@ define(
               if(newtop<pageend) newtop = pageend+ptop/2;
               if (newtop>0) newtop = 0;
           }
-          //console.log("top=="+top+"  pageend=="+pageend+"  newtop=="+newtop+"  oldpercent="+oldpercent+"  el=="+el.id);
           el.style.top = parseInt(newtop)+"px";
       }
       function movesbot(touches, el){
@@ -100,13 +98,13 @@ define(
               }
           if(!newtext) newtext = newtexts[j-1];
           if(!newtext) newtext = text;
-          console.log("j=="+j+" i=="+i+" off=="+off+" newtexts=="+newtexts.join("|||"));
+          console.log("j=="+j+" i=="+i+" off=="+off+" newtexts=="+newtexts.join("|||"));//NFP
           var realwords = newtext.match(/[\w\S]{4,99}/mg);
           if(realwords.length<4) realwords = newtext.match(/[\w\S]{3,99}/mg);
           if(realwords.length<4) realwords = newtext.match(/[\w\S]{2,99}/mg);
           var idx = realwords.indexOf(word);
           var spirale = [-1, 1, -2, 2, -3, 3, -4, 4];
-          console.log("newtext=\""+newtext+"\" text==\""+text+"\" realwords=="+realwords+" word=="+word);
+          console.log("newtext=\""+newtext+"\" text==\""+text+"\" realwords=="+realwords+" word=="+word);//NFP
           for(i = 0; i<spirale.length && res.length<3; i++){
                 var nw = realwords[idx+spirale[i]];
                 if(nw && nw.length>0 && spirale[i]>0) var snt = newtext.slice(newtext.indexOf(word), newtext.indexOf(nw)+nw.length+1);
@@ -114,7 +112,7 @@ define(
                 if(nw && snt && snt.length>0 && res.indexOf(snt)===-1) {res.push(snt); snt=null;}
           }
           if(newtext.length<99 && res.indexOf(newtext)===-1) res.push(newtext);
-          console.log("res=="+res);
+          console.log("res=="+res);//NFP
           return res;
       }
       function expand2s(off, text){
@@ -122,7 +120,6 @@ define(
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           var out = text.slice(loind===0 ? loind : loind+1, hiind===text.length ? hiind : hiind+1);
-          //console.log("Got sentence: "+out);
           return out;
       }
       function ispointinrect(rect, x, y){
@@ -136,7 +133,6 @@ define(
       }
       function ispointinrectlist(rectlist, x, y){
           "use strict";
-          //console.log(JSON.stringify(rectlist));
           for(var i=0; i<rectlist.length; i++){
              if(ispointinrect(rectlist[i], x, y)) return i;
           }
@@ -169,11 +165,9 @@ define(
                       try{clone.setEnd(clone.endContainer, i);}
                       catch(e){console.log(e.stack); break;}
                       if(ispointinrectlist(clone.getClientRects(), x, y)>-1){
-                          //console.log(j+")"+i+") selected: "+clone.toString());
                           z = i-k;
                           retch = child;
                           gotit++;
-                          //console.log("z=="+z);
                           break;
                       }
                   }
@@ -183,11 +177,9 @@ define(
           sidx++;
           if((gotit && retch.textContent.replace(/\s/g, '')!='') || sidx>=spirales.length){
               if(retch) {
-                //console.log("All ok, got \""+retch.textContent.replace(/\s/g, '')+"\".");
                 return [z, retch];
               }
           } else {
-              //console.log("d=="+d+". Got bad. \""+(retch ? retch.textContent : '')+"\" Going new - "+sidx);
               return get_off(_x, _y, sidx);
           }
           return true;
@@ -225,14 +217,12 @@ define(
                       rng.expand("word");
                       sel.addRange( rng );
                       selected_word = sel.toString();
-                      //console.log("Selected by rng.expand "+sel.toString());
                   } else {
                       sel.addRange(rng);
                       sel.modify("extend", "backward", "word");
                       sel.collapseToStart();
                       sel.modify("extend", "forward", "word");
                       selected_word = sel.toString();
-                      //console.log("Selected by sel.modify "+sel.toString());
                   }
               } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
                                 +" using expand2w, got "+selected_word+" off=="+off);}
@@ -266,7 +256,6 @@ define(
             txarea.style.width  = parseInt(nw)+"px";
             txarea.style.height = parseInt(nh)+"px";
             var stscale = "scale("+scale+")";
-            //console.log("Got nhw == "+nw+", "+nh+" | stscale=="+stscale+" scale=="+scale);
             txarea.style.transform = stscale;
             txarea.style.transformOrigin = "0 0";
             txarea.style.WebkitTransform = stscale;
@@ -302,11 +291,9 @@ define(
               return true;
           },
           dragpop:function(y){
-              //console.log("max_Y=="+max_Y+" y=="+y);
               if(y===-1) var ch = parseInt(stuff.getStyle(pts, 'height'))+(parseInt(stuff.getStyle(pts, 'font-size')) | 16);
               if(max_Y>window.innerHeight/2){
                   if(y===-1){
-                      //console.log("top max_Y=="+max_Y+" ch=="+ch);
                       if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch)+"px";
                       else pop.style.bottom = "75%"
                       pop.style.top = 0+"px";
@@ -315,7 +302,6 @@ define(
                   pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
               } else {
                   if(y===-1){
-                      //console.log("bot max_Y=="+max_Y+" ch=="+ch);
                       if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+"px";
                       else pop.style.top = "75%"
                       pop.style.bottom = 0+"px";
@@ -333,7 +319,6 @@ define(
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
-              //console.log("Got code "+Code);
               if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();

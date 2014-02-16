@@ -3,8 +3,6 @@ function(jsepub, stuff, encod, options){
     var epub = null;
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
-    //console.log(unescape(stuff.tocxsl.replace(/&quot;/g,'"')));
-    //xsltp.importStylesheet(parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml'));
     var xsl = parsr.parseFromString(stuff.tocxsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml');
     if(window.XSLTProcessor){
         var xsltp = new XSLTProcessor();
@@ -30,8 +28,7 @@ function(jsepub, stuff, encod, options){
        for(i=0; i<points.length; i++){
            var lbl = points[i].getElementsByTagName("navLabel")[0];
            var cont = points[i].getElementsByTagName("content")[0];
-           console.log("points["+i+"].id=="+points[i].id+" lbl.text=="+lbl.textContent.replace(/\s+/mg, ' ')
-                        +" cont.src=="+cont.attributes['src'].value);//.replace(/\s+/mg, ' '));
+           console.log("points["+i+"].id=="+points[i].id+" lbl.text=="+lbl.textContent.replace(/\s+/mg, ' ')+" cont.src=="+cont.attributes['src'].value);//NFP
            var opt = document.createElement("option");
            opt.style.textIndent = "32px";
            opt.setAttribute("id", points[i].attributes['playOrder'].value);
@@ -50,7 +47,7 @@ function(jsepub, stuff, encod, options){
     function load_jsepub(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
-            console.log("Load input file");
+            console.log("Load input file");//NFP
             proceedepub(evt.target.result, file);
         };
         Reader.readAsBinaryString(file);
@@ -71,7 +68,7 @@ function(jsepub, stuff, encod, options){
                     msg = "Post processing";
                 } else if (step === 5) {
                     msg = "Finishing";
-                    console.log(msg);
+                    console.log(msg);//NFP
                     callbacks['got_book']();
                 }
                 // Render the "msg" here.
@@ -93,7 +90,6 @@ function(jsepub, stuff, encod, options){
             var spine = epub.opf.spine[i];
             var href = epub.opf.manifest[spine]["href"];
             if(href===url) {
-                //console.log(text+"i=="+i+" id=="+id+" href=="+href);
                 return i+1;
             }
         }
@@ -101,19 +97,16 @@ function(jsepub, stuff, encod, options){
         return id;
     }
     function get_indexed_page(index){
-        //console.log("get_indexed_page "+index);
         var opf = epub.opf();
         var toc = epub.toc();
         var files = epub.files();
         if(index>-1){
             if(opf && toc && files){
                 var idx = pages[index];
-                //console.log("pages=="+pages+" idx=="+idx+" index=="+index);
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
                 var doc = files[href];
-                //console.log("href: "+href);
                 var html = srlzr.serializeToString(doc);
                 options.set_opt("last_html", html, true);
                 return html;//decodeURIComponent( escape(resultDocument) ));
@@ -122,7 +115,6 @@ function(jsepub, stuff, encod, options){
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
             var contents = transxsl(toc, xsl, doc);//xsltp.transformToDocument(toc,doc);
             if(!contents || !contents.getElementsByTagName) contents = js_toc(toc);
-            //console.log("1st:"+srlzr.serializeToString(contents)+"\n2nd:"+srlzr.serializeToString(js_toc(toc)));
             var opts = contents.getElementsByTagName("option");
             var hrefs = [];
             var urls = [];
@@ -132,20 +124,16 @@ function(jsepub, stuff, encod, options){
             for(var i = 0; i < opts.length; i++) {
                 urls.push(opts[i].getAttribute('url').replace(re, "$2").replace(re1, "$1"));
                 var idx = hrefs.indexOf(urls[i]);
-                //console.log("Got url: "+opts[i].getAttribute('url')+" -> "+urls[i]+". idx=="+idx+", hrefs[idx]=="+hrefs[idx]);
                 if(idx>-1) pages.push(idx);
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
                 else pages.push(0);
             }
-            //console.log("urls is "+urls+" opf.spine.length=="+opf.spine.length);
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];
                 opf.manifest[spine]['href'] = opf.manifest[spine]['href'].replace(re1, "$1");
             }
-            //console.log("hrefs is "+hrefs);
             var docFragment = document.createDocumentFragment();
             while(contents.firstChild) docFragment.appendChild(contents.firstChild);
-            //console.log(encod.utf8b2str( encod.str2utf8b(contents.textContent) ));
             return docFragment;//contents;
         }
     }
@@ -164,7 +152,6 @@ function(jsepub, stuff, encod, options){
                      return get_indexed_page(index);
              },
              option:function(i){
-                     //console.log("i=="+i+" currentpage=="+currentpage+" pages[currentpage]=="+pages[currentpage])
                      //if(i==0) return currentpage;
                      if(pages[currentpage]>-1 && !isNaN(pages[currentpage])) return currentpage;
                      return i;
@@ -178,7 +165,6 @@ function(jsepub, stuff, encod, options){
                      return currentpage;
              },
              next_page:function(diff){
-                     //console.log(currentpage+" next_page "+diff);
                      var page = pages.indexOf(pages[currentpage] + diff);
                      if(page>-1) {
                             currentpage = page;
