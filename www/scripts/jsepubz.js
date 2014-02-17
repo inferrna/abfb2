@@ -134,8 +134,14 @@ define(['mimetypes'], function (mimetypes) {
             spine: []
         };
         var metadatas = doc.getElementsByTagName("metadata")[0];
+        console.log("readOpf doc:");//NFP
+        console.log(doc);//NFP
+        console.log("readOpf metadatas:");//NFP
+        console.log(metadatas);//NFP
         //if(metadatas===undefined) metadatas = doc.getElementsByTagName("opf:metadata")[0];
         var metadataNodes = metadatas.childNodes;
+        console.log("readOpf metadatas.childNodes:");//NFP
+        console.log(metadatas.childNodes);//NFP
 
         for (var i = 0, il = metadataNodes.length; i < il; i++) {
             var node = metadataNodes[i];
@@ -143,9 +149,11 @@ define(['mimetypes'], function (mimetypes) {
             if (node.nodeType === 3) { continue }
 
             var attrs = {};
-            for (var i2 = 0, il2 = node.attributes.length; i2 < il2; i2++) {
-                var attr = node.attributes[i2];
-                attrs[attr.name] = attr.value;
+            if(node.attributes && node.attributes.length){
+                for (var i2 = 0, il2 = node.attributes.length; i2 < il2; i2++) {
+                    var attr = node.attributes[i2];
+                    attrs[attr.name] = attr.value;
+                }
             }
             attrs._text = node.textContent;
             opf.metadata[node.nodeName] = attrs;
@@ -215,7 +223,7 @@ define(['mimetypes'], function (mimetypes) {
         var mediaType = '';
         var href = '';
         var result = '';
-        var tocre = /.+?\.ncx/i;
+        var tocre = /.+?\.ncx|toc\.xhtml/i;
         var xml = '';
         var keys = Object.keys(opf.manifest);
         console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));//NFP
@@ -224,11 +232,15 @@ define(['mimetypes'], function (mimetypes) {
             key = keys[_key];
             try {
                 mediaType = opf.manifest[key]["media-type"];
+                var id = opf.manifest[key]["id"];
+                //console.log(key+":");
+                //console.log(opf.manifest[key]);//NFP
                 href = opf.manifest[key]["href"];
                 result = undefined;
                 if (mediaType === "text/css") {
                     result = postProcessCSS(href);
-                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href)) {
+                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || id === "toc") {
+                    console.log("toc href== "+href);//NFP
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     toc = xmlDocument(xml);

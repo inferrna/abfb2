@@ -18,12 +18,14 @@ function(jsepub, stuff, encod, options){
                 srlzr.serializeToString(xsl)), "text/html");
         }
     }
-    function js_toc(toc){
+    function js_toc(toc, files){
         //var doc = new DOMParser().parseFromString(xml, "text/xml");
        var div = document.createElement("div");
        var sel = document.createElement("select");
        sel.setAttribute("id", "tocselect");
        sel.style.width = "auto";
+       console.log("toc:");
+       console.log(toc);
        var points = toc.getElementsByTagName("navPoint");
        for(i=0; i<points.length; i++){
            var lbl = points[i].getElementsByTagName("navLabel")[0];
@@ -35,6 +37,22 @@ function(jsepub, stuff, encod, options){
            opt.setAttribute('url', cont.attributes['src'].value);
            opt.textContent = lbl.textContent.replace(/\s+/mg, ' ');
            sel.appendChild(opt);
+       }
+       var recl = /toc-.+/i;
+       var points = toc.getElementsByTagName("li");
+       var keys = Object.keys(files).map(function(key){return key.replace(/(.*)?\/(.+)/i, "$2");});
+       console.log("files keys:");//NFP
+       console.log(keys);
+       for(i=0; i<points.length; i++){
+           if(recl.test(points[i].className)){
+               var a = points[i].getElementsByTagName("a")[0];
+               var opt = document.createElement("option");
+               opt.style.textIndent = "32px";
+               opt.setAttribute("id", ""+i);
+               opt.setAttribute('url', a.getAttribute("href"));
+               opt.textContent = a.textContent.replace(/\s+/mg, ' ');
+               sel.appendChild(opt);
+           }
        }
        div.appendChild(sel);
        return div;
@@ -114,13 +132,15 @@ function(jsepub, stuff, encod, options){
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
             var contents = transxsl(toc, xsl, doc);//xsltp.transformToDocument(toc,doc);
-            if(!contents || !contents.getElementsByTagName) contents = js_toc(toc);
+            if(!contents || !contents.getElementsByTagName || contents.id!=="tocselect") contents = js_toc(toc, files);
             var opts = contents.getElementsByTagName("option");
             var hrefs = [];
             var urls = [];
-            var re = /(.*\/)+?(.+?)/;
+            var re = /(.*?)\/(.+?)/;
             var re1 = /(.+?)(#.*)/;
             var hrefs = opf.spine.map(function(sp){return opf.manifest[sp]['href'].replace(re, "$2").replace(re1, "$1");});
+            console.log("hrefs:");//NFP
+            console.log(hrefs);//NFP
             for(var i = 0; i < opts.length; i++) {
                 urls.push(opts[i].getAttribute('url').replace(re, "$2").replace(re1, "$1"));
                 var idx = hrefs.indexOf(urls[i]);
@@ -128,6 +148,9 @@ function(jsepub, stuff, encod, options){
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
                 else pages.push(0);
             }
+            console.log("urls:");//NFP
+            console.log(urls);//NFP
+
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];
                 opf.manifest[spine]['href'] = opf.manifest[spine]['href'].replace(re1, "$1");
