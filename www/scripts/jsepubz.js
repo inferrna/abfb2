@@ -377,7 +377,7 @@ define(['mimetypes'], function (mimetypes) {
 
    function getDataUri(url, href) {
         var dataHref = resolvePath(url, href);
-        var mediaType = findMediaTypeByHref(dataHref);
+        var mediaType = mimetypes.getMimeType(dataHref);
         if(b64blobs[dataHref]) return b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
         encodedData = escape(files[dataHref]);
         return "data:" + mediaType + "," + encodedData;
