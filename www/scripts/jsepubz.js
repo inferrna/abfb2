@@ -228,6 +228,7 @@ define(['mimetypes'], function (mimetypes) {
         var keys = Object.keys(opf.manifest);
         console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));//NFP
         var key;
+        //First loop. All exept binary data and html.
         for (var _key in keys) {
             key = keys[_key];
             try {
@@ -255,6 +256,37 @@ define(['mimetypes'], function (mimetypes) {
                 }
             } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
         }
+        //2nd loop. css only.
+        for (var _key in keys) {
+            key = keys[_key];
+            try {
+                mediaType = opf.manifest[key]["media-type"];
+                href = opf.manifest[key]["href"];
+                result = undefined;
+                if (mediaType === "text/css"){
+                    var fnm = href.replace(/(.+?\/)(.*?\.css)/i, "$2");
+                    var base = href.replace(fnm, "");
+                    var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
+                    var importnames = [].concat(files[href].split(/\n/gi).filter(function(st){return reincl.test(st);}));
+                    if(importnames.length){
+                        var result = files[href];
+                        for(var i=0; i<importnames.length; i++){
+                            var incnm = base+importnames[i].replace(reincl, "$2");
+                            console.log("css)"+href + " includes "+incnm);//NFP
+                            var result = result.replace(importnames[i], files[incnm]);
+                        }
+                        files[href] = result;
+                        console.log("result:");
+                        console.log(result);
+                    }
+                    //result = postProcessCSS(href);
+                    //if(result) files[href] = result;
+                }
+                if (result !== undefined){
+                }
+            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
+        }
+        //3rd loop. html only.
         for (var _key in keys) {
             key = keys[_key];
             try {
@@ -270,25 +302,24 @@ define(['mimetypes'], function (mimetypes) {
                 }
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
+
     }
 
     function postProcessCSS(href) {
         var file = files[href];
         var self = this;
-        var isformat = /url.*?format/;
+        //var isformat = /url.*?format.+?/gi;
         file = file.replace(/url\((.*?)\)/gi, function (str, url) {
             var format = '';
             if (/^data/i.test(url)) {
                 // Don't replace data strings
                 return str;
             } else {
-                if(!isformat.test(url)){
-                    if(/\.(otf$)/.test(url)) format = " format('opentype')";
-                    if(/\.(ttf$)/.test(url)) format = " format('truetype')";
-                    if(/\.(eot$)/.test(url)) format = " format('embedded-opentype')";
-                    if(/\.(woff$)/.test(url)) format = " format('woff')";
-                }
                 var dataUri = getDataUri(url, href);
+                if(/\.(otf$)/.test(url)) format = " format('opentype')";
+                if(/\.(ttf$)/.test(url)) format = " format('truetype')";
+                if(/\.(eot$)/.test(url)) format = " format('embedded-opentype')";
+                if(/\.(woff$)/.test(url)) format = " format('woff')";
                 return "url('" + dataUri + "')"+format;
             }
         });
