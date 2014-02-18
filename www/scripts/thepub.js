@@ -33,7 +33,8 @@ function(jsepub, stuff, encod, options){
            console.log("points["+i+"].id=="+points[i].id+" lbl.text=="+lbl.textContent.replace(/\s+/mg, ' ')+" cont.src=="+cont.attributes['src'].value);//NFP
            var opt = document.createElement("option");
            opt.style.textIndent = "32px";
-           opt.setAttribute("id", points[i].attributes['playOrder'].value);
+           var order = points[i].attributes['playOrder'] ? points[i].attributes['playOrder'].value : i; 
+           opt.setAttribute("id", order);
            opt.setAttribute('url', cont.attributes['src'].value);
            opt.textContent = lbl.textContent.replace(/\s+/mg, ' ');
            sel.appendChild(opt);
@@ -44,8 +45,8 @@ function(jsepub, stuff, encod, options){
        console.log("files keys:");//NFP
        console.log(keys);
        for(i=0; i<points.length; i++){
-           if(recl.test(points[i].className)){
-               var a = points[i].getElementsByTagName("a")[0];
+           var a = points[i].getElementsByTagName("a")[0];
+           if(a){
                var opt = document.createElement("option");
                opt.style.textIndent = "32px";
                opt.setAttribute("id", ""+i);

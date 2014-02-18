@@ -223,7 +223,7 @@ define(['mimetypes'], function (mimetypes) {
         var mediaType = '';
         var href = '';
         var result = '';
-        var tocre = /.+?\.ncx|toc\.xhtml/i;
+        var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         var xml = '';
         var keys = Object.keys(opf.manifest);
         console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));//NFP
