@@ -28,7 +28,7 @@ define(['mimetypes'], function (mimetypes) {
         delete reader;
     }
     function fill_files(data, name, callback, params){
-        var re = /.+?\.(jpeg|jpg|gif|png|otf|ttf|bmp|wav)/i;
+        var re = /.+?\.(jpeg|jpg|gif|png|otf|ttf|woff|bmp|wav)/i;
         params[1]++; //i
         if (re.test(name)){
             logger("extracting blob: " +name+"...");
@@ -49,7 +49,7 @@ define(['mimetypes'], function (mimetypes) {
     function unzipBlob(notifier) {
         if(window.cordova){
             function fill_crdo(data, name){
-                var re = /.+?\.(jpeg|jpg|gif|png|otf|ttf|bmp|wav)/i;
+                var re = /.+?\.(jpeg|jpg|gif|png|woff|otf|ttf|bmp|wav)/i;
                 if (re.test(name)){
                     logger("extracting blob: " +name+"...");
                     b64blobs[name] = "data:"+mimetypes.getMimeType(name)+";base64,"+data;
@@ -286,6 +286,7 @@ define(['mimetypes'], function (mimetypes) {
                     if(/\.(otf$)/.test(url)) format = " format('opentype')";
                     if(/\.(ttf$)/.test(url)) format = " format('truetype')";
                     if(/\.(eot$)/.test(url)) format = " format('embedded-opentype')";
+                    if(/\.(woff$)/.test(url)) format = " format('woff')";
                 }
                 var dataUri = getDataUri(url, href);
                 return "url('" + dataUri + "')"+format;
