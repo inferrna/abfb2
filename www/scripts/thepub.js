@@ -11,12 +11,14 @@ function(jsepub, stuff, encod, options){
         //var jsxml = require('jsxml');
     }
     function transxsl(xml, xsl, doc){
+        try{
         if(window.XSLTProcessor) return xsltp.transformToDocument(xml, doc);
-        else {
+        /*else {
             return parsr.parseFromString(jsxml.transReady(
                 srlzr.serializeToString(xml),
                 srlzr.serializeToString(xsl)), "text/html");
-        }
+        }*/
+        } catch(e) { return null; }
     }
     function js_toc(toc, files){
         //var doc = new DOMParser().parseFromString(xml, "text/xml");
