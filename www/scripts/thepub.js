@@ -119,14 +119,18 @@ function(jsepub, stuff, encod, options){
         var opf = epub.opf();
         var toc = epub.toc();
         var files = epub.files();
+        console.log("calling index "+index+"; opf:");//NFP
+        console.log(opf);//NFP
         if(index>-1){
             if(opf && toc && files){
                 var idx = pages[index];
+                console.log("idx= "+idx+ "; pages="+pages);//NFP
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
                 var doc = files[href];
                 var html = srlzr.serializeToString(doc);
+                console.log("idx= "+idx+ "; href="+href);//NFP
                 options.set_opt("last_html", html, true);
                 return html;//decodeURIComponent( escape(resultDocument) ));
             } else { return null; }
@@ -137,8 +141,8 @@ function(jsepub, stuff, encod, options){
             var opts = contents.getElementsByTagName("option");
             var hrefs = [];
             var urls = [];
-            var re = /(.*?)\/(.+?)/;
-            var re1 = /(.+?)(#.*)/;
+            var re = /(.*?\/)+(.+?)/gi;
+            var re1 = /(.+?)(#.*)/gi;
             var hrefs = opf.spine.map(function(sp){return opf.manifest[sp]['href'].replace(re, "$2").replace(re1, "$1");});
             console.log("hrefs:");//NFP
             console.log(hrefs);//NFP

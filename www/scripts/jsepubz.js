@@ -264,7 +264,7 @@ define(['mimetypes'], function (mimetypes) {
                 href = opf.manifest[key]["href"];
                 result = undefined;
                 if (mediaType === "text/css"){
-                    var fnm = href.replace(/(.+?\/)(.*?\.css)/i, "$2");
+                    var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");
                     var base = href.replace(fnm, "");
                     var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
                     var importnames = [].concat(files[href].split(/\n/gi).filter(function(st){return reincl.test(st);}));
@@ -279,8 +279,6 @@ define(['mimetypes'], function (mimetypes) {
                         console.log("result:");
                         console.log(result);
                     }
-                    //result = postProcessCSS(href);
-                    //if(result) files[href] = result;
                 }
                 if (result !== undefined){
                 }
