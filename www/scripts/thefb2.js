@@ -10,14 +10,12 @@ function(stuff){
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
     var transavail = null;
-    console.log("window.XSLTProcessor supports is "+(window.XSLTProcessor ? true : false));//NFP
 
     function ctransform(arr, callback){};
     try {
         var exec = cordova.require('cordova/exec');
         ctransform = function(arr, callback) {
             exec(callback, function(err) {
-                console.log("Got error: '"+err+"' while exec transform");//NFP
                 callback("");
             }, "XSLT", "transform", arr);
         };
@@ -26,7 +24,6 @@ function(stuff){
 
     function cordova_trans(xslt, xml, callback){
         ctransform([xslt, xml], function(string) {
-            console.log("Got transformed:\n"+string);//NFP
             callback(parsr.parseFromString(string));
         });
     }
@@ -50,7 +47,6 @@ function(stuff){
     function load_fb2(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
-            console.log("Load input file");//NFP
             proceedfb2(evt.target.result);
         };
         Reader.readAsText(file);
@@ -58,21 +54,17 @@ function(stuff){
     function proceedfb2(fb2File){
         var serializer = new XMLSerializer();
         transxsl(fb2File, serializer.serializeToString(xsl), function(resultDocument){
-            console.log("Got resultDocument == "+resultDocument);//NFP
             fb2.appendChild(resultDocument);
             //fb2 = resultDocument;
             var divlist = fb2.getElementsByTagName('div');
             var re = /TOC_.+/g;
             clean_tags(fb2, 'script');
             clean_tags(fb2, 'a');
-            console.log("Tags cleaned");//NFP
             for(var i = 0; i < divlist.length; i++)
                 if(re.test(divlist[i].getAttribute('id'))){ 
-                    console.log("Push div id "+divlist[i].getAttribute('id'));//NFP
                     divs.push(divlist[i]);//.getAttribute('id'));
             } 
             callbacks['got_book']();
-            console.log("fb2 pages is "+pages);//NFP
         });
     }
     function clean_tags(doc, tag){
@@ -140,7 +132,6 @@ function(stuff){
              },
              get_fromopt:function(idx){
                      var tidx = pages[idx];
-                     console.log("idx=="+idx+" tidx=="+tidx+" pages=="+pages);//NFP
                      if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
                      return get_indexed_page(currentpage);
              },

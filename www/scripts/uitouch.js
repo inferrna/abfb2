@@ -98,13 +98,11 @@ define(
               }
           if(!newtext) newtext = newtexts[j-1];
           if(!newtext) newtext = text;
-          console.log("j=="+j+" i=="+i+" off=="+off+" newtexts=="+newtexts.join("|||"));//NFP
           var realwords = newtext.match(/[\w\S]{4,99}/mg);
           if(realwords.length<4) realwords = newtext.match(/[\w\S]{3,99}/mg);
           if(realwords.length<4) realwords = newtext.match(/[\w\S]{2,99}/mg);
           var idx = realwords.indexOf(word);
           var spirale = [-1, 1, -2, 2, -3, 3, -4, 4];
-          console.log("newtext=\""+newtext+"\" text==\""+text+"\" realwords=="+realwords+" word=="+word);//NFP
           for(i = 0; i<spirale.length && res.length<3; i++){
                 var nw = realwords[idx+spirale[i]];
                 if(nw && nw.length>0 && spirale[i]>0) var snt = newtext.slice(newtext.indexOf(word), newtext.indexOf(nw)+nw.length+1);
@@ -112,7 +110,6 @@ define(
                 if(nw && snt && snt.length>0 && res.indexOf(snt)===-1) {res.push(snt); snt=null;}
           }
           if(newtext.length<99 && res.indexOf(newtext)===-1) res.push(newtext);
-          console.log("res=="+res);//NFP
           return res;
       }
       function expand2s(off, text){

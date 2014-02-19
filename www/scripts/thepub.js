@@ -30,7 +30,6 @@ function(jsepub, stuff, encod, options){
        for(i=0; i<points.length; i++){
            var lbl = points[i].getElementsByTagName("navLabel")[0];
            var cont = points[i].getElementsByTagName("content")[0];
-           console.log("points["+i+"].id=="+points[i].id+" lbl.text=="+lbl.textContent.replace(/\s+/mg, ' ')+" cont.src=="+cont.attributes['src'].value);//NFP
            var opt = document.createElement("option");
            opt.style.textIndent = "32px";
            var order = points[i].attributes['playOrder'] ? points[i].attributes['playOrder'].value : i; 
@@ -42,7 +41,6 @@ function(jsepub, stuff, encod, options){
        var recl = /toc-.+/i;
        var points = toc.getElementsByTagName("li");
        var keys = Object.keys(files).map(function(key){return key.replace(/(.*)?\/(.+)/i, "$2");});
-       console.log("files keys:");//NFP
        console.log(keys);
        for(i=0; i<points.length; i++){
            var a = points[i].getElementsByTagName("a")[0];
@@ -66,7 +64,6 @@ function(jsepub, stuff, encod, options){
     function load_jsepub(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
-            console.log("Load input file");//NFP
             proceedepub(evt.target.result, file);
         };
         Reader.readAsBinaryString(file);
@@ -87,7 +84,6 @@ function(jsepub, stuff, encod, options){
                     msg = "Post processing";
                 } else if (step === 5) {
                     msg = "Finishing";
-                    console.log(msg);//NFP
                     callbacks['got_book']();
                 }
                 // Render the "msg" here.
@@ -119,18 +115,14 @@ function(jsepub, stuff, encod, options){
         var opf = epub.opf();
         var toc = epub.toc();
         var files = epub.files();
-        console.log("calling index "+index+"; opf:");//NFP
-        console.log(opf);//NFP
         if(index>-1){
             if(opf && toc && files){
                 var idx = pages[index];
-                console.log("idx= "+idx+ "; pages="+pages);//NFP
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
                 var doc = files[href];
                 var html = srlzr.serializeToString(doc);
-                console.log("idx= "+idx+ "; href="+href);//NFP
                 options.set_opt("last_html", html, true);
                 return html;//decodeURIComponent( escape(resultDocument) ));
             } else { return null; }
@@ -144,8 +136,6 @@ function(jsepub, stuff, encod, options){
             var re = /(.*?\/)+(.+?)/gi;
             var re1 = /(.+?)(#.*)/gi;
             var hrefs = opf.spine.map(function(sp){return opf.manifest[sp]['href'].replace(re, "$2").replace(re1, "$1");});
-            console.log("hrefs:");//NFP
-            console.log(hrefs);//NFP
             for(var i = 0; i < opts.length; i++) {
                 urls.push(opts[i].getAttribute('url').replace(re, "$2").replace(re1, "$1"));
                 var idx = hrefs.indexOf(urls[i]);
@@ -153,8 +143,6 @@ function(jsepub, stuff, encod, options){
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
                 else pages.push(0);
             }
-            console.log("urls:");//NFP
-            console.log(urls);//NFP
 
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];

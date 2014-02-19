@@ -1,6 +1,5 @@
 require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'require', 'images', 'hammer'],
 function(uitouch, dict, options, book, stuff, sound, require){
-    console.log("app.js loads");//NFP
     var ws = null;
     var dreq = null;
     var timer = null;

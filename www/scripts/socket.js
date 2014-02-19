@@ -10,10 +10,8 @@ define(
     var db = "!";
     var rcl = 0;
     var callback = function(){};
-    console.log("Creating tcpecho.");//NFP
     function parse_resp(resp){
         if(resp.match(/.*552 no match.*/)){
-            console.log(resp);//NFP
             if(rcl===0){rcl=1; get_matches();}
             else{rcl=0; callback("<b>"+word+"</b> not found.");}
         } else {
@@ -24,7 +22,6 @@ define(
         var l = word.length;
         var cut = Math.floor(l/5);
         text = "MATCH "+db+" re ^.{0,"+cut+"}"+word.slice(cut, l-cut)+".{0,"+cut+"}$\n";
-        console.log(text);//NFP
         if(sockavail === 'chrome') chromecreate();
         else if (sockavail === 'mozilla') mozopen();
         else if (sockavail === 'cordova') cordova_get(host, port, text);
@@ -35,7 +32,6 @@ define(
         var exec = cordova.require('cordova/exec');
         tcpecho = function(arr, callback) {
             exec(callback, function(err) {
-                console.log("Got error: '"+err+"' while exec echo");//NFP
                 callback("");
             }, "Echo", "echo", arr);
         };
@@ -71,7 +67,6 @@ define(
         resp = '';
         var mtext = text;
         var data = encod.str2utf8b(mtext);
-        console.log("mtext is "+mtext);//NFP
         var moz_socket = navigator.mozTCPSocket.open(host, port, {binaryType: 'arraybuffer'});//'arraybuffer''string'
         moz_socket.onopen = function(e){
                 moz_socket.send(data);
@@ -94,7 +89,6 @@ define(
             callback = _clbck;
             word = _word;
             text = "DEFINE "+db+" "+word+"\n";
-            console.log(text);//NFP
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
             else if (sockavail === 'cordova') cordova_get(host, port, text);
@@ -119,12 +113,10 @@ define(
                 } catch(e) {console.log("navigator.mozTCPSocket present, but unaccessible");}
             }
             else if(_chrome) sockavail = 'chrome';
-            console.log("sockavail=="+sockavail);//NFP
             return sockavail;
         },
         init:function(_host, _port, _db){
             if(sockavail===null){
-                console.log("Socket unavailiable or check first");//NFP
                 return;
             }
             host = _host;

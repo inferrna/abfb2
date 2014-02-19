@@ -8,7 +8,6 @@ define(['mimetypes'], function (mimetypes) {
     var logger = function(text){console.log(text);};
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
-        console.log("Extracting "+index);//NFP
         if(files[index]) console.warn("dublicated index "+index);
         if(reader.addEventListener){
             reader.addEventListener("loadend", function() {
@@ -40,7 +39,6 @@ define(['mimetypes'], function (mimetypes) {
         delete data;
     }
     function go_all(){
-        console.log("go_all");//NFP
         container = files["META-INF/container.xml"];
         mimetype = files["mimetype"];
         didUncompressAllFiles(notifier);
@@ -61,7 +59,6 @@ define(['mimetypes'], function (mimetypes) {
             var exec = cordova.require('cordova/exec');
             crunzip = function(arr, callback) {
                 exec(callback, function(err) {
-                    console.log("Got error: '"+err+"' while exec unzip");//NFP
                 }, "unzip", "unzip", arr);
             };
             var reader = new FileReader();
@@ -80,7 +77,6 @@ define(['mimetypes'], function (mimetypes) {
                     var entries = params[0], i = params[1], reader = params[2];
                     filenames.push(entries[i].filename);
                     entries[i].getData(new zip.BlobWriter(), function (data) {
-                            console.log("unzip "+i);//NFP
                             fill_files(data, filenames[i], getdatas, [entries, i, reader]);
                            // datas.push(data);
                             reader.close(function () {   });
@@ -103,7 +99,6 @@ define(['mimetypes'], function (mimetypes) {
    function didUncompressAllFiles(notifier) {
             notifier(3);
             opfPath = getOpfPathFromContainer();
-            console.log("opfPath=="+opfPath);//NFP
             readOpf(files[opfPath]);
 
             notifier(4);
@@ -134,14 +129,8 @@ define(['mimetypes'], function (mimetypes) {
             spine: []
         };
         var metadatas = doc.getElementsByTagName("metadata")[0];
-        console.log("readOpf doc:");//NFP
-        console.log(doc);//NFP
-        console.log("readOpf metadatas:");//NFP
-        console.log(metadatas);//NFP
         //if(metadatas===undefined) metadatas = doc.getElementsByTagName("opf:metadata")[0];
         var metadataNodes = metadatas.childNodes;
-        console.log("readOpf metadatas.childNodes:");//NFP
-        console.log(metadatas.childNodes);//NFP
 
         for (var i = 0, il = metadataNodes.length; i < il; i++) {
             var node = metadataNodes[i];
@@ -226,7 +215,6 @@ define(['mimetypes'], function (mimetypes) {
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         var xml = '';
         var keys = Object.keys(opf.manifest);
-        console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));//NFP
         var key;
         //First loop. All exept binary data and html.
         for (var _key in keys) {
@@ -235,23 +223,19 @@ define(['mimetypes'], function (mimetypes) {
                 mediaType = opf.manifest[key]["media-type"];
                 var id = opf.manifest[key]["id"];
                 //console.log(key+":");
-                //console.log(opf.manifest[key]);//NFP
                 href = opf.manifest[key]["href"];
                 result = undefined;
                 if (mediaType === "text/css") {
                     result = postProcessCSS(href);
                 } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || id === "toc") {
-                    console.log("toc href== "+href);//NFP
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     toc = xmlDocument(xml);
                 } else if (mediaType === "application/xhtml+xml") {
                     //Do nothing
                 } else { 
-                    console.log(href + " media type is " + mediaType);//NFP
                 }
                 if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
                     files[href] = result;
                 }
             } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
@@ -272,7 +256,6 @@ define(['mimetypes'], function (mimetypes) {
                         var result = files[href];
                         for(var i=0; i<importnames.length; i++){
                             var incnm = base+importnames[i].replace(reincl, "$2");
-                            console.log("css)"+href + " includes "+incnm);//NFP
                             var result = result.replace(importnames[i], files[incnm]);
                         }
                         files[href] = result;
@@ -290,11 +273,9 @@ define(['mimetypes'], function (mimetypes) {
             try {
                 mediaType = opf.manifest[key]["media-type"];
                 href = opf.manifest[key]["href"];
-                console.log("2nd)"+href + " media type is " + mediaType+" file exists: "+(files[href]?true:false));//NFP
                 result = undefined;
                 if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
                 if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
                     delete files[href];
                     files[href] = result;
                 }
@@ -346,7 +327,6 @@ define(['mimetypes'], function (mimetypes) {
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
-        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,128));//NFP
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -354,7 +334,6 @@ define(['mimetypes'], function (mimetypes) {
             if (/^data/.test(src)) { continue }
             image.setAttribute("src", getDataUri(src, href));
         }
-        console.log("postProcessHTML: images done - 1");//NFP
         images = doc.getElementsByTagName("image");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -366,7 +345,6 @@ define(['mimetypes'], function (mimetypes) {
             image.removeAttribute("height");
             image.setAttribute("src", getDataUri(src, href))
         }
-        console.log("postProcessHTML: images done - 2");//NFP
         //var head = doc.getElementsByTagName("head")[0];
         var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
@@ -384,7 +362,6 @@ define(['mimetypes'], function (mimetypes) {
                 link.parentNode.replaceChild(inlineStyle, link);
             }
         }
-        console.log("postProcessHTML: links done");//NFP
         try{
             clean_tags(doc, "head");
             clean_tags(doc, "body");
@@ -393,7 +370,6 @@ define(['mimetypes'], function (mimetypes) {
             clean_tags(doc, "script");
             //clean_tags(doc, "a");
             clean_tags(doc, "a");
-            console.log("postProcessHTML: clean tags done");//NFP
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
             var div = document.createElement('div');
