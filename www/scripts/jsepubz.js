@@ -49,11 +49,12 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
     function unzipBlob(notifier) {
         if(window.cordova){
             function fill_crdo(data, name){
-                var re = /.+?\.(jpeg|jpg|gif|png|woff|otf|ttf|bmp|wav)/i;
-                if (re.test(name)){
+                var reb = /.+?\.(jpeg|jpg|gif|png|woff|otf|ttf|bmp|wav)/i;
+                var ret = /.+?\.(txt|html|xhtml|ncx|xml|css|smil|pls|opf|svg)/i;
+                if (reb.test(name)){
                     logger("extracting blob: " +name+"...");
                     b64blobs[name] = "data:"+mimetypes.getMimeType(name)+";base64,"+data;
-                } else {
+                } else if (ret.test(name)){
                     logger("extracting text: " +name+"...");
                     files[name] = window.atob(data);
                 }
