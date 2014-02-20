@@ -1,5 +1,5 @@
-define(['stuff', 'cordova.js'],
-function(stuff){
+define(['stuff', 'sharedf', 'cordova.js'],
+function(stuff, sharedf){
     var fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
@@ -63,8 +63,7 @@ function(stuff){
             //fb2 = resultDocument;
             var divlist = fb2.getElementsByTagName('div');
             var re = /TOC_.+/g;
-            clean_tags(fb2, 'script');
-            clean_tags(fb2, 'a');
+            sharedf.clean_tags(fb2, ['script', 'a']);
             console.log("Tags cleaned");//NFP
             for(var i = 0; i < divlist.length; i++)
                 if(re.test(divlist[i].getAttribute('id'))){ 

@@ -12,11 +12,6 @@ function(jsepub, stuff, encod, options){
     }
     function transxsl(xml, xsl, doc){
         if(window.XSLTProcessor) return xsltp.transformToDocument(xml, doc);
-        else {
-            return parsr.parseFromString(jsxml.transReady(
-                srlzr.serializeToString(xml),
-                srlzr.serializeToString(xsl)), "text/html");
-        }
     }
     function js_toc(toc, files){
         //var doc = new DOMParser().parseFromString(xml, "text/xml");
@@ -92,17 +87,6 @@ function(jsepub, stuff, encod, options){
                 }
                 // Render the "msg" here.
             }, options.msg);
-    }
-    function clean_tags(doc, tag){
-            var tags = doc.getElementsByTagName(tag);
-            for (var i = 0, il = tags.length; i < il; i++) {
-                var fragment = document.createDocumentFragment();
-                var ltag = tags[i];
-                while(ltag.firstChild) {
-                    fragment.appendChild(ltag.firstChild);
-                }
-                ltag.parentNode.replaceChild(fragment, ltag);
-            }
     }
     function get_true_id(url, id, text){
         for(var i = 0; i<epub.opf.spine.length;i++){

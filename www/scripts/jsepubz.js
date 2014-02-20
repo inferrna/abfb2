@@ -1,4 +1,4 @@
-define(['mimetypes'], function (mimetypes) {
+define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};
@@ -323,24 +323,6 @@ define(['mimetypes'], function (mimetypes) {
         });
         return file;
     }
-    function clean_tags(doc, tag){
-            var tags = doc.getElementsByTagName(tag);
-            for (var i = 0, il = tags.length; i < il; i++) {
-                if(tags[i]){
-                    var ltag = tags[i];
-                    /*var fragment = document.createDocumentFragment();
-                    while(ltag.firstChild) {
-                        fragment.appendChild(ltag.firstChild);
-                    }
-                    ltag.parentNode.replaceChild(fragment, ltag);*/
-                    while (ltag.childNodes.length > 0) {
-                        ltag.parentNode.appendChild(ltag.childNodes[0]);
-                    }
-                    ltag.parentNode.removeChild(ltag);
-                }
-            }
-            if (doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
-    }
     function postProcessHTML(href) {
         var xml = null;
         try{ xml = decodeURIComponent(escape(files[href]));}
@@ -386,19 +368,13 @@ define(['mimetypes'], function (mimetypes) {
         }
         console.log("postProcessHTML: links done");//NFP
         try{
-            clean_tags(doc, "head");
-            clean_tags(doc, "body");
-            clean_tags(doc, "meta");
-            clean_tags(doc, "svg");
-            clean_tags(doc, "script");
-            //clean_tags(doc, "a");
-            clean_tags(doc, "a");
+            sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
             console.log("postProcessHTML: clean tags done");//NFP
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
             var div = document.createElement('div');
             while(doc.firstChild) div.appendChild(doc.firstChild);
-            clean_tags(div, "html");
+            sharedf.clean_tags(div, ["html"]);
             //delete doc;
             return div;
         } catch(e) { return doc; } 
