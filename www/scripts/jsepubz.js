@@ -1,4 +1,4 @@
-define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
+define(['mimetypes', 'sharedf', 'unzips'], function (mimetypes, sharedf, unzips) {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};
@@ -28,15 +28,15 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
         delete reader;
     }
     function fill_files(data, name, callback, params){
-        var re = /.+?\.(jpeg|jpg|gif|png|otf|ttf|woff|bmp|wav)/i;
-        params[1]++; //i
-        if (re.test(name)){
+        params[1]++; //i++
+        console.log("Got: "+name+" binary ? "+sharedf.reb.test(name)+"; text ? "+sharedf.ret.test(name));//NFP
+        if (sharedf.reb.test(name)){
             logger("extracting blob: " +name+"...");
             extract_data(data, name, b64blobs, callback, params, 'blob');
-        } else {
+        } else if (sharedf.ret.test(name)){
             logger("extracting text: " +name+"...");
             extract_data(data, name, files, callback, params, 'text');
-        }
+        } else callback(params);
         delete data;
     }
     function go_all(){
@@ -49,15 +49,13 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
     function unzipBlob(notifier) {
         if(window.cordova){
             function fill_crdo(data, name){
-                var reb = /.+?\.(jpeg|jpg|gif|png|woff|otf|ttf|bmp|wav)/i;
-                var ret = /.+?\.(txt|html|xhtml|ncx|xml|css|smil|pls|opf|svg)/i;
-                if (reb.test(name)){
+                if (sharedf.reb.test(name)){
                     logger("extracting blob: " +name+"...");
                     b64blobs[name] = "data:"+mimetypes.getMimeType(name)+";base64,"+data;
-                } else if (ret.test(name)){
+                } else if (sharedf.ret.test(name)){
                     logger("extracting text: " +name+"...");
                     files[name] = window.atob(data);
-                }
+                } else callback(params);
             }
             var exec = cordova.require('cordova/exec');
             crunzip = function(arr, callback) {
@@ -77,21 +75,30 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
             var filenames = [];
             var datas = [];
             function getdatas(params){
-                    if(params[1]>=params[0].length){ go_all(); return; }
-                    var entries = params[0], i = params[1], reader = params[2];
-                    filenames.push(entries[i].filename);
-                    entries[i].getData(new zip.BlobWriter(), function (data) {
-                            console.log("unzip "+i);//NFP
-                            fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                           // datas.push(data);
-                            reader.close(function () {   });
-                            i++;
-                            //if(i<entries.length) getdatas(entries, i, reader);
-                            //else go_all();
-                        }, function(current, total) {
-                            //logger("unzip "+current+" of total "+total);
-                        });
+                console.log("entries.length=="+params[0].length);//NFP
+                if(params[1]>=params[0].length){ go_all(); return; }
+                var entries = params[0], i = params[1], reader = params[2];
+                filenames.push(entries[i].filename);
+                entries[i].getData(new zip.BlobWriter(), function (data) {
+                        console.log("unzip "+i);//NFP
+                        fill_files(data, filenames[i], getdatas, [entries, i, reader]);
+                       // datas.push(data);
+                        reader.close(function () {   });
+                        i++;
+                        //if(i<entries.length) getdatas(entries, i, reader);
+                        //else go_all();
+                    }, function(current, total) {
+                        //logger("unzip "+current+" of total "+total);
+                    });
             }
+            //var entries = [];
+            function get_fstneeded(stufffiles){
+                   var fstneeded = ["META-INF/container.xml", "mimetype"];
+                   var fstentries = stufffiles.filter(function(entry){return fstneeded.indexOf(entry.filename)>-1;});
+                   console.log("fstentries:"); console.log(fstentries);
+                   unzips.get_files(fstentries, function(fstfiles){console.log("fstfiles:"); console.log(fstfiles);});
+            }
+            unzips.get_contents(file, function(filelist){console.log("filelist:"); get_fstneeded(filelist);});
             zip.createReader(new zip.BlobReader(file), function (zipReader) {
                 zipReader.getEntries(function (entries) {
                       getdatas([entries, 0, zipReader]);
