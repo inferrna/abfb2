@@ -1,7 +1,6 @@
 define(
-  ['require'],
-  function(require){
-    var fnmre = /(.*)?\/(.+)/;
+  ['require', 'sharedf'],
+  function(require, sharedf1){
     var options = null;
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
@@ -35,7 +34,7 @@ define(
                             options.msg(count+" files found on SD card");
                             options.get_opt('last_file', 
                                 function(vl){ for(var i = 1; i < sel.options.length; i++){
-                                                      var currentname = sel.options[i].value.replace(fnmre, "$2");
+                                                      var currentname = sel.options[i].value.replace(sharedf.relf, "$2");
                                                       if(currentname === vl){
                                                           sel.selectedIndex = i;
                                                           try { var evt = new Event('change');}

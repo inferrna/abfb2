@@ -21,8 +21,12 @@ define(
                      clean_tag(doc, doc.getElementsByTagName(taglst[i]), taglst[i]);
                 }
             },
+            /*binary files*/
             reb: /.+?\.(jpeg|jpg|gif|png|woff|otf|ttf|bmp|wav)/i,
-            ret: /.+?\.(txt|html|xhtml|ncx|xml|css|smil|pls|opf|svg)/i
+            /*text files*/
+            ret: /.+?\.(txt|html|xhtml|ncx|xml|css|smil|pls|opf|svg)/i,
+            /* last file */
+            relf: /(.*?\/)+(.+?)/gi
     }
   }
 );

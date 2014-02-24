@@ -1,5 +1,5 @@
-define(['jsepubz', 'stuff', 'encod', 'options'],
-function(jsepub, stuff, encod, options){
+define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf'],
+function(jsepub, stuff, encod, options, sharedf){
     var epub = null;
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
@@ -125,13 +125,14 @@ function(jsepub, stuff, encod, options){
             var opts = contents.getElementsByTagName("option");
             var hrefs = [];
             var urls = [];
-            var re = /(.*?\/)+(.+?)/gi;
             var re1 = /(.+?)(#.*)/gi;
-            var hrefs = opf.spine.map(function(sp){return opf.manifest[sp]['href'].replace(re, "$2").replace(re1, "$1");});
+            var hrefs = opf.spine.map(function(sp){return opf.manifest[sp]['href']
+                                                          .replace(sharedf.relf, "$2")
+                                                          .replace(re1, "$1");});
             console.log("hrefs:");//NFP
             console.log(hrefs);//NFP
             for(var i = 0; i < opts.length; i++) {
-                urls.push(opts[i].getAttribute('url').replace(re, "$2").replace(re1, "$1"));
+                urls.push(opts[i].getAttribute('url').replace(sharedf.relf, "$2").replace(re1, "$1"));
                 var idx = hrefs.indexOf(urls[i]);
                 if(idx>-1) pages.push(idx);
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
