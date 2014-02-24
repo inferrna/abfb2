@@ -1,4 +1,4 @@
-define(['mimetypes', 'sharedf', 'unzips'], function (mimetypes, sharedf, unzips) {
+define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};
@@ -82,23 +82,11 @@ define(['mimetypes', 'sharedf', 'unzips'], function (mimetypes, sharedf, unzips)
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         console.log("unzip "+i);//NFP
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                       // datas.push(data);
                         reader.close(function () {   });
                         i++;
-                        //if(i<entries.length) getdatas(entries, i, reader);
-                        //else go_all();
                     }, function(current, total) {
-                        //logger("unzip "+current+" of total "+total);
                     });
             }
-            //var entries = [];
-            function get_fstneeded(stufffiles){
-                   var fstneeded = ["META-INF/container.xml", "mimetype"];
-                   var fstentries = stufffiles.filter(function(entry){return fstneeded.indexOf(entry.filename)>-1;});
-                   console.log("fstentries:"); console.log(fstentries);
-                   unzips.get_files(fstentries, function(fstfiles){console.log("fstfiles:"); console.log(fstfiles);});
-            }
-            unzips.get_contents(file, function(filelist){console.log("filelist:"); get_fstneeded(filelist);});
             zip.createReader(new zip.BlobReader(file), function (zipReader) {
                 zipReader.getEntries(function (entries) {
                       getdatas([entries, 0, zipReader]);
