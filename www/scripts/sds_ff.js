@@ -5,12 +5,14 @@ define(
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
     function parse_storage_ff(sel, obj){
+        "use strict";
         var pics = navigator.getDeviceStorage('sdcard');
         // Let's browse all the images available
         var cursor = pics.enumerate();
         var count = 0;
         cursor.onsuccess = function () {
             function g_or_b(err){
+                "use strict";
                 if(count>0) {
                     obj.appendChild(sel);
                     options.msg(count+" files found on SD card");
@@ -24,7 +26,7 @@ define(
                                               }
                                           } }, null);
                 } else {
-                    delete sel;
+                    sel.parentNode.removeChild(sel);
                     options.msg(badtext+" (err: "+err+")");
                 }
             }

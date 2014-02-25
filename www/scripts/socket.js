@@ -12,6 +12,7 @@ define(
     var callback = function(){};
     console.log("Creating tcpecho.");//NFP
     function parse_resp(resp){
+        "use strict";
         if(resp.match(/.*552 no match.*/)){
             console.log(resp);//NFP
             if(rcl===0){rcl=1; get_matches();}
@@ -21,6 +22,7 @@ define(
         }
     }
     function get_matches(){
+        "use strict";
         var l = word.length;
         var cut = Math.floor(l/5);
         text = "MATCH "+db+" re ^.{0,"+cut+"}"+word.slice(cut, l-cut)+".{0,"+cut+"}$\n";
@@ -68,6 +70,7 @@ define(
             });
     }
     function mozopen(){
+        "use strict";
         resp = '';
         var mtext = text;
         var data = encod.str2utf8b(mtext);

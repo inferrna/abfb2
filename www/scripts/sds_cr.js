@@ -5,12 +5,10 @@ define(
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
     function parse_storage_cr(sel, obj){
+        "use strict";
         document.addEventListener("deviceready", onDeviceReady, false);
-        //if(!window.cordova)    onDeviceReady();
         function onDeviceReady(){
-            /*window.requestFileSystem = window.requestFileSystem | window.webkitRequestFileSystem;
-            if(window.LocalFileSystem) var fstype = LocalFileSystem.PERSISTENT;
-            else var fstype = window.PERSISTENT;*/
+            "use strict";
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
                fileSystem.root.getDirectory("Download", {
                        create: false
@@ -43,7 +41,7 @@ define(
                                                       }
                                                   } }, null);
                         } else {
-                            delete sel;
+                            sel.parentNode.removeChild(sel);
                             options.msg(badtext+" (err: "+err+")");
                         }
 

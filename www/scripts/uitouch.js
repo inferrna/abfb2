@@ -1,7 +1,7 @@
 define(
     ['options', 'stuff'],
   function(options, stuff){
-      "use strict";
+   //   "use strict";
       var dictflag = 0;
       var liftflag = 0;
       var hold = 0;
@@ -54,6 +54,7 @@ define(
           el.style.top = parseInt(newtop)+"px";
       }
       function movesbot(touches, el){
+          "use strict";
           var newpos = 0;
           var my = max_Y-12;
           var oldpos = parseInt(el.style.bottom);
@@ -64,6 +65,7 @@ define(
           }
       }
       function movestop(touches, el){
+          "use strict";
           var newpos = 0;
           var my = max_Y+12;
           var oldpos = parseInt(el.style.bottom);
@@ -74,6 +76,7 @@ define(
           }
       }
       function expand2w(off, text){
+          "use strict";
           var re = /[\s\.\;\"\,\<\>\(\)—\-\“]/;
           var spirale = [-1, 1, -2, 2, -3, 3];
           var newoff = 0;
@@ -88,6 +91,7 @@ define(
           return text.slice(loind+1, hiind).replace(/(^\s)|[\.\!\?\,\;\:\"\“\)\(]|(\s$)/gm, "");
       }
       function expand23w(word, text, off){
+          "use strict";
           var rep = /[\.\,\:\;\?\!—\)\(\"\“]/mg;
           var res = [];
           word = word.replace(rep, '');
@@ -116,6 +120,7 @@ define(
           return res;
       }
       function expand2s(off, text){
+          "use strict";
           var re = /[\.\!\?]/;
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
@@ -238,6 +243,7 @@ define(
           }
       }
       function chscale(cf, apply){
+            "use strict";
             if(isNaN(scale) || !scale) scale = 1.0;
             var _scale = cf;
             if(_scale > 8.0 || _scale < 0.25 || isNaN(_scale)){
@@ -248,6 +254,7 @@ define(
             if(apply===1) scale = _scale;
       }
       function apply_scale(){
+            "use strict";
             var txarea = document.getElementById('txtarea');
             //var txarea = mtext.parentNode;
             var nw = parseInt(window.innerWidth)/scale;
