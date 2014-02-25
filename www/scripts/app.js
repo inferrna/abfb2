@@ -21,7 +21,7 @@ function(uitouch, dict, options, book, stuff, sound, require){
     fl_text.style.width =  "auto";
     var style = document.createElement('style');
     style.type = 'text/css';
-    style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight)+'px; max-width:'+parseInt(window.innerWidth)+'px;}';
+    style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight-64)+'px; max-width:'+parseInt(window.innerWidth-64)+'px; overflow:hidden}';
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
@@ -33,6 +33,7 @@ function(uitouch, dict, options, book, stuff, sound, require){
     var pts = document.getElementById("pts");
     var pop = document.getElementById("pop");
     var marea = document.getElementById("maintext");
+    var helper = document.getElementById("helper");
     marea.style.top = "0px";
     txarea.style.backgroundSize = '100%';
     if ( window.cordova ) {
@@ -58,6 +59,9 @@ function(uitouch, dict, options, book, stuff, sound, require){
     hammer(pop).on("dragdown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
+    console.log("VER 1");//NFP
+    hammer(helper).on("tap", function(evt){helper.style.display="none";});
+    helper.addEventListener("click", function(e){helper.style.display="none";}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");

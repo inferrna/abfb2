@@ -9,7 +9,7 @@
   <script type="text/javascript" src="scripts/jsxml.js"></script>
   <script data-main="scripts/_app" src="scripts/require.js"></script>
 </head>
-<body style='margin:0;padding:0;background-image:url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);background-repeat:repeat;'>
+<body style='margin:0;padding:0;background-image:url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);background-repeat:repeat; overflow:hidden; height:99%; width:99%;'>
 <div id="pop">
   <div class="popflex" id="pt">
     <div id="pts" class="bcol">
@@ -31,8 +31,8 @@
 </div>
 <div id="txtarea" class="gradient" style="position:absolute; overflow:hidden; top:0px; z-index: -1;">
 <div class="flex" id="fl_text">
-<div id="maintext" class="bcol">
 
+<div id="helper" style="position:absolute; overflow:hidden; top:0px; z-index: 1060;">
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 744.75 677.47">
  <defs>
   <radialGradient id="radialGradient4698" gradientUnits="userSpaceOnUse" cy="601" cx="100" gradientTransform="matrix(1.0923572,4.9576112,-7.1232433,1.5695281,4538.3806,-1017.7993)" r="82.8">
@@ -107,7 +107,8 @@
   </g>
  </g>
 </svg>
-
+</div>
+<div id="maintext" class="bcol">
 </div>
 </div>
 </div>
