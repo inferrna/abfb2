@@ -75,7 +75,15 @@ define(
             else if (datas["dictionary"] === 'socket'){
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);
-                socket.get_def(lword, callbacks['got_def']);
+                socket.get_def(lword, function(resp){
+                        try {
+                            var re = new RegExp("^(.*?"+lword+")*", "mgi");
+                            resp = resp.replace(/\"|\'|\.|\,/mg, ' ').split(/151.+?/gi).slice(2, 999)
+                                       .map(function(wr){return wr.replace(/\s/mgi, ' ').replace(re, ' ').replace(/\s+/mg, ' ');})
+                                       .join(", ");
+                        } catch(e) { }
+                        callbacks['got_def'](resp);
+                    });
             } else console.log("No dictionary selected");
 
     }
