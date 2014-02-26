@@ -380,9 +380,15 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
    function getDataUri(url, href) {
         var dataHref = resolvePath(url, href);
         var mediaType = mimetypes.getMimeType(dataHref);
-        if(b64blobs[dataHref]) return b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
-        encodedData = escape(files[dataHref]);
-        return "data:" + mediaType + "," + encodedData;
+        var result = '';
+        if(b64blobs[dataHref]) {
+            result = b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
+            delete b64blobs[dataHref];
+        } else { 
+            result = "data:" + mediaType + "," + escape(files[dataHref]);
+            delete files[dataHref];
+        }
+        return result;
     }
 
     function validate() {
