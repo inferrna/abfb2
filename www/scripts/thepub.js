@@ -11,7 +11,13 @@ function(jsepub, stuff, encod, options, sharedf){
         //var jsxml = require('jsxml');
     }
     function transxsl(xml, xsl, doc){
-        if(window.XSLTProcessor) return xsltp.transformToDocument(xml, doc);
+        var result = null;
+        if(window.XSLTProcessor)
+            try {result = xsltp.transformToDocument(xml, doc);}
+            catch(e){
+                console.log(e.stack);//NFP
+            }
+        return result;
     }
     function js_toc(toc, files){
         //var doc = new DOMParser().parseFromString(xml, "text/xml");
