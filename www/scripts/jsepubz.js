@@ -296,7 +296,6 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
                 }
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
-
     }
 
     function postProcessCSS(href) {

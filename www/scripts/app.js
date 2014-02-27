@@ -1,5 +1,5 @@
-require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'require', 'images', 'hammer'],
-function(uitouch, dict, options, book, stuff, sound, require){
+require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedc', 'require', 'images', 'hammer'],
+function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     console.log("app.js loads");//NFP
     var ws = null;
     var dreq = null;
@@ -67,8 +67,8 @@ function(uitouch, dict, options, book, stuff, sound, require){
     var opt_bl = document.getElementById("options_block");
     try { window.addEventListener("beforeunload", function(){ console.log("saving.."); options.savepp();});}
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){console.log("saving.."); options.savepp();});}
-    uitouch.add_callback('got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
-    uitouch.add_callback('next_chapter', function (i) {
+    sharedc.register('uitouch', 'got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
+    sharedc.register('uitouch', 'next_chapter', function (i) {
             var sel = document.getElementById("tocselect");
             var diff = parseInt(i);
             var page = book.foliant().next_page(diff); 
@@ -87,12 +87,12 @@ function(uitouch, dict, options, book, stuff, sound, require){
                 console.log("saving.."); options.savepp();
             }
         });
-    dict.add_callback('got_def', function (txt, els) {
+    sharedc.register('dict', 'got_def', function (txt, els) {
         dict.push_cache(txt);
         if(txt.length>1) fill_thumb(txt, els);
         else fill_thumb("Something went wrong. Please check your options.");
     });
-    options.add_callback('got_file', function () {
+    sharedc.register('options', 'got_file', function () {
             options.remove_old();
             options.getpp();
             options.get_opt("prc", function(prc){
@@ -103,10 +103,10 @@ function(uitouch, dict, options, book, stuff, sound, require){
                                        }, true);
                                     });
             book.init(options.bookfile());
-            book.foliant().add_callback('got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
+            sharedc.register('book', 'got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
             book.load();
         });
-    options.add_callback('got_pp', function () {
+    sharedc.register('options', 'got_pp', function () {
                                                 var html = null;
                                                 if(book.foliant()) html = book.foliant().get_page(options.getpage());
                                                 if(html){

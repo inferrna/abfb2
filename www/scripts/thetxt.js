@@ -1,9 +1,8 @@
-define(['stuff'],
-function(stuff){
+define(['stuff', 'sharedc'],
+function(stuff, sharedc){
     var text = [];
     var name = '';
     var currentpage = 0;
-    var callbacks = { 'got_book':function(){} };
     function load_txt(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
@@ -32,7 +31,7 @@ function(stuff){
             }
             if(curstrip<maxlen) text.push(txt.strip(curstrip, maxlen));
         }
-        callbacks['got_book']();
+        sharedc.exec('book', 'got_book')();
         //console.log(text[0]);
     }
     function get_indexed_page(index){
@@ -88,9 +87,6 @@ function(stuff){
              init:function(){
                      text = [];
                      name = '';
-             },
-             add_callback:function(key, fcn){
-                    callbacks[key] = fcn;
              }
     }
 }

@@ -1,8 +1,7 @@
 define(
-  ['stuff', 'encod', 'socket'],
-  function(stuff, encod, socket){
+  ['stuff', 'encod', 'socket', 'sharedc'],
+  function(stuff, encod, socket, sharedc){
     var resp = '';
-    var callbacks = {'got_def':function(){}, 'got_dbs':function(){}}; 
     //var got_def_ev = new Event('got_def');
     var gsocketid = 0;
     var cache = {};
@@ -67,11 +66,11 @@ define(
     }
     function get_def(word){
             lword = word.replace(/(^\s)|(\s$)/gm, "").replace(/(^)(\W*)(.*?)(\W*?)($)/, "$3$5");
-            if(cache[lword]) { console.log("Got from cache"); callbacks['got_def'](cache[lword], seealso);}
-            else if(datas["dictionary"] === 'socket proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_def'], '');
-            else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], callbacks['got_def'], '');
+            if(cache[lword]) { console.log("Got from cache"); sharedc.exec('dict', 'got_def')(cache[lword], seealso);}
+            else if(datas["dictionary"] === 'socket proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", sharedc.exec('dict', 'got_def'), '');
+            else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], sharedc.exec('dict', 'got_def'), '');
             else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
-                                   "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], callbacks['got_def'], '');
+                                   "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], sharedc.exec('dict', 'got_def'), '');
             else if (datas["dictionary"] === 'socket'){
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);
@@ -82,7 +81,7 @@ define(
                                        .map(function(wr){return wr.replace(/\s/mgi, ' ').replace(re, ' ').replace(/\s+/mg, ' ');})
                                        .join(", ");
                         } catch(e) { }
-                        callbacks['got_def'](resp);
+                        sharedc.exec('dict', 'got_def')(resp);
                     });
             } else console.log("No dictionary selected");
 
@@ -111,11 +110,12 @@ define(
             get_def(word);
         },
         get_dbs:function(type){
-            if(type === 'socket proxy') get_http("SHOW DATABASES\n", locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", callbacks['got_dbs']);
+            if(type === 'socket proxy')
+                get_http("SHOW DATABASES\n", locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", sharedc.exec('dict', 'got_dbs'));
             else {
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);
-                socket.get_dbs(callbacks['got_dbs']);
+                socket.get_dbs(sharedc.exec('dict', 'got_dbs'));
             }
         },
         lang:function(){return datas["sl"]},
@@ -127,9 +127,6 @@ define(
                 locals[key] = datas[key];
             }
             cache = {};
-        },
-        add_callback:function(key, fcn){
-            callbacks[key] = fcn;
         }
     };
   }

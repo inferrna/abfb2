@@ -1,5 +1,5 @@
-define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf'],
-function(jsepub, stuff, encod, options, sharedf){
+define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf', 'sharedc'],
+function(jsepub, stuff, encod, options, sharedf, sharedc){
     var epub = null;
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
@@ -61,7 +61,6 @@ function(jsepub, stuff, encod, options, sharedf){
     }
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
-    var callbacks = { 'got_book':function(){} };
     var pages = [];
     var currentpage = 0;
     function load_jsepub(file){
@@ -89,7 +88,7 @@ function(jsepub, stuff, encod, options, sharedf){
                 } else if (step === 5) {
                     msg = "Finishing";
                     console.log(msg);//NFP
-                    callbacks['got_book']();
+                    sharedc.exec('book', 'got_book')();
                 }
                 // Render the "msg" here.
             }, options.msg);
@@ -195,9 +194,6 @@ function(jsepub, stuff, encod, options, sharedf){
                      epub = null;
                      pages = [];
                      currentpage = 0;
-             },
-             add_callback:function(key, fcn){
-                    callbacks[key] = fcn;
              }
     }
 }

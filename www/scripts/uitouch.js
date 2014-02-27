@@ -1,6 +1,6 @@
 define(
-    ['options', 'stuff'],
-  function(options, stuff){
+    ['options', 'stuff', 'sharedc'],
+  function(options, stuff, sharedc){
    //   "use strict";
       var dictflag = 0;
       var liftflag = 0;
@@ -22,7 +22,6 @@ define(
       var scale = 1.0;
       var ispinch = 0;
       pop.style.display = 'none';
-      var callbacks = {'got_selection':function(){}, 'next_chapter':function(){}};
       var movef = function(){};
       function sign(x) { return x && x / Math.abs(x); }
      function liftcol(el, dir) {
@@ -39,9 +38,9 @@ define(
           var oldpercent = -100*parseInt(top)/elh;
           var percent = -100*parseFloat(newtop)/elh;
           if(el.id==="maintext"){
-              if(percent>100 || (dir===-1 && elh===wh)) {callbacks['next_chapter']( 1); newtop=0;}
+              if(percent>100 || (dir===-1 && elh===wh)) {sharedc.exec('uitouch', 'next_chapter')(1); newtop=0;}
               else if (newtop>0) {
-                  if(top===0) {callbacks['next_chapter'](-1); return;}
+                  if(top===0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
                   else {newtop = 0;}
               } else {
                   options.setpercent(percent);
@@ -232,14 +231,8 @@ define(
               } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
                                 +" using expand2w, got "+selected_word+" off=="+off);}
               if(selected_word && selected_word.length){                  
-                  /*var rng = document.createRange();
-                  rng.setStart(el, off);
-                  rng.setEnd(el, off+selected_word.length);
-                  var sel = window.getSelection();
-                  sel.addRange(rng);*/
-                  callbacks['got_selection']([selected_word.toLowerCase(), expand23w(selected_word, txt, off)]);
+                  sharedc.exec('uitouch', 'got_selection')([selected_word.toLowerCase(), expand23w(selected_word, txt, off)]);
               }
-              //callbacks['got_selection']([selected_word, '']);//expand2s(off, txt)]);// evo.dispatchEvent(got_sel_ev);
           }
       }
       function chscale(cf, apply){
@@ -349,10 +342,7 @@ define(
           handleSelect:function(evt){
               var sel = window.getSelection();
               selected_word = sel.toString();
-              callbacks['got_selection']([selected_word, '']);
-          },
-          add_callback:function(key, fcn){
-              callbacks[key] = fcn;
+              sharedc.exec('uitouch', 'got_selection')([selected_word, '']);
           },
           doscale:function(cf){
               chscale(Math.sqrt(Math.sqrt(cf)), 1);

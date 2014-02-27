@@ -1,9 +1,8 @@
-define(['stuff', 'sharedf', 'cordova.js'],
-function(stuff, sharedf){
+define(['stuff', 'sharedf', 'sharedc', 'cordova.js'],
+function(stuff, sharedc, sharedf){
     var fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
-    var callbacks = { 'got_book':function(){} };
     var pages = [];
     var divs = [];
     var currentpage = 0;
@@ -70,7 +69,7 @@ function(stuff, sharedf){
                     console.log("Push div id "+divlist[i].getAttribute('id'));//NFP
                     divs.push(divlist[i]);//.getAttribute('id'));
             } 
-            callbacks['got_book']();
+            sharedc.exec('book','got_book')();
             console.log("fb2 pages is "+pages);//NFP
         });
     }
@@ -165,9 +164,6 @@ function(stuff, sharedf){
                     pages = [];
                     divs = [];
                     currentpage = 0;
-             },
-             add_callback:function(key, fcn){
-                    callbacks[key] = fcn;
              }
     }
 }

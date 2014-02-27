@@ -1,8 +1,7 @@
 define(
-  ['dict', 'uitouch', 'socket', 'sdstorage'],
-  function(dict, uitouch, socket, sdstorage){
+  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc'],
+  function(dict, uitouch, socket, sdstorage, sharedc){
     "use strict";
-    var callbacks = {'got_file':function(){}, 'got_pp':function(){}};
     var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
     var lbl = document.createElement("label");
@@ -121,7 +120,7 @@ define(
         sel.style.width = "80%";
         //<device storage
         if(key==="dict_db"){
-            dict.add_callback('got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
+            sharedc.register('dict', 'got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
             //dict.get_dbs();
         }else if(key==="dsfile"){
             //if (navigator.getDeviceStorage) {
@@ -133,7 +132,7 @@ define(
                                                                        file = _file;
                                                                        set_opt('last_file', filename);
                                                                        set_opt(filename+"_time", Date.now());
-                                                                       callbacks['got_file']();} );
+                                                                       sharedc.exec('options', 'got_file')();} );
                                 }, false);
                 sdstorage.parse(sel, obj);
             return sel;
@@ -173,7 +172,7 @@ define(
                                                             filename = file.name.replace(fnmre, "$2");
                                                             set_opt('last_file', filename);
                                                             set_opt(filename+"_time", Date.now());
-                                                            callbacks['got_file']();}, false );
+                                                            sharedc.exec('options', 'got_file')();}, false );
         } else {
             inp.value = value;
             var params = [];
@@ -247,19 +246,19 @@ define(
                 for(var key in result){
                     callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
                 }
-                if(evt) callbacks[evt]();//evo.dispatchEvent(evt);
+                if(evt) sharedc.exec('options', evt)();//evo.dispatchEvent(evt);
             });
     }
     function get_ls(keys, callback, evt){
         for(var key in keys){
             callback( keys[key], storage.getItem(keys[key]) );//currentpp[ps[key]] = makepos(storage.getItem(key));
         }
-        if(evt) callbacks[evt]();//evo.dispatchEvent(evt);//got_pp_ev);
+        if(evt) sharedc.exec('options', evt)();//evo.dispatchEvent(evt);//got_pp_ev);
     }
     function get_opt(keys, callback, evt){
         if(hasStorage) get_ls(keys, callback, evt);
         else if(crstorage) get_cr(keys, callback, evt);
-        else if(evt) callbacks[evt]();//evo.dispatchEvent(evt);
+        else if(evt) sharedc.exec('options', evt)();//evo.dispatchEvent(evt);
     }
     function set_opt(key, p){
         if(hasStorage) set_ls(key, p);
@@ -423,9 +422,6 @@ define(
             },
             getpage:function(){
                 return currentpp['page'];
-            },
-            add_callback:function(key, fcn){
-                callbacks[key] = fcn;
             },
             filename:function(){
                 return filename;
