@@ -1,4 +1,5 @@
-define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
+define(['mimetypes', 'sharedf', 'sharedc'], 
+function (mimetypes, sharedf, sharedc) {
     var blob = null;//blob;
     var file = null;//file;
     var files = {};
@@ -79,6 +80,7 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
                 if(params[1]>=params[0].length){ go_all(); return; }
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
+                files[entries[i].filename] = null;
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         console.log("unzip "+i);//NFP
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
@@ -241,6 +243,7 @@ define(['mimetypes', 'sharedf'], function (mimetypes, sharedf) {
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     toc = xmlDocument(xml);
+                    sharedc.exec('jsepubz', 'got_toc')();
                 } else if (mediaType === "application/xhtml+xml") {
                     //Do nothing
                 } else { 

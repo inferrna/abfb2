@@ -103,7 +103,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
                                        }, true);
                                     });
             book.init(options.bookfile());
-            sharedc.register('book', 'got_book', function () {console.log("Got book"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
+            sharedc.register('jsepubz', 'got_toc', function () {console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
+            sharedc.register('book', 'got_book', function () {console.log("Got book"); uitouch.init_scale();});
             book.load();
         });
     sharedc.register('options', 'got_pp', function () {
