@@ -7,6 +7,7 @@ function (mimetypes, sharedf, sharedc) {
     var opfPath, container, mimetype, opf, toc=null;
     var notifier = null;
     var logger = function(text){console.log(text);};
+    sharedc.register('app', 'got_href', proceedhtmlfst);
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
         console.log("Extracting "+index);//NFP
@@ -122,6 +123,21 @@ function (mimetypes, sharedf, sharedc) {
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
     }
+    function proceedhtmlfst(href){
+        unzipFiles([href], proceedhtmloth);
+    }
+    function proceedhtmloth(){
+        var htmls2ext = [];
+        for (var key in opf.manifest) {
+            try {
+                mediaType = opf.manifest[key]["media-type"];
+                href = opf.manifest[key]["href"];
+                if (mediaType === "application/xhtml+xml") htmls2ext.push(href); //After processing css
+            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
+        }
+        unzipFiles(htmls2ext, proceedhtmloth);
+    }
+
     function unzipFiles(filelist, extcallback) {
         if(window.cordova){
             function fill_crdo(data, name){
