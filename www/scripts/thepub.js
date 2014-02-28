@@ -194,6 +194,18 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      epub = null;
                      pages = [];
                      currentpage = 0;
+             },
+             get_href_byidx:function(index){
+                var opf = epub.opf();
+                console.log("calling href by index "+index+"; opf:");//NFP
+                console.log(opf);//NFP
+                if(opf && index>-1){
+                    var idx = pages[index];
+                    console.log("idx= "+idx+ "; pages="+pages);//NFP
+                    if(idx >= opf.spine.length) idx = 0;
+                    var spine = opf.spine[idx];
+                    return opf.manifest[spine]["href"];
+                }
              }
     }
 }

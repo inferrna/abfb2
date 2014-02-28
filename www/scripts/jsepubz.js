@@ -136,7 +136,6 @@ function (mimetypes, sharedf, sharedc) {
         console.log(doc);//NFP
         console.log("readOpf metadatas:");//NFP
         console.log(metadatas);//NFP
-        //if(metadatas===undefined) metadatas = doc.getElementsByTagName("opf:metadata")[0];
         var metadataNodes = metadatas.childNodes;
         console.log("readOpf metadatas.childNodes:");//NFP
         console.log(metadatas.childNodes);//NFP

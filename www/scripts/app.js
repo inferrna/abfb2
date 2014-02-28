@@ -109,7 +109,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         });
     sharedc.register('options', 'got_pp', function () {
                                                 var html = null;
-                                                if(book.foliant()) html = book.foliant().get_page(options.getpage());
+                                                var i = options.getpage();
+                                                try{ console.log("href2get: "+book.foliant().get_href_byidx(i));//NFP
+                                                } catch(e) {console.log(e.stack);}
+                                                if(book.foliant()) html = book.foliant().get_page(i);
                                                 if(html){
                                                     fill_page(html, options.getpercent()); 
                                                     var sel = document.getElementById("tocselect");
