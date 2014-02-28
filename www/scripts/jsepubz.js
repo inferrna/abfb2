@@ -48,6 +48,81 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipBlob(notifier) {
+    /*    zip.createReader(new zip.BlobReader(file), function (zipReader) {
+            zipReader.getEntries(function (entries) {
+                  var filelist = entries.map(function{return entr.filename});
+                  getcontainer
+                });*/
+        unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
+    }
+    function proceedcontainer(){
+        container = files["META-INF/container.xml"];
+        opfPath = getOpfPathFromContainer();
+        unzipFiles([opfPath], proceedopf);
+    }
+    function proceedopf(){
+        readOpf(files[opfPath]);
+        var staff2ext = [];
+        //sharedf.reb.test(name);
+        var keyre = /ncx|toc/i;
+        var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
+        for(var key in opf.manifest){
+            var mediaType = opf.manifest[key]["media-type"];
+            var href = opf.manifest[key]["href"];
+            if(sharedf.reb.test(href) || mediaType==="text/css"
+                || mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key))
+                staff2ext.push(opf.manifest[key]["href"]);
+        }
+        unzipFiles(staff2ext, proceedcss);
+    }
+    function proceedcss(){
+        var keyre = /ncx|toc/i;
+        var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
+        for(var key in opf.manifest){
+            try {
+                var mediaType = opf.manifest[key]["media-type"];
+                var href = opf.manifest[key]["href"];
+                var result = undefined;
+                if (mediaType === "text/css") {
+                    result = postProcessCSS(href);
+                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key)) {
+                    console.log("toc href== "+href);//NFP
+                    try {xml = decodeURIComponent(escape(files[href]));}
+                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
+                    toc = xmlDocument(xml);
+                    sharedc.exec('jsepubz', 'got_toc')();
+                }
+                if (result !== undefined) {
+                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
+                    files[href] = result;
+                }
+            } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
+        }
+        var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
+        var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");
+        //2nd loop. css only.
+        for (var key in opf.manifest){
+            try {
+                mediaType = opf.manifest[key]["media-type"];
+                href = opf.manifest[key]["href"];
+                result = undefined;
+                if (mediaType === "text/css"){
+                    var base = href.replace(fnm, "");
+                    var importnames = [].concat(files[href].split(/\n/gi).filter(function(st){return reincl.test(st);}));
+                    if(importnames.length){
+                        var result = files[href];
+                        for(var i=0; i<importnames.length; i++){
+                            var incnm = base+importnames[i].replace(reincl, "$2");
+                            console.log("css)"+href + " includes "+incnm);//NFP
+                            var result = result.replace(importnames[i], files[incnm]);
+                        }
+                        files[href] = result;
+                    }
+                }
+            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
+        }
+    }
+    function unzipFiles(filelist, extcallback) {
         if(window.cordova){
             function fill_crdo(data, name){
                 if (sharedf.reb.test(name)){
@@ -69,7 +144,7 @@ function (mimetypes, sharedf, sharedc) {
                     var zblob = window.btoa(evt.target.result);
                     crunzip([zblob], function(itm){if(!(itm.name==="END" && itm.data==="END")){
                                                        fill_crdo(itm.data, itm.name);
-                                                    } else {go_all();}}); 
+                                                    } else {extcallback();}}); 
                 };
             reader.readAsBinaryString(file);
         } else {
@@ -77,7 +152,7 @@ function (mimetypes, sharedf, sharedc) {
             var datas = [];
             function getdatas(params){
                 console.log("entries.length=="+params[0].length);//NFP
-                if(params[1]>=params[0].length){ go_all(); return; }
+                if(params[1]>=params[0].length){ extcallback(); return; }
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
                 files[entries[i].filename] = null;
@@ -91,7 +166,7 @@ function (mimetypes, sharedf, sharedc) {
             }
             zip.createReader(new zip.BlobReader(file), function (zipReader) {
                 zipReader.getEntries(function (entries) {
-                      getdatas([entries, 0, zipReader]);
+                      getdatas([entries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;}), 0, zipReader]);
                     });
             }, function(e){console.warn(e);});
         }
@@ -220,6 +295,7 @@ function (mimetypes, sharedf, sharedc) {
         var mediaType = '';
         var href = '';
         var result = '';
+        var keyre = /ncx|toc/i;
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         var xml = '';
         var keys = Object.keys(opf.manifest);
@@ -230,14 +306,13 @@ function (mimetypes, sharedf, sharedc) {
             key = keys[_key];
             try {
                 mediaType = opf.manifest[key]["media-type"];
-                var id = opf.manifest[key]["id"];
                 //console.log(key+":");
                 //console.log(opf.manifest[key]);//NFP
                 href = opf.manifest[key]["href"];
                 result = undefined;
                 if (mediaType === "text/css") {
                     result = postProcessCSS(href);
-                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || id === "toc") {
+                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key)) {
                     console.log("toc href== "+href);//NFP
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
