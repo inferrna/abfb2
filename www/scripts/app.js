@@ -110,8 +110,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     sharedc.register('options', 'got_pp', function () {
                                                 var html = null;
                                                 var i = options.getpage();
-                                                try{ console.log("href2get: "+book.foliant().get_href_byidx(i));//NFP
+                                                var href = book.foliant().get_href_byidx(i);
+                                                try{ console.log("href2get: "+href);//NFP
                                                 } catch(e) {console.log(e.stack);}
+                                                sharedc.exec('app', 'got_href')(href);
                                                 if(book.foliant()) html = book.foliant().get_page(i);
                                                 if(html){
                                                     fill_page(html, options.getpercent()); 

@@ -49,12 +49,12 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipBlob(notifier) {
-    /*    zip.createReader(new zip.BlobReader(file), function (zipReader) {
+        zip.createReader(new zip.BlobReader(file), function (zipReader) {
             zipReader.getEntries(function (entries) {
-                  var filelist = entries.map(function{return entr.filename});
-                  getcontainer
-                });*/
-        unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
+                  entries.map(function(entr){files[entr.filename]=null;});
+                  unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
+                })
+            });
     }
     function proceedcontainer(){
         container = files["META-INF/container.xml"];
@@ -65,7 +65,7 @@ function (mimetypes, sharedf, sharedc) {
         readOpf(files[opfPath]);
         var staff2ext = [];
         //sharedf.reb.test(name);
-        var keyre = /ncx|toc/i;
+        var keyre = /^(ncx|toc)$/i;
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         for(var key in opf.manifest){
             var mediaType = opf.manifest[key]["media-type"];
@@ -77,7 +77,7 @@ function (mimetypes, sharedf, sharedc) {
         unzipFiles(staff2ext, proceedcss);
     }
     function proceedcss(){
-        var keyre = /ncx|toc/i;
+        var keyre = /^(ncx|toc)$/i;
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         for(var key in opf.manifest){
             try {
@@ -87,7 +87,7 @@ function (mimetypes, sharedf, sharedc) {
                 if (mediaType === "text/css") {
                     result = postProcessCSS(href);
                 } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key)) {
-                    console.log("toc href== "+href);//NFP
+                    console.log("toc href=="+href);//NFP
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     toc = xmlDocument(xml);
@@ -135,7 +135,7 @@ function (mimetypes, sharedf, sharedc) {
                 if (mediaType === "application/xhtml+xml") htmls2ext.push(href); //After processing css
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
-        unzipFiles(htmls2ext, proceedhtmloth);
+        unzipFiles(htmls2ext, function(){});
     }
 
     function unzipFiles(filelist, extcallback) {
