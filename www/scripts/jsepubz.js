@@ -145,7 +145,12 @@ function (mimetypes, sharedf, sharedc) {
                 if (href!==fsthref && mediaType === "application/xhtml+xml") htmls2ext.push(href); //After processing css
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
-        unzipFiles(htmls2ext, function(){});
+        unzipFiles(htmls2ext, function(){
+                for(var i=0; i<htmls2ext.length; i++){
+                    var href = htmls2ext[i]
+                    files[href] = postProcessHTML(href);
+                }
+            });
     }
 
     function unzipFiles(filelist, extcallback) {
