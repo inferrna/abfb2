@@ -24,7 +24,7 @@ define(
             /*binary files*/
             reb: /.+?\.(jpeg|jpg|gif|png|woff|otf|ttf|bmp|wav)/i,
             /*text files*/
-            ret: /.+?\.(txt|html|xhtml|ncx|xml|css|smil|pls|opf|svg)/i,
+            ret: /.*?\.?(mimetype|txt|html|xhtml|ncx|xml|css|smil|pls|opf|svg)/i,
             /* last file */
             relf: /(.*?\/)+(.+?)/gi
     }

@@ -111,16 +111,22 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         console.log("calling index "+index+"; opf:");//NFP
         console.log(opf);//NFP
         if(index>-1){
+            console.log("files:");//NFP
+            console.log(files);//NFP
             if(opf && toc && files){
                 var idx = pages[index];
                 console.log("idx= "+idx+ "; pages="+pages);//NFP
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
-                var doc = files[href];
-                var html = srlzr.serializeToString(doc);
                 console.log("idx= "+idx+ "; href="+href);//NFP
-                options.set_opt("last_html", html, true);
+                var doc = files[href];
+              //  console.log("doc:");//NFP
+            //    console.log(doc);//NFP
+                var html = srlzr.serializeToString(doc);
+                console.log("html:");//NFP
+                console.log(html);//NFP
+                //options.set_opt("last_html", html, true);
                 return html;//decodeURIComponent( escape(resultDocument) ));
             } else { return null; }
         }else{

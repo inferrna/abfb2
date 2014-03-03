@@ -2,31 +2,34 @@ define(['mimetypes', 'sharedf', 'sharedc'],
 function (mimetypes, sharedf, sharedc) {
     var blob = null;//blob;
     var file = null;//file;
+    var zipreader = null;
+    var gentries = null;
     var files = {};
     var b64blobs = {};
     var opfPath, container, mimetype, opf, toc=null;
     var notifier = null;
+    var fsthref = null;
     var logger = function(text){console.log(text);};
     sharedc.register('app', 'got_href', proceedhtmlfst);
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
-        console.log("Extracting "+index);//NFP
         if(files[index]) console.warn("dublicated index "+index);
+        console.log("Extracting "+index);//NFP
         if(reader.addEventListener){
             reader.addEventListener("loadend", function() {
+                   console.log("Extracted "+index);//NFP
                    array[index]=reader.result;
                    callback(params);
                 });
-            if(mtype==='blob') reader.readAsDataURL(blob);
-            else reader.readAsText(blob);
         } else {
             reader.onload = function(e){
+                    console.log("Extracted "+index);//NFP
                     array[index]=reader.result;
                     callback(params);
                 }
-            if(mtype==='blob') reader.readAsDataURL(blob);
-            else reader.readAsText(blob);
         }
+        if(mtype==='blob') reader.readAsDataURL(blob);
+        else reader.readAsText(blob);
         delete reader;
     }
     function fill_files(data, name, callback, params){
@@ -49,9 +52,11 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipBlob(notifier) {
-        zip.createReader(new zip.BlobReader(file), function (zipReader) {
-            zipReader.getEntries(function (entries) {
-                  entries.map(function(entr){files[entr.filename]=null;});
+        zip.createReader(new zip.BlobReader(file), function (_zipReader) {
+            zipreader = _zipReader;
+            _zipReader.getEntries(function (entries) {
+                  gentries = entries;
+                  gentries.map(function(entr){files[entr.filename]='';});
                   unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
                 })
             });
@@ -124,15 +129,20 @@ function (mimetypes, sharedf, sharedc) {
         }
     }
     function proceedhtmlfst(href){
+        fsthref = href;
         unzipFiles([href], proceedhtmloth);
     }
     function proceedhtmloth(){
+        files[fsthref] = postProcessHTML(fsthref);
+        console.log("inner files:");//NFP
+        console.log(files);//NFP
+        sharedc.exec('jsepubz', 'got_fstfile')();
         var htmls2ext = [];
         for (var key in opf.manifest) {
             try {
                 mediaType = opf.manifest[key]["media-type"];
                 href = opf.manifest[key]["href"];
-                if (mediaType === "application/xhtml+xml") htmls2ext.push(href); //After processing css
+                if (href!==fsthref && mediaType === "application/xhtml+xml") htmls2ext.push(href); //After processing css
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
         unzipFiles(htmls2ext, function(){});
@@ -171,20 +181,24 @@ function (mimetypes, sharedf, sharedc) {
                 if(params[1]>=params[0].length){ extcallback(); return; }
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
-                files[entries[i].filename] = null;
+                console.log("getdatas "+entries[i].filename);
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         console.log("unzip "+i);//NFP
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                        reader.close(function () {   });
+                        //reader.close(function () {   });
                         i++;
                     }, function(current, total) {
                     });
             }
-            zip.createReader(new zip.BlobReader(file), function (zipReader) {
+            /*zip.createReader(new zip.BlobReader(file), function (zipReader) {
                 zipReader.getEntries(function (entries) {
-                      getdatas([entries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;}), 0, zipReader]);
+                      getdatas([entriestg, 0, zipReader]);
                     });
-            }, function(e){console.warn(e);});
+                }, function(e){console.warn(e);});*/
+              var entriestg = gentries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;});
+              console.log("entriestg:");//NFP
+              console.log(entriestg);
+              getdatas([entriestg, 0, zipreader]);
         }
 
         return true;

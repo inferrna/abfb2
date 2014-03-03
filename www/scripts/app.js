@@ -94,33 +94,36 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     });
     sharedc.register('options', 'got_file', function () {
             options.remove_old();
-            options.getpp();
+            /*options.getpp();
             options.get_opt("prc", function(prc){
                                        if(!prc) prc = options.getpercent();
                                        options.get_opt("last_html", function(html){
                                            uitouch.init_scale();
                                            fill_page(html, prc, 1);
                                        }, true);
-                                    });
+                                    });*/
             book.init(options.bookfile());
             sharedc.register('jsepubz', 'got_toc', function () {console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
             sharedc.register('book', 'got_book', function () {console.log("Got book"); uitouch.init_scale();});
             book.load();
         });
     sharedc.register('options', 'got_pp', function () {
-                                                var html = null;
                                                 var i = options.getpage();
                                                 var href = book.foliant().get_href_byidx(i);
-                                                try{ console.log("href2get: "+href);//NFP
-                                                } catch(e) {console.log(e.stack);}
+                                                console.log("href2get: "+href);//NFP
+                                                sharedc.register('jsepubz', 'got_fstfile', function(){
+                                                    var html = null;
+                                                    if(book.foliant()) html = book.foliant().get_page(i);
+                                                    console.log("got html:");//NFP
+                                                    console.log(html);//NFP
+                                                    if(html){
+                                                        fill_page(html, options.getpercent()); 
+                                                        var sel = document.getElementById("tocselect");
+                                                        var newsel = book.foliant().option(sel.selectedIndex);
+                                                        if(sel.options[newsel]) sel.options[newsel].selected = true;
+                                                    }
+                                                });    
                                                 sharedc.exec('app', 'got_href')(href);
-                                                if(book.foliant()) html = book.foliant().get_page(i);
-                                                if(html){
-                                                    fill_page(html, options.getpercent()); 
-                                                    var sel = document.getElementById("tocselect");
-                                                    var newsel = book.foliant().option(sel.selectedIndex);
-                                                    if(sel.options[newsel]) sel.options[newsel].selected = true;
-                                                }
                                             });
     
     function fill_toc(html){
