@@ -96,7 +96,7 @@ function (mimetypes, sharedf, sharedc) {
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     toc = xmlDocument(xml);
-                    sharedc.exec('jsepubz', 'got_toc')();
+                    sharedc.exec('bookng', 'got_toc')();
                 }
                 if (result !== undefined) {
                     console.log(href + " media type is " + mediaType + " addedd ok");//NFP
@@ -136,7 +136,7 @@ function (mimetypes, sharedf, sharedc) {
         files[fsthref] = postProcessHTML(fsthref);
         console.log("inner files:");//NFP
         console.log(files);//NFP
-        sharedc.exec('jsepubz', 'got_fstfile')();
+        sharedc.exec('bookng', 'got_fstfile')();
         var htmls2ext = [];
         for (var key in opf.manifest) {
             try {
@@ -352,7 +352,7 @@ function (mimetypes, sharedf, sharedc) {
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     toc = xmlDocument(xml);
-                    sharedc.exec('jsepubz', 'got_toc')();
+                    sharedc.exec('bookng', 'got_toc')();
                 } else if (mediaType === "application/xhtml+xml") {
                     //Do nothing
                 } else { 

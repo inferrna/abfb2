@@ -92,6 +92,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         if(txt.length>1) fill_thumb(txt, els);
         else fill_thumb("Something went wrong. Please check your options.");
     });
+    sharedc.register('bookng', 'got_toc', function () {console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
+    sharedc.register('book', 'got_book', function () {console.log("Got book"); uitouch.init_scale();});
     sharedc.register('options', 'got_file', function () {
             options.remove_old();
             /*options.getpp();
@@ -103,26 +105,25 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
                                        }, true);
                                     });*/
             book.init(options.bookfile());
-            sharedc.register('jsepubz', 'got_toc', function () {console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
-            sharedc.register('book', 'got_book', function () {console.log("Got book"); uitouch.init_scale();});
             book.load();
         });
+    sharedc.register('bookng', 'got_fstfile', function(){
+        var html = null;
+        var i = options.getpage();
+        if(book.foliant()) html = book.foliant().get_page(i);
+        console.log("got html:");//NFP
+        console.log(html);//NFP
+        if(html){
+            fill_page(html, options.getpercent()); 
+            var sel = document.getElementById("tocselect");
+            var newsel = book.foliant().option(sel.selectedIndex);
+            if(sel.options[newsel]) sel.options[newsel].selected = true;
+        }
+    });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
                                                 var href = book.foliant().get_href_byidx(i);
                                                 console.log("href2get: "+href);//NFP
-                                                sharedc.register('jsepubz', 'got_fstfile', function(){
-                                                    var html = null;
-                                                    if(book.foliant()) html = book.foliant().get_page(i);
-                                                    console.log("got html:");//NFP
-                                                    console.log(html);//NFP
-                                                    if(html){
-                                                        fill_page(html, options.getpercent()); 
-                                                        var sel = document.getElementById("tocselect");
-                                                        var newsel = book.foliant().option(sel.selectedIndex);
-                                                        if(sel.options[newsel]) sel.options[newsel].selected = true;
-                                                    }
-                                                });    
                                                 sharedc.exec('app', 'got_href')(href);
                                             });
     

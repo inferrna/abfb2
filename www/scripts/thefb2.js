@@ -1,5 +1,5 @@
 define(['stuff', 'sharedf', 'sharedc', 'cordova.js'],
-function(stuff, sharedc, sharedf){
+function(stuff, sharedf, sharedc){
     var fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
@@ -70,6 +70,8 @@ function(stuff, sharedc, sharedf){
                     divs.push(divlist[i]);//.getAttribute('id'));
             } 
             sharedc.exec('book','got_book')();
+            sharedc.exec('bookng', 'got_toc')();
+            sharedc.exec('bookng', 'got_fstfile')();
             console.log("fb2 pages is "+pages);//NFP
         });
     }
@@ -164,7 +166,8 @@ function(stuff, sharedc, sharedf){
                     pages = [];
                     divs = [];
                     currentpage = 0;
-             }
+             },
+             get_href_byidx:function(){}
     }
 }
 );

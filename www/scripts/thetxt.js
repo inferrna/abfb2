@@ -31,6 +31,8 @@ function(stuff, sharedc){
             }
             if(curstrip<maxlen) text.push(txt.strip(curstrip, maxlen));
         }
+        sharedc.exec('bookng', 'got_toc')();
+        sharedc.exec('bookng', 'got_fstfile')();
         sharedc.exec('book', 'got_book')();
         //console.log(text[0]);
     }
@@ -87,7 +89,8 @@ function(stuff, sharedc){
              init:function(){
                      text = [];
                      name = '';
-             }
+             },
+             get_href_byidx:function(){}
     }
 }
 );
