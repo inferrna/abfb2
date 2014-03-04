@@ -96,14 +96,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     sharedc.register('book', 'got_book', function () {console.log("Got book"); uitouch.init_scale();});
     sharedc.register('options', 'got_file', function () {
             options.remove_old();
-            /*options.getpp();
-            options.get_opt("prc", function(prc){
-                                       if(!prc) prc = options.getpercent();
-                                       options.get_opt("last_html", function(html){
-                                           uitouch.init_scale();
-                                           fill_page(html, prc, 1);
-                                       }, true);
-                                    });*/
             book.init(options.bookfile());
             book.load();
         });

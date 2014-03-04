@@ -122,13 +122,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 var href = opf.manifest[spine]["href"];
                 console.log("idx= "+idx+ "; href="+href);//NFP
                 var doc = files[href];
-              //  console.log("doc:");//NFP
-            //    console.log(doc);//NFP
                 var html = srlzr.serializeToString(doc);
-                console.log("html:");//NFP
-                console.log(html);//NFP
-                //options.set_opt("last_html", html, true);
-                return html;//decodeURIComponent( escape(resultDocument) ));
+                return html;
             } else { return null; }
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
