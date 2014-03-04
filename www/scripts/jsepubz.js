@@ -6,9 +6,9 @@ function (mimetypes, sharedf, sharedc) {
     var gentries = null;
     var files = {};
     var b64blobs = {};
-    var opfPath, container, mimetype, opf, toc=null;
     var notifier = null;
     var fsthref = null;
+    var opfPath, container, mimetype, opf, toc=null;
     var logger = function(text){console.log(text);};
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
@@ -535,6 +535,14 @@ function (mimetypes, sharedf, sharedc) {
             file = _file;
             logger = _logger;
             sharedc.register('app', 'got_href', proceedhtmlfst);
+            var blob = null;//blob;
+            var file = null;//file;
+            var zipreader = null;
+            var gentries = null;
+            var files = {};
+            var b64blobs = {};
+            var notifier = null;
+            var fsthref = null;
         },
         processInSteps: function(_file, _notifier, _logger){
             file = _file;

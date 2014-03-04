@@ -75,6 +75,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         // Use HTML5 files or download via XHR.
         //epub = new JSEpub(epubFile, file);
         epub = jsepub;
+        epub.init();
         epub.processInSteps(file, function (step, extras) {
                 var msg;
                 if (step === 1) {
