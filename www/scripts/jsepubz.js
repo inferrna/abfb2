@@ -10,7 +10,6 @@ function (mimetypes, sharedf, sharedc) {
     var notifier = null;
     var fsthref = null;
     var logger = function(text){console.log(text);};
-    sharedc.register('app', 'got_href', proceedhtmlfst);
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
         if(files[index]) console.warn("dublicated index "+index);
@@ -535,6 +534,7 @@ function (mimetypes, sharedf, sharedc) {
         init: function(_file, _logger){
             file = _file;
             logger = _logger;
+            sharedc.register('app', 'got_href', proceedhtmlfst);
         },
         processInSteps: function(_file, _notifier, _logger){
             file = _file;

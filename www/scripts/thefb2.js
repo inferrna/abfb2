@@ -10,7 +10,6 @@ function(stuff, sharedf, sharedc){
     var parsr = new DOMParser();
     var transavail = null;
     console.log("window.XSLTProcessor supports is "+(window.XSLTProcessor ? true : false));//NFP
-
     function ctransform(arr, callback){};
     try {
         var exec = cordova.require('cordova/exec');
@@ -71,7 +70,6 @@ function(stuff, sharedf, sharedc){
             } 
             sharedc.exec('book','got_book')();
             sharedc.exec('bookng', 'got_toc')();
-            sharedc.exec('bookng', 'got_fstfile')();
             console.log("fb2 pages is "+pages);//NFP
         });
     }
@@ -166,6 +164,7 @@ function(stuff, sharedf, sharedc){
                     pages = [];
                     divs = [];
                     currentpage = 0;
+                    sharedc.register('app', 'got_href', function(){sharedc.exec('bookng', 'got_fstfile')();});
              },
              get_href_byidx:function(){}
     }
