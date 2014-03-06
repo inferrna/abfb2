@@ -96,6 +96,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     sharedc.register('book', 'got_book', function () {console.log("Got book"); uitouch.init_scale();});
     sharedc.register('options', 'got_file', function () {
             options.remove_old();
+            options.display("hide");
             book.init(options.bookfile());
             book.load();
         });
@@ -104,12 +105,13 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var i = options.getpage();
         if(book.foliant()) html = book.foliant().get_page(i);
         console.log("got html:");//NFP
-        console.log(html);//NFP
+        console.log("NL");//NFP
         if(html){
             fill_page(html, options.getpercent()); 
             var sel = document.getElementById("tocselect");
             var newsel = book.foliant().option(sel.selectedIndex);
             if(sel.options[newsel]) sel.options[newsel].selected = true;
+            options.display("hide");
         }
     });    
     sharedc.register('options', 'got_pp', function () {

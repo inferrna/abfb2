@@ -1,5 +1,8 @@
 define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf', 'sharedc'],
 function(jsepub, stuff, encod, options, sharedf, sharedc){
+    var pages = [];
+    var anchors = [];
+    var currentpage = 0;
     var epub = null;
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
@@ -61,8 +64,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
     }
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
-    var pages = [];
-    var currentpage = 0;
     function load_jsepub(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
@@ -116,7 +117,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             console.log(files);//NFP
             if(opf && toc && files){
                 var idx = pages[index];
-                console.log("idx= "+idx+ "; pages="+pages);//NFP
+                console.log("idx= "+idx+ "; anchor="+anchors[index]);//NFP
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
@@ -130,16 +131,18 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             var contents = transxsl(toc, xsl, doc);//xsltp.transformToDocument(toc,doc);
             if(!contents || !contents.getElementsByTagName || contents.id!=="tocselect") contents = js_toc(toc, files);
             var opts = contents.getElementsByTagName("option");
-            var hrefs = [];
+            var hrefs   = [];
             var urls = [];
-            var re1 = /(.+?)(#.*)/gi;
-            var hrefs = opf.spine.map(function(sp){return opf.manifest[sp]['href']
-                                                          .replace(sharedf.relf, "$2")
-                                                          .replace(re1, "$1");});
+            var re1 = /(.+?)#(.*)/gi;
+            var hrefs = opf.spine.map(function(sp){ var fnm = opf.manifest[sp]['href'].replace(re1, "$1");
+                                                    return fnm.replace(sharedf.relf, "$2");});
             console.log("hrefs:");//NFP
             console.log(hrefs);//NFP
+            anchors = []; urls = [];
             for(var i = 0; i < opts.length; i++) {
-                urls.push(opts[i].getAttribute('url').replace(sharedf.relf, "$2").replace(re1, "$1"));
+                var url = opts[i].getAttribute('url');
+                urls.push(url.replace(sharedf.relf, "$2").replace(re1, "$1"));
+                anchors.push(url.replace(sharedf.relf, "$2").replace(re1, "$2").replace(urls[i], null));
                 var idx = hrefs.indexOf(urls[i]);
                 if(idx>-1) pages.push(idx);
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
@@ -147,6 +150,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             }
             console.log("urls:");//NFP
             console.log(urls);//NFP
+            console.log("anchors:");//NFP
+            console.log(anchors);//NFP
 
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];
@@ -195,6 +200,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
              init:function(){
                      epub = null;
                      pages = [];
+                     anchors = [];
                      currentpage = 0;
              },
              get_href_byidx:function(index){
