@@ -1,5 +1,7 @@
 define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf', 'sharedc'],
 function(jsepub, stuff, encod, options, sharedf, sharedc){
+    var marea = document.getElementById("maintext");
+    var pageids = [];
     var pages = [];
     var anchors = [];
     var currentpage = 0;
@@ -125,8 +127,17 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 var doc = files[href];
                 if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
                 else var anchor = null;
-                var html = srlzr.serializeToString(doc);
-                return [html, anchor];
+                var mtextid = "xmaintext"+index;
+                if(pageids.indexOf(mtextid)===-1){
+                    var nmarea = marea.cloneNode(true);
+                    marea.style.display = 'none';
+                    nmarea.id = mtextid;
+                    pageids.push(mtextid);
+                    marea.parentNode.appendChild(nmarea);
+                    nmarea.innerHTML = srlzr.serializeToString(doc);
+                }
+                pageids.map(function(id){document.getElementById(id).style.display = 'none';});
+                return [mtextid, anchor];
             } else { return null; }
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);

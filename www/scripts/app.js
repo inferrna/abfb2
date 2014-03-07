@@ -146,21 +146,23 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         console.log(cheight);//NFP
         return 100.0*antop/cheight;
     }
-    function fill_page(html, percent, nosave){
-        marea.style.width = 'auto';
-        marea.style.height = 'auto';
-        marea.innerHTML = html[0];
-        var fs = parseInt(stuff.getStyle(marea, 'font-size'));
-        var cheight = parseInt(stuff.getStyle(marea, 'height'));//window.getComputedStyle(marea, null);
+    function fill_page(data, percent, nosave){
+        var xmarea = document.getElementById(data[0]);
+       // marea.innerHTML = html[0];
+        var fs = parseInt(stuff.getStyle(xmarea, 'font-size'));
+        var cheight = parseInt(stuff.getStyle(xmarea, 'height'));//window.getComputedStyle(marea, null);
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
         }
-        if(html[1]) percent = prc_from_anchor(html[1]);
-        marea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
+        if(data[1]) percent = prc_from_anchor(data[1]);
+        xmarea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }
+        xmarea.style.width = 'auto';
+        xmarea.style.height = 'auto';
+        xmarea.style.display = 'block';
     }
     function fill_thumb(text, els){
         if(text.length > 1){
