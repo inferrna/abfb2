@@ -1,0 +1,3 @@
+https://github.com/augustl/js-epub
+https://github.com/mathiasbynens/utf8.js
+https://github.com/fchasen/epub.js/

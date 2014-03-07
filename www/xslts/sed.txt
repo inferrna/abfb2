@@ -1,0 +1,1 @@
+cat FB2_22_xhtml_images_my.xsl| sed 's:\":\&quot\;:g'|sed "s/'/\&apos\;/g"|sed ':a;N;$!ba;s/\n\|\t/ /g'|sed 's/\([ ]\)\1\+/\1/g'

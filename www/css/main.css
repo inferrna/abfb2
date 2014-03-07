@@ -1,0 +1,175 @@
+/*  @font-face {
+  font-family: "Frutiger LT Pro";
+  font-style: normal;
+  font-weight: bold;
+  src:url("data:font/otf;");
+  }*/
+
+  input { padding: 2px; }
+  input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}
+  label { padding: 2px; }
+  select { padding: 2px; }
+  scrollbar { overflow-y: scroll; top: 0; right:0; display: none; height: 100%; position: fixed; }
+  .pincher {
+    overflow: hidden;
+    position: relative;
+    align: center;
+    left: 45%;
+    height: 4px;
+    width: 10px;
+    bottom: 0px;
+    background-color: #AABBCC;
+    border-radius: 5px;
+  }
+  #pop {
+    display: none;
+    /*-webkit-flex-direction: column;
+    flex-direction: column;
+    flex-grow: 3;
+    -webkit-flex-grow: 3;*/
+    width: 100%;
+    background-clip: padding-box;
+    background-color: #FFF;
+    /*box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);*/
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    height: auto;
+    overflow: hidden;
+    margin-left: 0px;
+    position: fixed;
+    /*left: -100%;*/
+    outline: medium none;
+    z-index: 1050;
+    padding:1px;
+  }
+  .flex {
+    position: relative;
+    top: 1px;
+    padding: 1px;
+    display: -webkit-flex;
+    display: flex;
+    /*overflow-y: auto;
+    max-height: 400px;*/
+  }
+  .flex > div
+  {
+      /*margin: 2px;*/
+      overflow:hidden;
+      -webkit-flex: 1 1 auto;
+      flex: 1 1 auto;
+
+      width: 100%; /* To make the transition work nicely.  (Transitions to/from
+                      "width:auto" are buggy in Gecko and Webkit, at least.
+                      See http://bugzil.la/731886 for more info.) */
+
+      /*-webkit-transition: height 0.7s ease-out;
+      transition: height 0.7s ease-out;*/
+      -webkit-transition: background 2s ease-out;
+      transition: background 2s ease-out;
+  }
+  .flex > div:active
+  {
+    background: #EEDDCC;
+    color: #112233;
+  }
+  .popflex {
+    position: relative;
+    top: 1px;
+    padding: 1px;
+    display: -webkit-flex;
+    display: flex;
+    /*overflow-y: auto;
+    max-height: 400px;*/
+  }
+  .popflex > div
+  {
+      /*margin: 2px;*/
+      overflow:hidden;
+      /*-webkit-flex: 1 6 60%;
+      flex: 1 6 60%;
+     -webkit-flex-flow: column;
+      flex-flow: column;*/
+      width: 98%; /* To make the transition work nicely.  (Transitions to/from
+                      "width:auto" are buggy in Gecko and Webkit, at least.
+                      See http://bugzil.la/731886 for more info.) */
+
+      /*-webkit-transition: height 0.7s ease-out;
+      transition: height 0.7s ease-out;*/
+      -webkit-transition: background 2s ease-out;
+      transition: background 2s ease-out;
+  }
+  .popflex > div:active
+  {
+    background: #DDEECC;
+    color: #113322;
+  }
+  .hrefs {
+    position:absolute;
+    bottom: 5px;
+  }
+  .spflex {
+    height: auto;
+    padding: 1px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-transition: background 2s ease-out;
+    transition: background 2s ease-out;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    align-items: flex-start;
+    -webkit-align-items: flex-start;
+    /*max-height: 60%;*/
+    border: 1px solid #555;
+    border-radius: 0 0 3px 3px;
+    background-color: rgba(255,255,255,0.6666);
+  }
+  .spflex div > span {
+    /*align-content: stretch;
+    -moz-align-content: stretch
+    -webkit-align-content: stretch;*/
+    width: 16em;
+    -webkit-flex: 1 1 auto;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+  }
+  .spflex div > span > input {
+    white-space: nowrap;
+    width: 8em;
+  }
+  .spflex div > span > label {
+    white-space: nowrap;
+    width: 8em;
+  }
+  .spflex > div {
+    width: 100%;
+    background-color: rgba(255,255,255,0.1);
+  }
+  .spflex:active {
+    background-color: rgba(200,200,255,0.5);
+  }
+
+  .bcol {
+    overflow:hidden;
+    font-size:small;
+    word-wrap:normal;
+    position: relative;
+    margin-left: 1px;
+    margin-right: 1px;
+/*    text-shadow:#aaa 0px 0.3px 0, #aaa 0px -0.3px 0px, #aaa 0.3px 0px 0px, #aaa -0.3px 0px 0px;*/
+  }
+  .gradient {
+    background-image: linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -o-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -moz-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -webkit-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image: -ms-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+
+    background-image: -webkit-gradient(
+        linear,
+        right top,
+        left top,
+        color-stop(0, rgb(222,211,165)),
+        color-stop(0.5, rgb(235,232,200)),
+        color-stop(1, rgb(209,200,148))
+    );
+  }
