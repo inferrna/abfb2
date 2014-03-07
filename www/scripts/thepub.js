@@ -123,8 +123,10 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 var href = opf.manifest[spine]["href"];
                 console.log("idx= "+idx+ "; href="+href);//NFP
                 var doc = files[href];
+                if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
+                else var anchor = null;
                 var html = srlzr.serializeToString(doc);
-                return html;
+                return [html, anchor];
             } else { return null; }
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);

@@ -37,8 +37,8 @@ function(stuff, sharedc){
     }
     function get_indexed_page(index){
         if(index>-1){
-            if(text[index]) return text[index];//decodeURIComponent( escape(resultDocument) ));
-            else return null;
+            if(text[index]) return [text[index], null];//decodeURIComponent( escape(resultDocument) ));
+            else return [null, null];
         }else{
             var contents = document.createElement("div");;
             var h1 = document.createElement("h1");

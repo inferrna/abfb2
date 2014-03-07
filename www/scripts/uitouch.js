@@ -24,7 +24,7 @@ define(
       pop.style.display = 'none';
       var movef = function(){};
       function sign(x) { return x && x / Math.abs(x); }
-     function liftcol(el, dir) {
+      function liftcol(el, dir) {
           "use strict";
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));

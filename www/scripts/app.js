@@ -136,15 +136,28 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
                                                 fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
         options.getpp();
     }
+    function prc_from_anchor(anchor){
+        var ancel = document.getElementById(anchor);
+        var antop = parseFloat(stuff.getStyle(ancel, 'top'));
+        var cheight = parseFloat(stuff.getStyle(marea, 'height'));
+        console.log("anchors prc got from: ");//NFP
+        console.log(ancel);//NFP
+        console.log(antop);//NFP
+        console.log(cheight);//NFP
+        return 100.0*antop/cheight;
+    }
     function fill_page(html, percent, nosave){
         marea.style.width = 'auto';
         marea.style.height = 'auto';
-        marea.innerHTML = html;
+        marea.innerHTML = html[0];
         var fs = parseInt(stuff.getStyle(marea, 'font-size'));
         var cheight = parseInt(stuff.getStyle(marea, 'height'));//window.getComputedStyle(marea, null);
-        marea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
+        }
+        if(html[1]) percent = prc_from_anchor(html[1]);
+        marea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
+        if(!nosave) {
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }

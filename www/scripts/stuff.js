@@ -18,14 +18,13 @@ define(
                       return letter.toUpperCase();
                     });
                   };
-
-                  if (el.currentStyle) {
-                    return el.currentStyle[camelize(styleProp)];
-                  } else if (document.defaultView && document.defaultView.getComputedStyle) {
+                  if(/top|left|right|bottom/i.test(styleProp) && el.getBoundingClientRect)
+                      return el.getBoundingClientRect()[styleProp];
+                  else if (document.defaultView && document.defaultView.getComputedStyle) {
                     return document.defaultView.getComputedStyle(el,null)
                                                .getPropertyValue(styleProp);
                   } else {
-                    return el.style[camelize(styleProp)]; 
+                    return el.style[camelize(styleProp)] || el.currentStyle[camelize(styleProp)]; 
                   }
                 },
                  targetimg:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAMxSURBVEjHVdXZlts4DATQS4pabPcy+f+PTNJxWwspcR5EezLSg3xAEAcoVJUDFYIP0flMBtF5UJ2nARSL3H4vYaYKFaJ/WvrFRVUlvb6VDA67bFNFxb2VLeEPof53nU9BNZpQ9TodDoei6BSzQ/CwCGeJUIMfKqIPdG6q3qRTdW2Uwy7YzKLNQ5DdBayhfoqIPh0mE94Eg0EQXgUoVofNLPhC8UcgtTk/HC4GvclgFPXSXx0URXKg98enL8nVTEL1idFgNLqJJoNk0KmiqsqybBM9fPjy7sskKwmjKLpIRm+iq9FoaCBGxW63yg3Uhw+/3dy9+ZlUN4cbLq6iq6vJZJIMoopdtth0jQN3Nw+94pJMqgE3Sefq6urSuuh1gl2RDeZ2/XBz17n6bUwG1SSJLiajycXN1cVk0AkOxWoWG6S7bHC465UT6WjUC3qjydXVm5ux7WG363WialdsimoTDCeIvUP/eifjC4dnB1knqG2UySaIBtSE1FiXDAbJ2ECcjKLgkERVsRmtZkmnl626pIo6UdAJjUCpFRskwWFzyPq22CS2O1VMNMKexO1EnSS11FGQ7a/YGT/lHVXh6QFPxXt9n7Ez/b/z+v+s9AoebcdHU9/hsDcW7q/I8ZfR1FNMoR3XllJkpZEn2EWlxc73kF/Fgj1hVxpBtpa8Ng4eTWzZarPaZMtfvQVHQjE0lIvNbPCQ2t6fPMhms9nWiHQoNruaVFmw6QyyTW9u2y+NSKcWHx4Ws8VmUziHTLLB6jAp1ibgoNoNxpeYVqvFt9lqs1ssopVkNlmMZlWytgXtstHSTPX05GcHs9VhlZGTajGYjQZ3bwKqzcWiF1o3m/zqYre5CxbBd8LDaDW4+3RvXBiUxrsTxEO2yma7hwe+sRDqDyTvqg+8C96EZiZPBzg9ICtWm4dillW/hLOAZujvuBgkF6djPz1odygWhzsesuAnhDq4oboZ2nWuOkEvNUROW2exCr7tgl+nAAL1akQ1uao6VwFjk+3zn2lTRKsF1e+mpV+BVwmid0FtblCb8k5d7rIVweLRRvulNlnWyaXpcjSJNB96suI4tSf7bkUPXyr/AuzktdPMOGclAAAAAElFTkSuQmCC",

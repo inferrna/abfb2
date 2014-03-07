@@ -103,7 +103,7 @@ function(stuff, sharedf, sharedc){
             } catch (e) { console.warn(ch);
                 clean_invalid(ch);
                 return null;}
-            return html;
+            return [html, null];
         }else{
             var result = document.createElement('div');//document.createDocumentFragment();;//document.createElement('div');
             var toc = fb2.getElementsByTagName('select')[0].cloneNode(true);
