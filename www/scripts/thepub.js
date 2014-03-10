@@ -124,7 +124,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
                 console.log("idx= "+idx+ "; href="+href);//NFP
-                var doc = files[href];
                 if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
                 else var anchor = null;
                 var mtextid = "xmaintext"+index;
@@ -134,7 +133,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     nmarea.id = mtextid;
                     pageids.push(mtextid);
                     marea.parentNode.appendChild(nmarea);
-                    nmarea.innerHTML = srlzr.serializeToString(doc);
+                    nmarea.innerHTML = srlzr.serializeToString(files[href]);
+                    delete files[href];
                 }
                 pageids.map(function(id){document.getElementById(id).style.display = 'none';});
                 return [mtextid, anchor];
@@ -188,6 +188,12 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
              get_page:function(index){
                      currentpage = index;
                      return get_indexed_page(index);
+             },
+             render_all_pages:function(){
+                 for(i=0; i<pages.length; i++){
+                     get_indexed_page(i);
+                     jsepub.init()
+                 }
              },
              option:function(i){
                      //if(i==0) return currentpage;

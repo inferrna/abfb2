@@ -149,6 +149,7 @@ function (mimetypes, sharedf, sharedc) {
                     var href = htmls2ext[i]
                     files[href] = postProcessHTML(href);
                 }
+                sharedc.exec('book', 'last_html')();
             });
     }
 
