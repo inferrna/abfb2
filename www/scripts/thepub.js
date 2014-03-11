@@ -126,7 +126,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 console.log("idx= "+idx+ "; href="+href);//NFP
                 if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
                 else var anchor = null;
-                var mtextid = "xmaintext"+index;
+                var mtextid = stuff.pprefix+index;
                 if(pageids.indexOf(mtextid)===-1){
                     var nmarea = marea.cloneNode(true);
                     marea.style.display = 'none';
@@ -136,7 +136,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     nmarea.innerHTML = srlzr.serializeToString(files[href]);
                     delete files[href];
                 }
-                pageids.map(function(id){document.getElementById(id).style.display = 'none';});
+                pageids.map(function(id){if(stuff.pprefix+currentpage!==id) document.getElementById(id).style.display = 'none';});
                 return [mtextid, anchor];
             } else { return null; }
         }else{
@@ -193,6 +193,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                  for(i=0; i<pages.length; i++){
                      get_indexed_page(i);
                      jsepub.init()
+                     files = null;
                  }
              },
              option:function(i){
@@ -209,11 +210,13 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      return currentpage;
              },
              next_page:function(diff){
-                     var page = pages.indexOf(pages[currentpage] + diff);
+                     var idx = currentpage+diff;
+                     var page = pageids.indexOf(stuff.pprefix+idx);
                      if(page>-1) {
-                            currentpage = page;
+                            currentpage = idx;
                             return get_indexed_page(currentpage);
                      }
+                     console.log("Page "+idx+" not found.");//NFP
                      return -1;
              },
              init:function(){

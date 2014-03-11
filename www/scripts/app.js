@@ -47,8 +47,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         else txarea.style.backgroundImage='url(../images/back.jpg)';
     }
     var drvhds = Math.min(Math.floor(window.innerHeight/3), Math.floor(window.innerWidth/3));
-    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(document.getElementById(stuff.pprefix+book.currentpage()), -1); pop.style.display='none';}});
+    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(document.getElementById(stuff.pprefix+book.currentpage()), 1); pop.style.display='none';}});
     hammer(txarea).on("dragup", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('hide'); pop.style.display='none';}});
     hammer(txarea).on("dragdown", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('show'); pop.style.display='none';}});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
@@ -71,18 +71,20 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     sharedc.register('uitouch', 'next_chapter', function (i) {
             var sel = document.getElementById("tocselect");
             var diff = parseInt(i);
-            var page = book.foliant().next_page(diff); 
+            var page = book.foliant().next_page(diff);
+            console.log("Got page "+page);//NFP 
             if(page!=-1){
-                fill_page(page, 0);
+                var el = fill_page(page, 0);
                 var newsel = book.foliant().option(sel.selectedIndex);
                 sel.options[newsel].selected = true;
                 if(diff===-1){
                     var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
-                    var top = (-(parseInt(stuff.getStyle(marea, 'height')) - 3*ptop/4));
+                    var top = (-(stuff.getStyle(el, 'height') - 3*ptop/4));
                     top = top>0 ? 0 : top;
-                    marea.style.top = parseInt(top)+"px";
+                    el.style.top = top+"px";
+                    console.log("next top == "+top+" ptop == "+ptop+" elh == "+stuff.getStyle(el, 'height'));//NFP
                 }
-                var el_rectO = marea.getBoundingClientRect();
+                var el_rectO = el.getBoundingClientRect();
                 options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
                 console.log("saving.."); options.savepp();
             }
@@ -163,6 +165,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         xmarea.style.width = 'auto';
         xmarea.style.height = 'auto';
         xmarea.style.display = 'block';
+        return xmarea;
     }
     function fill_thumb(text, els){
         if(text.length > 1){

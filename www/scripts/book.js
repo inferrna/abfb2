@@ -31,6 +31,9 @@ define(
                  evo:function(){
                          return evo;
                  },
+                 currentpage:function(){
+                         return foliant.currentpage()
+                 },
                  foliant:function(){
                          return foliant;
                  }
