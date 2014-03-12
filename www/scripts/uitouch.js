@@ -46,17 +46,19 @@ define(
           if(reprefix.test(el.id)){
               if(percent>100 || (dir===-1 && elh===wh)) {sharedc.exec('uitouch', 'next_chapter')(1); newtop=0;}
               else if (newtop>0) {
-                  if(dtop<=0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
-                  else {newtop = 0;}
-              } else {
-                  options.setpercent(percent);
-                  console.log("saving.."); options.savepp();
-              }
-          } else {
-              if(newtop<pageend) newtop = pageend+ptop/2;
-              if (newtop>0) newtop = 0;
+                      if(dtop<=0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
+                      else newtop = 0;
+                  } else {
+                      if(newtop<pageend) newtop = pageend+ptop/2;
+                      if (newtop>0) newtop = 0;
+                  }
           }
           el.style.top = parseInt(newtop)+"px";
+          if(reprefix.test(el.id)){
+              percent = -100*parseFloat(newtop)/elh;
+              options.setpercent(percent);
+              console.log("saving.."); options.savepp();
+          }
       }
       function movesbot(touches, el){
           "use strict";

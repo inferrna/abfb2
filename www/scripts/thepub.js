@@ -126,19 +126,12 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 console.log("idx= "+idx+ "; href="+href);//NFP
                 if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
                 else var anchor = null;
-                var mtextid = stuff.pprefix+index;
-                if(pageids.indexOf(mtextid)===-1){
-                    var nmarea = marea.cloneNode(true);
-                    marea.style.display = 'none';
-                    nmarea.id = mtextid;
-                    pageids.push(mtextid);
-                    marea.parentNode.appendChild(nmarea);
-                    nmarea.innerHTML = srlzr.serializeToString(files[href]);
-                    delete files[href];
-                }
-                pageids.map(function(id){if(stuff.pprefix+currentpage!==id) document.getElementById(id).style.display = 'none';});
-                return [mtextid, anchor];
-            } else { return null; }
+                epub.get_by_href(href, function(html){
+                        currentpage = index;
+                        //console.log("2. currentpage is "+currentpage);//NFP
+                        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
+                    });
+            } else return -1;
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
             var contents = transxsl(toc, xsl, doc);//xsltp.transformToDocument(toc,doc);
@@ -186,19 +179,18 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      if(lib==='jsepub') load_jsepub(file);
              },
              get_page:function(index){
-                     currentpage = index;
                      return get_indexed_page(index);
              },
              render_all_pages:function(){
+                 jsepub.init()
                  for(i=0; i<pages.length; i++){
-                     get_indexed_page(i);
-                     jsepub.init()
-                     files = null;
+                     //get_indexed_page(i);
+                     //files = null;
                  }
              },
              option:function(i){
                      //if(i==0) return currentpage;
-                     if(pages[currentpage]>-1 && !isNaN(pages[currentpage])) return currentpage;
+                     if(currentpage<pages.length) return currentpage;
                      return i;
              },
              get_fromopt:function(idx){
@@ -207,17 +199,17 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      return get_indexed_page(currentpage);
              },
              currentpage:function(){
+                     console.log("1. currentpage is "+currentpage);//NFP
                      return currentpage;
              },
              next_page:function(diff){
                      var idx = currentpage+diff;
-                     var page = pageids.indexOf(stuff.pprefix+idx);
-                     if(page>-1) {
-                            currentpage = idx;
-                            return get_indexed_page(currentpage);
-                     }
-                     console.log("Page "+idx+" not found.");//NFP
-                     return -1;
+                     if(idx<pages.length) {
+                         delete document.getElementById(stuff.pprefix+currentpage);//.style.display = 'none';
+                         pageids = pageids.filter(function(id){return id!==currentpage});
+                         currentpage = idx;
+                         return get_indexed_page(currentpage);
+                     } else return -1;
              },
              init:function(){
                      epub = null;
@@ -229,10 +221,11 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 var opf = epub.opf();
                 console.log("calling href by index "+index+"; opf:");//NFP
                 console.log(opf);//NFP
-                if(opf && index>-1){
-                    var idx = pages[index];
+                if(opf){
+                    var idx = index>-1 ? pages[index] : 0;
                     console.log("idx= "+idx+ "; pages="+pages);//NFP
                     if(idx >= opf.spine.length) idx = 0;
+                    else currentpage = index;
                     var spine = opf.spine[idx];
                     return opf.manifest[spine]["href"];
                 }

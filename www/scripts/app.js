@@ -102,25 +102,24 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             book.init(options.bookfile());
             book.load();
         });
-    sharedc.register('bookng', 'got_fstfile', function(){
-        var html = null;
-        var i = options.getpage();
-        if(book.foliant()) html = book.foliant().get_page(i);
-        console.log("got html:");//NFP
-        console.log("NL");//NFP
-        if(html){
-            fill_page(html, options.getpercent()); 
+    sharedc.register('bookng', 'got_fstfile', function(data){
+        if(data){
+            fill_page(data, options.getpercent(), false); 
             var sel = document.getElementById("tocselect");
             var newsel = book.foliant().option(sel.selectedIndex);
+            console.log("newsel for opt is "+newsel);//NFP
             if(sel.options[newsel]) sel.options[newsel].selected = true;
             options.display("hide");
         }
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
-                                                var href = book.foliant().get_href_byidx(i);
-                                                console.log("href2get: "+href);//NFP
-                                                sharedc.exec('app', 'got_href')(href);
+                                                book.foliant().get_fromopt(i);
+                                                //var href = book.foliant().get_href_byidx(i);
+                                                //console.log("href2get: "+href);//NFP
+                                                //sharedc.exec('app', 'got_href')(href, function(html){fill_page([html, null], 0, false);});
+                                                //var sel = document.getElementById("tocselect");
+                                                //if(sel.options[i]) sel.options[i].selected = true;
                                             });
     
     function fill_toc(html){
@@ -135,7 +134,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
         sel.addEventListener("change", function (event){/*console.log("Select changed");*/ marea.style.top="0px"; 
-                                                fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
+                                                book.foliant().get_fromopt(event.target.selectedIndex);} );
         options.getpp();
     }
     function prc_from_anchor(anchor){
@@ -149,23 +148,23 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         return 100.0*antop/cheight;
     }
     function fill_page(data, percent, nosave){
-        var xmarea = document.getElementById(data[0]);
-       // marea.innerHTML = html[0];
-        var fs = parseInt(stuff.getStyle(xmarea, 'font-size'));
-        var cheight = parseInt(stuff.getStyle(xmarea, 'height'));//window.getComputedStyle(marea, null);
+        //var xmarea = document.getElementById(data[0]);
+        marea.innerHTML = data[0];
+        var fs = parseInt(stuff.getStyle(marea, 'font-size'));
+        var cheight = stuff.getStyle(marea, 'height');//window.getComputedStyle(marea, null);
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
         }
         if(data[1]) percent = prc_from_anchor(data[1]);
-        xmarea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
+        marea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }
-        xmarea.style.width = 'auto';
-        xmarea.style.height = 'auto';
-        xmarea.style.display = 'block';
-        return xmarea;
+        marea.style.width = 'auto';
+        marea.style.height = 'auto';
+        marea.style.display = 'block';
+        return marea;
     }
     function fill_thumb(text, els){
         if(text.length > 1){

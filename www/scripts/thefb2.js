@@ -164,7 +164,7 @@ function(stuff, sharedf, sharedc){
                     pages = [];
                     divs = [];
                     currentpage = 0;
-                    sharedc.register('app', 'got_href', function(){sharedc.exec('bookng', 'got_fstfile')();});
+                    //sharedc.register('app', 'got_href', function(){sharedc.exec('bookng', 'got_fstfile')();});
              },
              get_href_byidx:function(){}
     }

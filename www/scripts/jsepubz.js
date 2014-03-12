@@ -10,6 +10,7 @@ function (mimetypes, sharedf, sharedc) {
     var fsthref = null;
     var opfPath, container, mimetype, opf, toc=null;
     var logger = function(text){console.log(text);};
+    var srlzr = new XMLSerializer();
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
         if(files[index]) console.warn("dublicated index "+index);
@@ -127,29 +128,12 @@ function (mimetypes, sharedf, sharedc) {
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
     }
-    function proceedhtmlfst(href){
+    function proceedhtmlfst(href, clbk){
         fsthref = href;
-        unzipFiles([href], proceedhtmloth);
-    }
-    function proceedhtmloth(){
-        files[fsthref] = postProcessHTML(fsthref);
-        console.log("inner files:");//NFP
-        console.log(files);//NFP
-        sharedc.exec('bookng', 'got_fstfile')();
-        var htmls2ext = [];
-        for (var key in opf.manifest) {
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                href = opf.manifest[key]["href"];
-                if (href!==fsthref && mediaType === "application/xhtml+xml") htmls2ext.push(href); //After processing css
-            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
-        }
-        unzipFiles(htmls2ext, function(){
-                for(var i=0; i<htmls2ext.length; i++){
-                    var href = htmls2ext[i]
-                    files[href] = postProcessHTML(href);
-                }
-                sharedc.exec('book', 'last_html')();
+        unzipFiles([href], function(){
+                console.log("proceedhtmlfst clbk:");//NFP
+                console.log(clbk);//NFP
+                clbk(postProcessHTML(href));
             });
     }
 
@@ -483,9 +467,9 @@ function (mimetypes, sharedf, sharedc) {
             while(doc.firstChild) div.appendChild(doc.firstChild);
             sharedf.clean_tags(div, ["html"]);
             //delete doc;
-            return div;
-        } catch(e) { return doc; } 
-        return doc;
+            var res = div;
+        } catch(e) { var res = doc; } 
+        return srlzr.serializeToString(res);
     }
 
    function getDataUri(url, href) {
@@ -550,6 +534,9 @@ function (mimetypes, sharedf, sharedc) {
             logger = _logger;
             notifier = _notifier;
             unzipBlob(notifier);
+        },
+        get_by_href:function(href, clbk){
+            proceedhtmlfst(href, clbk);
         },
         toc:function(){return toc},
         opf:function(){return opf},
