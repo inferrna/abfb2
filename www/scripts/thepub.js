@@ -108,11 +108,11 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         console.warn(url+" not found");
         return id;
     }
-    function get_indexed_page(index){
+    function get_indexed_page(index, percent){
         var opf = epub.opf();
         var toc = epub.toc();
         var files = epub.files();
-        console.log("calling index "+index+"; opf:");//NFP
+        console.log("calling index "+index+"; percent: "+percent+"; opf:");//NFP
         console.log(opf);//NFP
         if(index>-1){
             console.log("files:");//NFP
@@ -129,7 +129,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 epub.get_by_href(href, function(html){
                         currentpage = index;
                         //console.log("2. currentpage is "+currentpage);//NFP
-                        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
+                        if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
+                        else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
                     });
             } else return -1;
         }else{
@@ -204,11 +205,12 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
              },
              next_page:function(diff){
                      var idx = currentpage+diff;
+                     console.log("next currentpage is "+idx+" from "+(pages.length-1));//NFP
                      if(idx<pages.length) {
-                         delete document.getElementById(stuff.pprefix+currentpage);//.style.display = 'none';
-                         pageids = pageids.filter(function(id){return id!==currentpage});
                          currentpage = idx;
-                         return get_indexed_page(currentpage);
+                         if(diff===-1) var prc='end';
+                         else prc = 0.0000001; //For examine if percent sended
+                         return get_indexed_page(currentpage, prc);
                      } else return -1;
              },
              init:function(){

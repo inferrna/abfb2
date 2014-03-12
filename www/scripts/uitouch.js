@@ -42,8 +42,7 @@ define(
           console.log("newtop == "+newtop);//NFP
           console.log("top == "+top);//NFP
           console.log("dtop == "+(stuff.getStyle(el.parentNode, 'top')-top));//NFP
-
-          if(reprefix.test(el.id)){
+          if(el.id==="maintext"){
               if(percent>100 || (dir===-1 && elh===wh)) {sharedc.exec('uitouch', 'next_chapter')(1); newtop=0;}
               else if (newtop>0) {
                       if(dtop<=0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
@@ -54,7 +53,7 @@ define(
                   }
           }
           el.style.top = parseInt(newtop)+"px";
-          if(reprefix.test(el.id)){
+          if(el.id==="maintext"){
               percent = -100*parseFloat(newtop)/elh;
               options.setpercent(percent);
               console.log("saving.."); options.savepp();
@@ -330,7 +329,7 @@ define(
               if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();
-              var el = pop.style.display === 'none' ? document.getElementById(stuff.pprefix+book.currentpage()) : pts;
+              var el = pop.style.display === 'none' ? mtext: pts;//document.getElementById(stuff.pprefix+book.currentpage())
               if(Code===37) liftcol(el, 1);
               else if (Code===39) liftcol(el, -1);
               else if (Code===38) {options.display('hide'); pop.style.display='none';}

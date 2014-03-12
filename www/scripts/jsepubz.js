@@ -129,7 +129,6 @@ function (mimetypes, sharedf, sharedc) {
         }
     }
     function proceedhtmlfst(href, clbk){
-        fsthref = href;
         unzipFiles([href], function(){
                 console.log("proceedhtmlfst clbk:");//NFP
                 console.log(clbk);//NFP

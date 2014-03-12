@@ -26,15 +26,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
     var nosnd = document.getElementById('nosnd');
-    /*sndbt.onclick=function(){sound.play(sndcnt);};
-    sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
-    sndbt.style.width = sndbt.style.height;
-    sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';*/
     var pts = document.getElementById("pts");
     var pop = document.getElementById("pop");
-    var marea = document.getElementById("maintext");
     var helper = document.getElementById("helper");
-    marea.style.top = "0px";
+    mtext.style.top = "0px";
     txarea.style.backgroundSize = '100%';
     if ( window.cordova ) {
         var images = require("images");
@@ -47,8 +42,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         else txarea.style.backgroundImage='url(../images/back.jpg)';
     }
     var drvhds = Math.min(Math.floor(window.innerHeight/3), Math.floor(window.innerWidth/3));
-    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(document.getElementById(stuff.pprefix+book.currentpage()), -1); pop.style.display='none';}});
-    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(document.getElementById(stuff.pprefix+book.currentpage()), 1); pop.style.display='none';}});
+    hammer(txarea).on("dragleft", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hammer(txarea).on("dragright", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
     hammer(txarea).on("dragup", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('hide'); pop.style.display='none';}});
     hammer(txarea).on("dragdown", function(evt){if(evt.gesture.distance>=drvhds){evt.gesture.stopDetect(); options.display('show'); pop.style.display='none';}});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
@@ -71,14 +66,14 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     sharedc.register('uitouch', 'next_chapter', function (i) {
             var sel = document.getElementById("tocselect");
             var diff = parseInt(i);
-            var page = book.foliant().next_page(diff);
-            console.log("Got page "+page);//NFP 
+            book.foliant().next_page(diff);
+            /*console.log("Got page "+page);//NFP 
             if(page!=-1){
                 var el = fill_page(page, 0);
                 var newsel = book.foliant().option(sel.selectedIndex);
                 sel.options[newsel].selected = true;
                 if(diff===-1){
-                    var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
+                    var ptop = parseInt(mtext.parentNode.parentNode.offsetHeight);
                     var top = (-(stuff.getStyle(el, 'height') - 3*ptop/4));
                     top = top>0 ? 0 : top;
                     el.style.top = top+"px";
@@ -87,7 +82,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
                 var el_rectO = el.getBoundingClientRect();
                 options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
                 console.log("saving.."); options.savepp();
-            }
+            }*/
         });
     sharedc.register('dict', 'got_def', function (txt, els) {
         dict.push_cache(txt);
@@ -102,9 +97,11 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             book.init(options.bookfile());
             book.load();
         });
-    sharedc.register('bookng', 'got_fstfile', function(data){
+    sharedc.register('bookng', 'got_fstfile', function(data, prc){
         if(data){
-            fill_page(data, options.getpercent(), false); 
+            if(prc) var percent = prc;
+            else var percent = options.getpercent();
+            fill_page(data, percent, false); 
             var sel = document.getElementById("tocselect");
             var newsel = book.foliant().option(sel.selectedIndex);
             console.log("newsel for opt is "+newsel);//NFP
@@ -133,14 +130,14 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         dtoc.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
-        sel.addEventListener("change", function (event){/*console.log("Select changed");*/ marea.style.top="0px"; 
+        sel.addEventListener("change", function (event){mtext.style.top="0px"; 
                                                 book.foliant().get_fromopt(event.target.selectedIndex);} );
         options.getpp();
     }
     function prc_from_anchor(anchor){
         var ancel = document.getElementById(anchor);
         var antop = parseFloat(stuff.getStyle(ancel, 'top'));
-        var cheight = parseFloat(stuff.getStyle(marea, 'height'));
+        var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
         console.log("anchors prc got from: ");//NFP
         console.log(ancel);//NFP
         console.log(antop);//NFP
@@ -148,23 +145,23 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         return 100.0*antop/cheight;
     }
     function fill_page(data, percent, nosave){
-        //var xmarea = document.getElementById(data[0]);
-        marea.innerHTML = data[0];
-        var fs = parseInt(stuff.getStyle(marea, 'font-size'));
-        var cheight = stuff.getStyle(marea, 'height');//window.getComputedStyle(marea, null);
+        mtext.innerHTML = data[0];
+        var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
+        var cheight = stuff.getStyle(mtext, 'height');//window.getComputedStyle(marea, null);
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
         }
         if(data[1]) percent = prc_from_anchor(data[1]);
-        marea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
+        else if(percent==='end') percent = 100.0*parseFloat(Math.max(cheight-parseInt(window.innerHeight), 0))/parseFloat(cheight);
+        mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }
-        marea.style.width = 'auto';
-        marea.style.height = 'auto';
-        marea.style.display = 'block';
-        return marea;
+        mtext.style.width = 'auto';
+        mtext.style.height = 'auto';
+        mtext.style.display = 'block';
+        return mtext;
     }
     function fill_thumb(text, els){
         if(text.length > 1){
@@ -199,7 +196,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                var ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
+                var ptop = parseInt(txarea.style.height);
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
