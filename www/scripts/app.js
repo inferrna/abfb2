@@ -64,25 +64,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){console.log("saving.."); options.savepp();});}
     sharedc.register('uitouch', 'got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
     sharedc.register('uitouch', 'next_chapter', function (i) {
-            var sel = document.getElementById("tocselect");
             var diff = parseInt(i);
+            mtext.innerHTML='wait..';
+            options.display("show");
             book.foliant().next_page(diff);
-            /*console.log("Got page "+page);//NFP 
-            if(page!=-1){
-                var el = fill_page(page, 0);
-                var newsel = book.foliant().option(sel.selectedIndex);
-                sel.options[newsel].selected = true;
-                if(diff===-1){
-                    var ptop = parseInt(mtext.parentNode.parentNode.offsetHeight);
-                    var top = (-(stuff.getStyle(el, 'height') - 3*ptop/4));
-                    top = top>0 ? 0 : top;
-                    el.style.top = top+"px";
-                    console.log("next top == "+top+" ptop == "+ptop+" elh == "+stuff.getStyle(el, 'height'));//NFP
-                }
-                var el_rectO = el.getBoundingClientRect();
-                options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
-                console.log("saving.."); options.savepp();
-            }*/
         });
     sharedc.register('dict', 'got_def', function (txt, els) {
         dict.push_cache(txt);
@@ -145,7 +130,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         return 100.0*antop/cheight;
     }
     function fill_page(data, percent, nosave){
-        mtext.innerHTML = data[0];
+        if(data[0]) mtext.innerHTML = data[0];
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         var cheight = stuff.getStyle(mtext, 'height');//window.getComputedStyle(marea, null);
         if(!nosave) {
@@ -184,7 +169,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             sndbt.style.display = 'block';
             uitouch.dragpop(-1);
             sndbt.style.display = 'none';
-            //sndbt.disabled=true;
             sound.get_sound(dict.lword(), dict.lang());
         } else {el.style.display = 'none';}
     }
@@ -202,11 +186,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
                 cl.style.top = "0px";
                 if(pos==='top'){
                       el.style.top = 0+"px"; el.style.bottom = '99%';
-                    }// db.style.display='none'; dt.style.display=disp;}
+                    }
                 if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '99%';}// dt.style.display='none'; db.style.display=disp;}
-                    /*dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
-                                        "phost": config['proxy_host'], "pport": config['proxy_port'], "db": config["dict_db"],
-                                        "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});*/
                     dict.get_def(texts);
             } else {el.style.display = disp;}
         }

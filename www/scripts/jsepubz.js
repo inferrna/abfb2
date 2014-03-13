@@ -44,12 +44,6 @@ function (mimetypes, sharedf, sharedc) {
         } else callback(params);
         delete data;
     }
-    function go_all(){
-        console.log("go_all");//NFP
-        container = files["META-INF/container.xml"];
-        mimetype = files["mimetype"];
-        didUncompressAllFiles(notifier);
-    }
 
     function unzipBlob(notifier) {
         zip.createReader(new zip.BlobReader(file), function (_zipReader) {
@@ -173,16 +167,10 @@ function (mimetypes, sharedf, sharedc) {
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         console.log("unzip "+i);//NFP
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                        //reader.close(function () {   });
                         i++;
                     }, function(current, total) {
                     });
             }
-            /*zip.createReader(new zip.BlobReader(file), function (zipReader) {
-                zipReader.getEntries(function (entries) {
-                      getdatas([entriestg, 0, zipReader]);
-                    });
-                }, function(e){console.warn(e);});*/
               var entriestg = gentries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;});
               console.log("entriestg:");//NFP
               console.log(entriestg);
@@ -306,91 +294,6 @@ function (mimetypes, sharedf, sharedc) {
             }
         }
         return "undefined";
-    }
-
-    // Will modify all HTML and CSS files in place.
-    function postProcess() {
-        var mediaType = '';
-        var href = '';
-        var result = '';
-        var keyre = /ncx|toc/i;
-        var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
-        var xml = '';
-        var keys = Object.keys(opf.manifest);
-        console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));//NFP
-        var key;
-        //First loop. All exept binary data and html.
-        for (var _key in keys) {
-            key = keys[_key];
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                //console.log(key+":");
-                //console.log(opf.manifest[key]);//NFP
-                href = opf.manifest[key]["href"];
-                result = undefined;
-                if (mediaType === "text/css") {
-                    result = postProcessCSS(href);
-                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key)) {
-                    console.log("toc href== "+href);//NFP
-                    try {xml = decodeURIComponent(escape(files[href]));}
-                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                    toc = xmlDocument(xml);
-                    sharedc.exec('bookng', 'got_toc')();
-                } else if (mediaType === "application/xhtml+xml") {
-                    //Do nothing
-                } else { 
-                    console.log(href + " media type is " + mediaType);//NFP
-                }
-                if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
-                    files[href] = result;
-                }
-            } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
-        }
-        //2nd loop. css only.
-        for (var _key in keys) {
-            key = keys[_key];
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                href = opf.manifest[key]["href"];
-                result = undefined;
-                if (mediaType === "text/css"){
-                    var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");
-                    var base = href.replace(fnm, "");
-                    var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
-                    var importnames = [].concat(files[href].split(/\n/gi).filter(function(st){return reincl.test(st);}));
-                    if(importnames.length){
-                        var result = files[href];
-                        for(var i=0; i<importnames.length; i++){
-                            var incnm = base+importnames[i].replace(reincl, "$2");
-                            console.log("css)"+href + " includes "+incnm);//NFP
-                            var result = result.replace(importnames[i], files[incnm]);
-                        }
-                        files[href] = result;
-                        console.log("result:");
-                        console.log(result);
-                    }
-                }
-                if (result !== undefined){
-                }
-            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
-        }
-        //3rd loop. html only.
-        for (var _key in keys) {
-            key = keys[_key];
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                href = opf.manifest[key]["href"];
-                console.log("2nd)"+href + " media type is " + mediaType+" file exists: "+(files[href]?true:false));//NFP
-                result = undefined;
-                if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
-                if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
-                    delete files[href];
-                    files[href] = result;
-                }
-            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
-        }
     }
 
     function postProcessCSS(href) {

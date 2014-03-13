@@ -5,6 +5,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
     var pages = [];
     var anchors = [];
     var currentpage = 0;
+    var oldhref = null;
     var epub = null;
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
@@ -123,15 +124,21 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
-                console.log("idx= "+idx+ "; href="+href);//NFP
+                console.log("idx= "+idx+ "; href="+href+" currentpage= "+currentpage);//NFP
                 if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
                 else var anchor = null;
-                epub.get_by_href(href, function(html){
-                        currentpage = index;
-                        //console.log("2. currentpage is "+currentpage);//NFP
-                        if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
-                        else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
-                    });
+                if(oldhref===href){
+                    currentpage = index;
+                    if(percent) sharedc.exec('bookng', 'got_fstfile')([null, anchor], percent);
+                    else        sharedc.exec('bookng', 'got_fstfile')([null, anchor]);
+                } else {
+                    epub.get_by_href(href, function(html){
+                            oldhref=href;
+                            currentpage = index;
+                            if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
+                            else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
+                        });
+                }
             } else return -1;
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
@@ -196,8 +203,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
              },
              get_fromopt:function(idx){
                      var tidx = pages[idx];
-                     if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
-                     return get_indexed_page(currentpage);
+                     if(tidx>-1 && !isNaN(tidx))
+                        return get_indexed_page(idx);
              },
              currentpage:function(){
                      console.log("1. currentpage is "+currentpage);//NFP
@@ -207,10 +214,9 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      var idx = currentpage+diff;
                      console.log("next currentpage is "+idx+" from "+(pages.length-1));//NFP
                      if(idx<pages.length) {
-                         currentpage = idx;
                          if(diff===-1) var prc='end';
                          else prc = 0.0000001; //For examine if percent sended
-                         return get_indexed_page(currentpage, prc);
+                         return get_indexed_page(idx, prc);
                      } else return -1;
              },
              init:function(){
@@ -218,6 +224,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      pages = [];
                      anchors = [];
                      currentpage = 0;
+                     oldhref = null;
              },
              get_href_byidx:function(index){
                 var opf = epub.opf();
