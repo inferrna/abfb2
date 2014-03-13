@@ -114,9 +114,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
                                                 book.foliant().get_fromopt(event.target.selectedIndex);} );
         options.getpp();
     }
-    function prc_from_anchor(anchor){
+    function prc_from_anchor(anchor, prc){
         var ancel = document.getElementById(anchor);
-        if(!ancel) return 0;
+        if(!ancel) return prc;
         var antop = parseFloat(stuff.getStyle(ancel, 'top'));
         var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
         console.log("anchors prc got from: ");//NFP
@@ -132,7 +132,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
         }
-        if(data[1]) percent = prc_from_anchor(data[1]);
+        if(data[1]) percent = prc_from_anchor(data[1], percent);
         else if(percent==='end') percent = 100.0*parseFloat(Math.max(cheight-parseInt(window.innerHeight), 0))/parseFloat(cheight);
         mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {

@@ -362,7 +362,7 @@ function (mimetypes, sharedf, sharedc) {
         }
         console.log("postProcessHTML: links done");//NFP
         try{
-            //sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
+            sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
             console.log("postProcessHTML: clean tags done");//NFP
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
