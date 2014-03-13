@@ -321,7 +321,7 @@ function (mimetypes, sharedf, sharedc) {
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
-        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,128));//NFP
+        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,120));//NFP
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -350,10 +350,11 @@ function (mimetypes, sharedf, sharedc) {
             if (link.getAttribute("type") === "text/css") {
                 var inlineStyle = document.createElement("style");
                 inlineStyle.setAttribute("type", "text/css");
-                inlineStyle.setAttribute("data-orig-href", link.getAttribute("href"));
-
-                var css = files[resolvePath(link.getAttribute("href"), href)];
+              //  inlineStyle.setAttribute("data-orig-href", link.getAttribute("href"));
+                var csshref = resolvePath(link.getAttribute("href"), href);
+                var css = files[csshref];
                 //css = css.replace(/\(\.\.\//g, "(");
+                //console.log("Got "+csshref+": \n"+css);//NFP
                 inlineStyle.appendChild(document.createTextNode(css));
 
                 link.parentNode.replaceChild(inlineStyle, link);
@@ -361,7 +362,7 @@ function (mimetypes, sharedf, sharedc) {
         }
         console.log("postProcessHTML: links done");//NFP
         try{
-            sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
+            //sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
             console.log("postProcessHTML: clean tags done");//NFP
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 

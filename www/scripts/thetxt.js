@@ -19,7 +19,7 @@ function(stuff, sharedc){
         var off = 0;
         var curstrip = strip;
         if(maxlen<strip){
-            text.push(txt)
+            text.push(txt);
         }else {
             while(curstrip < maxlen){
                 while(re.test(txt.charAt(curstrip))===false && curstrip < maxlen-1){curstrip++;}
@@ -35,10 +35,13 @@ function(stuff, sharedc){
         sharedc.exec('book', 'got_book')();
         //console.log(text[0]);
     }
-    function get_indexed_page(index){
+    function get_indexed_page(index, percent){
         if(index>-1){
-            if(text[index]) return [text[index], null];//decodeURIComponent( escape(resultDocument) ));
-            else return [null, null];
+            if(text[index]){
+                currentpage = index;
+                if(percent) sharedc.exec('bookng', 'got_fstfile')([text[index], null], percent);
+                else        sharedc.exec('bookng', 'got_fstfile')([text[index], null]);
+            } else return -1;
         }else{
             var contents = document.createElement("div");;
             var h1 = document.createElement("h1");
@@ -70,25 +73,22 @@ function(stuff, sharedc){
                      return currentpage;
              },
              get_fromopt:function(idx){
-                     currentpage = idx;
-                     return get_indexed_page(currentpage);
+                     return get_indexed_page(idx);
              },
              currentpage:function(){
                      return currentpage;
              },
              next_page:function(diff){
-                     //console.log(currentpage+" next_page "+diff);
-                     var page = currentpage + diff;
-                     if(text.length>page && page>-1) {
-                            currentpage += diff;
-                            return get_indexed_page(currentpage);
-                     }
-                     return -1;
+                    var page = currentpage + diff;
+                    page = page>=text.length ? 0 : page<0 ? text.length-1 : page;
+                    if(diff===-1) var prc='end';
+                    else var prc = 0.0000001; //For examine if percent sended
+                    return get_indexed_page(page, prc);
              },
              init:function(){
                      text = [];
                      name = '';
-                     sharedc.register('app', 'got_href', function(){sharedc.exec('bookng', 'got_fstfile')();});
+                     //sharedc.register('app', 'got_href', function(){sharedc.exec('bookng', 'got_fstfile')();});
              },
              get_href_byidx:function(){}
     }

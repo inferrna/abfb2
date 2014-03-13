@@ -97,11 +97,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
                                                 book.foliant().get_fromopt(i);
-                                                //var href = book.foliant().get_href_byidx(i);
-                                                //console.log("href2get: "+href);//NFP
-                                                //sharedc.exec('app', 'got_href')(href, function(html){fill_page([html, null], 0, false);});
-                                                //var sel = document.getElementById("tocselect");
-                                                //if(sel.options[i]) sel.options[i].selected = true;
                                             });
     
     function fill_toc(html){
@@ -121,6 +116,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     }
     function prc_from_anchor(anchor){
         var ancel = document.getElementById(anchor);
+        if(!ancel) return 0;
         var antop = parseFloat(stuff.getStyle(ancel, 'top'));
         var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
         console.log("anchors prc got from: ");//NFP

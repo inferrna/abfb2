@@ -204,20 +204,18 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
              get_fromopt:function(idx){
                      var tidx = pages[idx];
                      if(tidx>-1 && !isNaN(tidx))
-                        return get_indexed_page(idx);
+                        return get_indexed_page(idx, 0.0000001);
              },
              currentpage:function(){
                      console.log("1. currentpage is "+currentpage);//NFP
                      return currentpage;
              },
              next_page:function(diff){
-                     var idx = currentpage+diff;
-                     console.log("next currentpage is "+idx+" from "+(pages.length-1));//NFP
-                     if(idx<pages.length) {
-                         if(diff===-1) var prc='end';
-                         else prc = 0.0000001; //For examine if percent sended
-                         return get_indexed_page(idx, prc);
-                     } else return -1;
+                    var page = currentpage + diff;
+                    page = page>=pages.length ? 0 : page<0 ? pages.length-1 : page;
+                    if(diff===-1) var prc='end';
+                    else var prc = 0.0000001; //For examine if percent sended
+                    return get_indexed_page(page, prc);
              },
              init:function(){
                      epub = null;
