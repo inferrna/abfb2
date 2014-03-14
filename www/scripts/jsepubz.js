@@ -79,7 +79,7 @@ function (mimetypes, sharedf, sharedc) {
         var keyre = /^(ncx|toc)$/i;
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         for(var key in opf.manifest){
-            try {
+           // try {
                 var mediaType = opf.manifest[key]["media-type"];
                 var href = opf.manifest[key]["href"];
                 var result = undefined;
@@ -96,7 +96,7 @@ function (mimetypes, sharedf, sharedc) {
                     console.log(href + " media type is " + mediaType + " addedd ok");//NFP
                     files[href] = result;
                 }
-            } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
+           // } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
         }
         var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
         var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");
@@ -127,6 +127,7 @@ function (mimetypes, sharedf, sharedc) {
                 console.log("proceedhtmlfst clbk:");//NFP
                 console.log(clbk);//NFP
                 clbk(postProcessHTML(href));
+                delete files[href];
             });
     }
 
@@ -316,8 +317,21 @@ function (mimetypes, sharedf, sharedc) {
         });
         return file;
     }
+    function extract_title(href){
+        var xml = null;
+        try{ xml = decodeURIComponent(escape(files[href]));}
+        catch(e){xml = files[href];}
+        var doc = xmlDocument(xml);
+        if(!doc) return null;
+        var title = doc.getElementsByTagName("header")[0] || doc.getElementsByTagName("title")[0] || doc.getElementsByTagName("h1")[0];
+        if(!title) return null;
+        console.log("Got title:");//NFP
+        console.log(title);//NFP
+        return title.textContent;
+    }
     function postProcessHTML(href) {
         var xml = null;
+        if(sharedf.reb.test(href)) return "<img src="+getDataUri(href)+">";
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
@@ -376,15 +390,17 @@ function (mimetypes, sharedf, sharedc) {
     }
 
    function getDataUri(url, href) {
-        var dataHref = resolvePath(url, href);
+        if(href) var dataHref = resolvePath(url, href);
+        else var dataHref = url;
         var mediaType = mimetypes.getMimeType(dataHref);
         var result = '';
+        console.log("dataHref == "+dataHref);//NFP
         if(b64blobs[dataHref]) {
             result = b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
-            delete b64blobs[dataHref];
+            //delete b64blobs[dataHref];
         } else { 
             result = "data:" + mediaType + "," + escape(files[dataHref]);
-            delete files[dataHref];
+            //delete files[dataHref];
         }
         return result;
     }
@@ -440,6 +456,16 @@ function (mimetypes, sharedf, sharedc) {
         },
         get_by_href:function(href, clbk){
             proceedhtmlfst(href, clbk);
+        },
+        restore_titles:function(badtitles, clbk){
+            var hrefs = [];
+            for(key in badtitles) hrefs.push(badtitles[key]);
+            console.log("Got bad hrefs:");//NFP
+            console.log(hrefs);//NFP
+            unzipFiles(hrefs, function(){
+                    clbk(hrefs.map(function(href){return extract_title(href);}));
+                    hrefs.map(function(href){delete files[href];});
+                });
         },
         toc:function(){return toc},
         opf:function(){return opf},
