@@ -73,7 +73,7 @@ function(stuff, sharedc){
                      return currentpage;
              },
              get_fromopt:function(idx){
-                     return get_indexed_page(idx);
+                     return get_indexed_page(idx, 0.0000001);
              },
              currentpage:function(){
                      return currentpage;
