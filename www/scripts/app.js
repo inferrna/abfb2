@@ -19,22 +19,13 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
     txarea.style.width = window.innerWidth+"px";
     fl_text.style.width =  "auto";
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight-64)+'px; max-width:'+parseInt(window.innerWidth-64)+'px; overflow:hidden}';
-    document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
     var nosnd = document.getElementById('nosnd');
-    /*sndbt.onclick=function(){sound.play(sndcnt);};
-    sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
-    sndbt.style.width = sndbt.style.height;
-    sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';*/
     var pts = document.getElementById("pts");
     var pop = document.getElementById("pop");
-    var marea = document.getElementById("maintext");
     var helper = document.getElementById("helper");
-    marea.style.top = "0px";
+    mtext.style.top = "0px";
     txarea.style.backgroundSize = '100%';
     if ( window.cordova ) {
         var images = require("images");
@@ -69,23 +60,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     catch (e) { chrome.app.window.current().onClosed.addListener(function(){console.log("saving.."); options.savepp();});}
     sharedc.register('uitouch', 'got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
     sharedc.register('uitouch', 'next_chapter', function (i) {
-            var sel = document.getElementById("tocselect");
             var diff = parseInt(i);
-            var page = book.foliant().next_page(diff); 
-            if(page!=-1){
-                fill_page(page, 0);
-                var newsel = book.foliant().option(sel.selectedIndex);
-                sel.options[newsel].selected = true;
-                if(diff===-1){
-                    var ptop = parseInt(marea.parentNode.parentNode.offsetHeight);
-                    var top = (-(parseInt(stuff.getStyle(marea, 'height')) - 3*ptop/4));
-                    top = top>0 ? 0 : top;
-                    marea.style.top = parseInt(top)+"px";
-                }
-                var el_rectO = marea.getBoundingClientRect();
-                options.setpercent(-100*parseInt(el_rectO.top)/el_rectO.height);
-                console.log("saving.."); options.savepp();
-            }
+            //mtext.innerHTML='wait..';
+            options.display("show");
+            book.foliant().next_page(diff);
         });
     sharedc.register('dict', 'got_def', function (txt, els) {
         dict.push_cache(txt);
@@ -100,25 +78,21 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             book.init(options.bookfile());
             book.load();
         });
-    sharedc.register('bookng', 'got_fstfile', function(){
-        var html = null;
-        var i = options.getpage();
-        if(book.foliant()) html = book.foliant().get_page(i);
-        console.log("got html:");//NFP
-        console.log("NL");//NFP
-        if(html){
-            fill_page(html, options.getpercent()); 
+    sharedc.register('bookng', 'got_fstfile', function(data, prc){
+        if(data){
+            if(prc) var percent = prc;
+            else var percent = options.getpercent();
+            fill_page(data, percent, false); 
             var sel = document.getElementById("tocselect");
             var newsel = book.foliant().option(sel.selectedIndex);
+            console.log("newsel for opt is "+newsel);//NFP
             if(sel.options[newsel]) sel.options[newsel].selected = true;
             options.display("hide");
         }
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
-                                                var href = book.foliant().get_href_byidx(i);
-                                                console.log("href2get: "+href);//NFP
-                                                sharedc.exec('app', 'got_href')(href);
+                                                book.foliant().get_fromopt(i);
                                             });
     
     function fill_toc(html){
@@ -132,35 +106,43 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         dtoc.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
-        sel.addEventListener("change", function (event){/*console.log("Select changed");*/ marea.style.top="0px"; 
-                                                fill_page(book.foliant().get_fromopt(event.target.selectedIndex), 0);} );
+        sel.addEventListener("change", function (event){mtext.style.top="0px"; 
+                                                book.foliant().get_fromopt(event.target.selectedIndex);} );
         options.getpp();
     }
-    function prc_from_anchor(anchor){
+    function prc_from_anchor(anchor, prc){
         var ancel = document.getElementById(anchor);
+        if(!ancel) return prc;
         var antop = parseFloat(stuff.getStyle(ancel, 'top'));
-        var cheight = parseFloat(stuff.getStyle(marea, 'height'));
+        var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
         console.log("anchors prc got from: ");//NFP
         console.log(ancel);//NFP
         console.log(antop);//NFP
         console.log(cheight);//NFP
         return 100.0*antop/cheight;
     }
-    function fill_page(html, percent, nosave){
-        marea.style.width = 'auto';
-        marea.style.height = 'auto';
-        marea.innerHTML = html[0];
-        var fs = parseInt(stuff.getStyle(marea, 'font-size'));
-        var cheight = parseInt(stuff.getStyle(marea, 'height'));//window.getComputedStyle(marea, null);
+    function fill_page(data, percent, nosave){
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight-64)+'px; max-width:'+parseInt(window.innerWidth-64)+'px; overflow:hidden}';
+        document.getElementsByTagName('head')[0].appendChild(style);
+        if(data[0]) mtext.innerHTML = data[0];
+        var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
+        var cheight = stuff.getStyle(mtext, 'height');//window.getComputedStyle(marea, null);
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
         }
-        if(html[1]) percent = prc_from_anchor(html[1]);
-        marea.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
+        if(data[1]) percent = prc_from_anchor(data[1], percent);
+        else if(percent==='end') percent = 100.0*parseFloat(Math.max(cheight-parseInt(window.innerHeight), 0))/parseFloat(cheight);
+        mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }
+        mtext.style.width = 'auto';
+        mtext.style.height = 'auto';
+        mtext.style.display = 'block';
+        return mtext;
     }
     function fill_thumb(text, els){
         if(text.length > 1){
@@ -183,7 +165,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             sndbt.style.display = 'block';
             uitouch.dragpop(-1);
             sndbt.style.display = 'none';
-            //sndbt.disabled=true;
             sound.get_sound(dict.lword(), dict.lang());
         } else {el.style.display = 'none';}
     }
@@ -195,17 +176,14 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                var ptop = parseInt(txarea.style.height);//marea.parentNode.parentNode.offsetHeight;
+                var ptop = parseInt(txarea.style.height);
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
                 if(pos==='top'){
                       el.style.top = 0+"px"; el.style.bottom = '99%';
-                    }// db.style.display='none'; dt.style.display=disp;}
+                    }
                 if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '99%';}// dt.style.display='none'; db.style.display=disp;}
-                    /*dict.init_params({"text": "value", "dictionary": config["dict_src"], "host": config["socket_host"], "port": parseInt(config["socket_port"]),
-                                        "phost": config['proxy_host'], "pport": config['proxy_port'], "db": config["dict_db"],
-                                        "sl": config["lang_f"], "hl": config["lang_t"], "tl": config["lang_t"]});*/
                     dict.get_def(texts);
             } else {el.style.display = disp;}
         }

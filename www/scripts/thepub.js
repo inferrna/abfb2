@@ -1,8 +1,11 @@
 define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf', 'sharedc'],
 function(jsepub, stuff, encod, options, sharedf, sharedc){
+    var marea = document.getElementById("maintext");
+    var pageids = [];
     var pages = [];
-    var anchors = [];
+    var anchors = {};
     var currentpage = 0;
+    var oldhref = null;
     var epub = null;
     var srlzr = new XMLSerializer();
     var parsr = new DOMParser();
@@ -22,7 +25,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             }
         return result;
     }
-    function js_toc(toc, files){
+    function js_toc(toc, hrefs){
         //var doc = new DOMParser().parseFromString(xml, "text/xml");
        var div = document.createElement("div");
        var sel = document.createElement("select");
@@ -31,35 +34,93 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
        console.log("toc:");
        console.log(toc);
        var points = toc.getElementsByTagName("navPoint");
+       var names = {};
+       var name = '';
+       var idx = '';
+       var re1 = /(.+?)#(.*)/gi;
+       var locanchors = {};
        for(i=0; i<points.length; i++){
            var lbl = points[i].getElementsByTagName("navLabel")[0];
            var cont = points[i].getElementsByTagName("content")[0];
-           console.log("points["+i+"].id=="+points[i].id+" lbl.text=="+lbl.textContent.replace(/\s+/mg, ' ')+" cont.src=="+cont.attributes['src'].value);//NFP
-           var opt = document.createElement("option");
-           opt.style.textIndent = "32px";
-           var order = points[i].attributes['playOrder'] ? points[i].attributes['playOrder'].value : i; 
-           opt.setAttribute("id", order);
-           opt.setAttribute('url', cont.attributes['src'].value);
-           opt.textContent = lbl.textContent.replace(/\s+/mg, ' ');
-           sel.appendChild(opt);
+           var href = cont.attributes['src'].value;
+           idx = href.replace(sharedf.relf, "$2").replace(re1, "$1");
+           name = lbl.textContent.replace(/\s+/mg, ' ');
+           console.log("lbl.textContent == "+lbl.textContent+"; href == "+href+"; idx=="+idx);//NFP
+           names[idx] = name;
+           if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
+           else anchor = null;
+           if(anchor){
+               if(!locanchors[idx]) locanchors[idx] = [];
+               locanchors[idx].push([anchor, name]);
+           }
        }
        var recl = /toc-.+/i;
        var points = toc.getElementsByTagName("li");
-       var keys = Object.keys(files).map(function(key){return key.replace(/(.*)?\/(.+)/i, "$2");});
-       console.log("files keys:");//NFP
-       console.log(keys);
        for(i=0; i<points.length; i++){
            var a = points[i].getElementsByTagName("a")[0];
-           if(a){
-               var opt = document.createElement("option");
-               opt.style.textIndent = "32px";
-               opt.setAttribute("id", ""+i);
-               opt.setAttribute('url', a.getAttribute("href"));
-               opt.textContent = a.textContent.replace(/\s+/mg, ' ');
-               sel.appendChild(opt);
+           var href = a.getAttribute("href");
+           idx = href.replace(sharedf.relf, "$2").replace(re1, "$1");
+           console.log("a.textContent == "+a.textContent+"; href == "+href+"; idx=="+idx);//NFP
+           if(a) name = a.textContent.replace(/\s+/mg, ' ');
+           names[idx] = name;
+           if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
+           else anchor = null;
+           if(anchor){
+               if(!locanchors[idx]) locanchors[idx] = [];
+               locanchors[idx].push([anchor, name]);
            }
        }
+       console.log("js_toc locanchors:");//NFP
+       console.log(locanchors);//NFP
+       var cnm = '';
+       var j = 2;
+       var k = 0;
+       var badtitles = {};
+       for(i=0; i<hrefs.length; i++){
+           var opt = document.createElement("option");
+           opt.style.textIndent = "32px";
+           opt.setAttribute("id", k);
+           opt.setAttribute('url', hrefs[i]);
+           idx = hrefs[i].replace(sharedf.relf, "$2").replace(re1, "$1");
+           opt.textContent = names[idx] || cnm+" - "+j;
+           if(names[idx]){cnm = names[idx]; j = 2;}
+           else {badtitles[i] = hrefs[i]; j++;}
+           sel.appendChild(opt);
+           if(locanchors[idx]){
+               console.log("js_toc locanchors for "+idx+":");//NFP
+               console.log(locanchors[idx]);//NFP
+               for(var c=0; c<locanchors[idx].length; c++){
+                   k++;
+                   var opt = document.createElement("option");
+                   opt.style.textIndent = "32px";
+                   opt.setAttribute("id", k);
+                   opt.setAttribute('url', hrefs[i]);
+                   anchors[k] = locanchors[idx][c][0];
+                   opt.textContent = locanchors[idx][c][1] || names[idx]+" - "+(c+2) || cnm+" - "+j;
+                   j++;
+                   sel.appendChild(opt);
+               }
+           }
+           k++;
+       }
        div.appendChild(sel);
+       epub.restore_titles(badtitles, function(titles){
+                console.log("Got titles:");//NFP
+                console.log(titles);//NFP
+                var sel = document.getElementById("tocselect");
+                if(sel) var options = sel.getElementsByTagName("option");
+                else return;
+                if(!options) return;
+                if(!options.length) return;
+                var i = 0;
+                console.log("Got options:");//NFP
+                console.log(options);//NFP
+                for(key in badtitles){
+                    var j = parseInt(key);
+                    if(titles[i] && options[j]) options[j].textContent = titles[i];
+                    i++;
+                }
+           });
        return div;
     }
     //var evo = document.createElement("br");
@@ -106,11 +167,11 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         console.warn(url+" not found");
         return id;
     }
-    function get_indexed_page(index){
+    function get_indexed_page(index, percent){
         var opf = epub.opf();
         var toc = epub.toc();
         var files = epub.files();
-        console.log("calling index "+index+"; opf:");//NFP
+        console.log("calling index "+index+"; percent: "+percent+"; opf:");//NFP
         console.log(opf);//NFP
         if(index>-1){
             console.log("files:");//NFP
@@ -121,30 +182,38 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
-                console.log("idx= "+idx+ "; href="+href);//NFP
-                var doc = files[href];
+                console.log("idx= "+idx+ "; href="+href+" currentpage= "+currentpage);//NFP
                 if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
                 else var anchor = null;
-                var html = srlzr.serializeToString(doc);
-                return [html, anchor];
-            } else { return null; }
+                if(oldhref===href){
+                    currentpage = index;
+                    if(percent) sharedc.exec('bookng', 'got_fstfile')([null, anchor], percent);
+                    else        sharedc.exec('bookng', 'got_fstfile')([null, anchor]);
+                } else {
+                    epub.get_by_href(href, function(html){
+                            oldhref=href;
+                            currentpage = index;
+                            if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
+                            else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
+                        });
+                }
+            } else return -1;
         }else{
             var doc = document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
-            var contents = transxsl(toc, xsl, doc);//xsltp.transformToDocument(toc,doc);
-            if(!contents || !contents.getElementsByTagName || contents.id!=="tocselect") contents = js_toc(toc, files);
-            var opts = contents.getElementsByTagName("option");
             var hrefs   = [];
             var urls = [];
             var re1 = /(.+?)#(.*)/gi;
+            var contents = js_toc(toc, opf.spine.map(function(sp){ return opf.manifest[sp]['href'];}));
             var hrefs = opf.spine.map(function(sp){ var fnm = opf.manifest[sp]['href'].replace(re1, "$1");
                                                     return fnm.replace(sharedf.relf, "$2");});
+            var opts = contents.getElementsByTagName("option");
             console.log("hrefs:");//NFP
             console.log(hrefs);//NFP
-            anchors = []; urls = [];
+            urls = []; pages = [];
             for(var i = 0; i < opts.length; i++) {
                 var url = opts[i].getAttribute('url');
                 urls.push(url.replace(sharedf.relf, "$2").replace(re1, "$1"));
-                anchors.push(url.replace(sharedf.relf, "$2").replace(re1, "$2").replace(urls[i], null));
+                //anchors.push(url.replace(sharedf.relf, "$2").replace(re1, "$2").replace(urls[i], null));
                 var idx = hrefs.indexOf(urls[i]);
                 if(idx>-1) pages.push(idx);
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
@@ -175,44 +244,52 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      if(lib==='jsepub') load_jsepub(file);
              },
              get_page:function(index){
-                     currentpage = index;
                      return get_indexed_page(index);
+             },
+             render_all_pages:function(){
+                 jsepub.init()
+                 for(i=0; i<pages.length; i++){
+                     //get_indexed_page(i);
+                     //files = null;
+                 }
              },
              option:function(i){
                      //if(i==0) return currentpage;
-                     if(pages[currentpage]>-1 && !isNaN(pages[currentpage])) return currentpage;
+                     if(currentpage<pages.length) return currentpage;
                      return i;
              },
              get_fromopt:function(idx){
                      var tidx = pages[idx];
-                     if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
-                     return get_indexed_page(currentpage);
+                     if(tidx>-1 && !isNaN(tidx))
+                        return get_indexed_page(idx, 0.0000001);
              },
              currentpage:function(){
+                     console.log("1. currentpage is "+currentpage);//NFP
                      return currentpage;
              },
              next_page:function(diff){
-                     var page = pages.indexOf(pages[currentpage] + diff);
-                     if(page>-1) {
-                            currentpage = page;
-                            return get_indexed_page(currentpage);
-                     }
-                     return -1;
+                    var page = currentpage + diff;
+                    page = page>=pages.length ? 0 : page<0 ? pages.length-1 : page;
+                    if(diff===-1) var prc='end';
+                    else var prc = 0.0000001; //For examine if percent sended
+                    return get_indexed_page(page, prc);
              },
              init:function(){
                      epub = null;
                      pages = [];
                      anchors = [];
                      currentpage = 0;
+                     oldhref = null;
              },
              get_href_byidx:function(index){
                 var opf = epub.opf();
                 console.log("calling href by index "+index+"; opf:");//NFP
                 console.log(opf);//NFP
-                if(opf && index>-1){
-                    var idx = pages[index];
+                if(opf){
+                    var idx = index>-1 ? pages[index] : 0;
                     console.log("idx= "+idx+ "; pages="+pages);//NFP
                     if(idx >= opf.spine.length) idx = 0;
+                    else currentpage = index;
                     var spine = opf.spine[idx];
                     return opf.manifest[spine]["href"];
                 }

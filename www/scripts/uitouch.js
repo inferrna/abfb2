@@ -1,6 +1,6 @@
 define(
-    ['options', 'stuff', 'sharedc'],
-  function(options, stuff, sharedc){
+    ['options', 'stuff', 'sharedc', 'book'],
+  function(options, stuff, sharedc, book){
    //   "use strict";
       var dictflag = 0;
       var liftflag = 0;
@@ -19,6 +19,7 @@ define(
       targimg.style.display = 'none';
       targimg.src = stuff.targetimg;
       targimg.style.position = "absolute";
+      var reprefix = new RegExp(stuff.pprefix+"\\d+?");
       var scale = 1.0;
       var ispinch = 0;
       pop.style.display = 'none';
@@ -37,20 +38,26 @@ define(
           var newtop = top + dir*(ptop-fs);
           var oldpercent = -100*parseInt(top)/elh;
           var percent = -100*parseFloat(newtop)/elh;
+          var dtop = stuff.getStyle(el.parentNode, 'top')-top;
+          console.log("newtop == "+newtop);//NFP
+          console.log("top == "+top);//NFP
+          console.log("dtop == "+(stuff.getStyle(el.parentNode, 'top')-top));//NFP
           if(el.id==="maintext"){
               if(percent>100 || (dir===-1 && elh===wh)) {sharedc.exec('uitouch', 'next_chapter')(1); newtop=0;}
               else if (newtop>0) {
-                  if(top===0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
-                  else {newtop = 0;}
-              } else {
-                  options.setpercent(percent);
-                  console.log("saving.."); options.savepp();
-              }
-          } else {
-              if(newtop<pageend) newtop = pageend+ptop/2;
-              if (newtop>0) newtop = 0;
+                      if(dtop<=0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
+                      else newtop = 0;
+                  } else {
+                      if(newtop<pageend) newtop = pageend+ptop/2;
+                      if (newtop>0) newtop = 0;
+                  }
           }
           el.style.top = parseInt(newtop)+"px";
+          if(el.id==="maintext"){
+              percent = -100*parseFloat(newtop)/elh;
+              options.setpercent(percent);
+              console.log("saving.."); options.savepp();
+          }
       }
       function movesbot(touches, el){
           "use strict";
@@ -322,7 +329,7 @@ define(
               if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();
-              var el = pop.style.display === 'none' ? mtext : pts;
+              var el = pop.style.display === 'none' ? mtext: pts;//document.getElementById(stuff.pprefix+book.currentpage())
               if(Code===37) liftcol(el, 1);
               else if (Code===39) liftcol(el, -1);
               else if (Code===38) {options.display('hide'); pop.style.display='none';}

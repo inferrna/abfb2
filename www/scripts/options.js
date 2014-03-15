@@ -352,6 +352,7 @@ define(
         set_opt(prckey, currentpp['percent']);
         set_opt(pnmkey, currentpp['page']);
         set_opt(timekey, Date.now());
+        console.log("Saving percent: "+currentpp['percent']+", page: "+currentpp['page']);//NFP
     }
     function getpp(){
         currentpp = {'page':0, 'percent':0};

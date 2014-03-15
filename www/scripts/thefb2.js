@@ -73,20 +73,6 @@ function(stuff, sharedf, sharedc){
             console.log("fb2 pages is "+pages);//NFP
         });
     }
-    function clean_tags(doc, tag){
-            var tags = doc.getElementsByTagName(tag);
-            for (var i = 0, il = tags.length; i < il; i++) {
-                var fragment = document.createDocumentFragment();
-                var ltag = tags[i];
-                if(ltag){
-                    while(ltag.firstChild) {
-                        fragment.appendChild(ltag.firstChild);
-                    }
-                    ltag.parentNode.replaceChild(fragment, ltag);
-                }
-            }
-            if(doc.getElementsByTagName(tag).length>0) clean_tags(doc, tag);
-    }
     function clean_invalid(doc){
         var invalids = Array.prototype.slice.call(doc.childNodes)
                        .filter(function(node){
@@ -94,16 +80,18 @@ function(stuff, sharedf, sharedc){
                                     catch (e) { console.warn(e); return false;}
                                });
     }
-    function get_indexed_page(index){
+    function get_indexed_page(index, percent){
         if(index>-1){
             var idx = pages[index];
             var ch = divs[idx];//document.getElementById(pages[index]);
-            try { 
+            try {
                 var html = srlzr.serializeToString(ch);
+                currentpage = index;
             } catch (e) { console.warn(ch);
                 clean_invalid(ch);
                 return null;}
-            return [html, null];
+            if(percent) sharedc.exec('bookng', 'got_fstfile')([html, null], percent);
+            else        sharedc.exec('bookng', 'got_fstfile')([html, null]);
         }else{
             var result = document.createElement('div');//document.createDocumentFragment();;//document.createElement('div');
             var toc = fb2.getElementsByTagName('select')[0].cloneNode(true);
@@ -129,7 +117,6 @@ function(stuff, sharedf, sharedc){
                      load_fb2(file);
              },
              get_page:function(index){
-                     currentpage = index;//();
                      return get_indexed_page(index);
              },
              option:function(i){
@@ -146,25 +133,17 @@ function(stuff, sharedf, sharedc){
                      return currentpage;
              },
              next_page:function(diff){
-                     var page = pages.indexOf(pages[currentpage] + diff);
-                     if(page>-1) {
-                            currentpage = page;
-                            return get_indexed_page(currentpage);
-                     }
-                     return -1;
-                     /*var page = currentpage + diff;
-                     if(pages.length>page && page>-1) {
-                            currentpage += diff;
-                            return get_indexed_page(currentpage);
-                     }
-                     return -1;*/
+                    var page = currentpage + diff;
+                    page = page>=pages.length ? 0 : page<0 ? pages.length-1 : page;
+                    if(diff===-1) var prc='end';
+                    else var prc = 0.0000001; //For examine if percent sended
+                    return get_indexed_page(page, prc);
              },
              init:function(){
                     fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
                     pages = [];
                     divs = [];
                     currentpage = 0;
-                    sharedc.register('app', 'got_href', function(){sharedc.exec('bookng', 'got_fstfile')();});
              },
              get_href_byidx:function(){}
     }

@@ -8,8 +8,8 @@ function (mimetypes, sharedf, sharedc) {
     var b64blobs = {};
     var notifier = null;
     var fsthref = null;
-    var opfPath, container, mimetype, opf, toc=null;
     var logger = function(text){console.log(text);};
+    var srlzr = new XMLSerializer();
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
         if(files[index]) console.warn("dublicated index "+index);
@@ -42,12 +42,6 @@ function (mimetypes, sharedf, sharedc) {
             extract_data(data, name, files, callback, params, 'text');
         } else callback(params);
         delete data;
-    }
-    function go_all(){
-        console.log("go_all");//NFP
-        container = files["META-INF/container.xml"];
-        mimetype = files["mimetype"];
-        didUncompressAllFiles(notifier);
     }
 
     function unzipBlob(notifier) {
@@ -83,8 +77,9 @@ function (mimetypes, sharedf, sharedc) {
     function proceedcss(){
         var keyre = /^(ncx|toc)$/i;
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
+        var tocs = [];
         for(var key in opf.manifest){
-            try {
+           // try {
                 var mediaType = opf.manifest[key]["media-type"];
                 var href = opf.manifest[key]["href"];
                 var result = undefined;
@@ -94,15 +89,22 @@ function (mimetypes, sharedf, sharedc) {
                     console.log("toc href=="+href);//NFP
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                    toc = xmlDocument(xml);
-                    sharedc.exec('bookng', 'got_toc')();
+                    tocs.push(xmlDocument(xml));
                 }
                 if (result !== undefined) {
                     console.log(href + " media type is " + mediaType + " addedd ok");//NFP
                     files[href] = result;
                 }
-            } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
+           // } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
         }
+        if(tocs.length===1) toc=tocs[0];
+        else
+            for(var i=0; i<tocs.length; i++){
+                if(/html/i.test(tocs[i].firstChild.tagName)) toc=tocs[i];
+            }
+        if(!toc) toc=tocs[0];
+        delete tocs;
+        sharedc.exec('bookng', 'got_toc')();
         var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
         var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");
         //2nd loop. css only.
@@ -127,28 +129,12 @@ function (mimetypes, sharedf, sharedc) {
             } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
         }
     }
-    function proceedhtmlfst(href){
-        fsthref = href;
-        unzipFiles([href], proceedhtmloth);
-    }
-    function proceedhtmloth(){
-        files[fsthref] = postProcessHTML(fsthref);
-        console.log("inner files:");//NFP
-        console.log(files);//NFP
-        sharedc.exec('bookng', 'got_fstfile')();
-        var htmls2ext = [];
-        for (var key in opf.manifest) {
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                href = opf.manifest[key]["href"];
-                if (href!==fsthref && mediaType === "application/xhtml+xml") htmls2ext.push(href); //After processing css
-            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
-        }
-        unzipFiles(htmls2ext, function(){
-                for(var i=0; i<htmls2ext.length; i++){
-                    var href = htmls2ext[i]
-                    files[href] = postProcessHTML(href);
-                }
+    function proceedhtmlfst(href, clbk){
+        unzipFiles([href], function(){
+                console.log("proceedhtmlfst clbk:");//NFP
+                console.log(clbk);//NFP
+                clbk(postProcessHTML(href));
+                delete files[href];
             });
     }
 
@@ -189,16 +175,10 @@ function (mimetypes, sharedf, sharedc) {
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         console.log("unzip "+i);//NFP
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
-                        //reader.close(function () {   });
                         i++;
                     }, function(current, total) {
                     });
             }
-            /*zip.createReader(new zip.BlobReader(file), function (zipReader) {
-                zipReader.getEntries(function (entries) {
-                      getdatas([entriestg, 0, zipReader]);
-                    });
-                }, function(e){console.warn(e);});*/
               var entriestg = gentries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;});
               console.log("entriestg:");//NFP
               console.log(entriestg);
@@ -324,95 +304,9 @@ function (mimetypes, sharedf, sharedc) {
         return "undefined";
     }
 
-    // Will modify all HTML and CSS files in place.
-    function postProcess() {
-        var mediaType = '';
-        var href = '';
-        var result = '';
-        var keyre = /ncx|toc/i;
-        var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
-        var xml = '';
-        var keys = Object.keys(opf.manifest);
-        console.log("postProcess opf.manifest:\n"+JSON.stringify(keys));//NFP
-        var key;
-        //First loop. All exept binary data and html.
-        for (var _key in keys) {
-            key = keys[_key];
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                //console.log(key+":");
-                //console.log(opf.manifest[key]);//NFP
-                href = opf.manifest[key]["href"];
-                result = undefined;
-                if (mediaType === "text/css") {
-                    result = postProcessCSS(href);
-                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key)) {
-                    console.log("toc href== "+href);//NFP
-                    try {xml = decodeURIComponent(escape(files[href]));}
-                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                    toc = xmlDocument(xml);
-                    sharedc.exec('bookng', 'got_toc')();
-                } else if (mediaType === "application/xhtml+xml") {
-                    //Do nothing
-                } else { 
-                    console.log(href + " media type is " + mediaType);//NFP
-                }
-                if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
-                    files[href] = result;
-                }
-            } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
-        }
-        //2nd loop. css only.
-        for (var _key in keys) {
-            key = keys[_key];
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                href = opf.manifest[key]["href"];
-                result = undefined;
-                if (mediaType === "text/css"){
-                    var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");
-                    var base = href.replace(fnm, "");
-                    var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
-                    var importnames = [].concat(files[href].split(/\n/gi).filter(function(st){return reincl.test(st);}));
-                    if(importnames.length){
-                        var result = files[href];
-                        for(var i=0; i<importnames.length; i++){
-                            var incnm = base+importnames[i].replace(reincl, "$2");
-                            console.log("css)"+href + " includes "+incnm);//NFP
-                            var result = result.replace(importnames[i], files[incnm]);
-                        }
-                        files[href] = result;
-                        console.log("result:");
-                        console.log(result);
-                    }
-                }
-                if (result !== undefined){
-                }
-            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
-        }
-        //3rd loop. html only.
-        for (var _key in keys) {
-            key = keys[_key];
-            try {
-                mediaType = opf.manifest[key]["media-type"];
-                href = opf.manifest[key]["href"];
-                console.log("2nd)"+href + " media type is " + mediaType+" file exists: "+(files[href]?true:false));//NFP
-                result = undefined;
-                if (mediaType === "application/xhtml+xml") result = postProcessHTML(href); //After processing css
-                if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
-                    delete files[href];
-                    files[href] = result;
-                }
-            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
-        }
-    }
-
     function postProcessCSS(href) {
         var file = files[href];
         var self = this;
-        //var isformat = /url.*?format.+?/gi;
         file = file.replace(/url\((.*?)\)/gi, function (str, url) {
             var format = '';
             if (/^data/i.test(url)) {
@@ -429,12 +323,25 @@ function (mimetypes, sharedf, sharedc) {
         });
         return file;
     }
-    function postProcessHTML(href) {
+    function extract_title(href){
         var xml = null;
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
-        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,128));//NFP
+        if(!doc) return null;
+        var title = doc.getElementsByTagName("header")[0] || doc.getElementsByTagName("title")[0] || doc.getElementsByTagName("h1")[0];
+        if(!title) return null;
+        console.log("Got title:");//NFP
+        console.log(title);//NFP
+        return title.textContent;
+    }
+    function postProcessHTML(href) {
+        var xml = null;
+        if(sharedf.reb.test(href)) return "<img src="+getDataUri(href)+">";
+        try{ xml = decodeURIComponent(escape(files[href]));}
+        catch(e){xml = files[href];}
+        var doc = xmlDocument(xml);
+        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,120));//NFP
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -455,7 +362,6 @@ function (mimetypes, sharedf, sharedc) {
             image.setAttribute("src", getDataUri(src, href))
         }
         console.log("postProcessHTML: images done - 2");//NFP
-        //var head = doc.getElementsByTagName("head")[0];
         var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
             var link = links[i];
@@ -463,10 +369,9 @@ function (mimetypes, sharedf, sharedc) {
             if (link.getAttribute("type") === "text/css") {
                 var inlineStyle = document.createElement("style");
                 inlineStyle.setAttribute("type", "text/css");
-                inlineStyle.setAttribute("data-orig-href", link.getAttribute("href"));
-
-                var css = files[resolvePath(link.getAttribute("href"), href)];
-                //css = css.replace(/\(\.\.\//g, "(");
+              //  inlineStyle.setAttribute("data-orig-href", link.getAttribute("href"));
+                var csshref = resolvePath(link.getAttribute("href"), href);
+                var css = files[csshref];
                 inlineStyle.appendChild(document.createTextNode(css));
 
                 link.parentNode.replaceChild(inlineStyle, link);
@@ -481,22 +386,23 @@ function (mimetypes, sharedf, sharedc) {
             var div = document.createElement('div');
             while(doc.firstChild) div.appendChild(doc.firstChild);
             sharedf.clean_tags(div, ["html"]);
-            //delete doc;
-            return div;
-        } catch(e) { return doc; } 
-        return doc;
+            var res = div;
+        } catch(e) { var res = doc; }
+        delete doc;
+        delete files[href];
+        return srlzr.serializeToString(res);
     }
 
    function getDataUri(url, href) {
-        var dataHref = resolvePath(url, href);
+        if(href) var dataHref = resolvePath(url, href);
+        else var dataHref = url;
         var mediaType = mimetypes.getMimeType(dataHref);
         var result = '';
+        console.log("dataHref == "+dataHref);//NFP
         if(b64blobs[dataHref]) {
             result = b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
-            delete b64blobs[dataHref];
         } else { 
             result = "data:" + mediaType + "," + escape(files[dataHref]);
-            delete files[dataHref];
         }
         return result;
     }
@@ -543,12 +449,27 @@ function (mimetypes, sharedf, sharedc) {
             var b64blobs = {};
             var notifier = null;
             var fsthref = null;
+            var toc = null;
+            var opfPath, container, mimetype, opf, toc=null;
         },
         processInSteps: function(_file, _notifier, _logger){
             file = _file;
             logger = _logger;
             notifier = _notifier;
             unzipBlob(notifier);
+        },
+        get_by_href:function(href, clbk){
+            proceedhtmlfst(href, clbk);
+        },
+        restore_titles:function(badtitles, clbk){
+            var hrefs = [];
+            for(key in badtitles) hrefs.push(badtitles[key]);
+            console.log("Got bad hrefs:");//NFP
+            console.log(hrefs);//NFP
+            unzipFiles(hrefs, function(){
+                    clbk(hrefs.map(function(href){return extract_title(href);}));
+                    hrefs.map(function(href){delete files[href];});
+                });
         },
         toc:function(){return toc},
         opf:function(){return opf},
