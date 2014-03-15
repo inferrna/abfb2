@@ -127,7 +127,7 @@ function(stuff, sharedf, sharedc){
                      var tidx = pages[idx];
                      console.log("idx=="+idx+" tidx=="+tidx+" pages=="+pages);//NFP
                      if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
-                     return get_indexed_page(currentpage);
+                     return get_indexed_page(currentpage, 0.0000001);
              },
              currentpage:function(){
                      return currentpage;
