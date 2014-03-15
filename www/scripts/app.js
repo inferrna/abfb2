@@ -19,10 +19,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
     txarea.style.width = window.innerWidth+"px";
     fl_text.style.width =  "auto";
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight-64)+'px; max-width:'+parseInt(window.innerWidth-64)+'px; overflow:hidden}';
-    document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
     var nosnd = document.getElementById('nosnd');
@@ -65,7 +61,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     sharedc.register('uitouch', 'got_selection', function (texts) { thumb_block(uitouch.max_Y(), texts, 'block'); });
     sharedc.register('uitouch', 'next_chapter', function (i) {
             var diff = parseInt(i);
-            mtext.innerHTML='wait..';
+            //mtext.innerHTML='wait..';
             options.display("show");
             book.foliant().next_page(diff);
         });
@@ -126,6 +122,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         return 100.0*antop/cheight;
     }
     function fill_page(data, percent, nosave){
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight-64)+'px; max-width:'+parseInt(window.innerWidth-64)+'px; overflow:hidden}';
+        document.getElementsByTagName('head')[0].appendChild(style);
         if(data[0]) mtext.innerHTML = data[0];
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         var cheight = stuff.getStyle(mtext, 'height');//window.getComputedStyle(marea, null);

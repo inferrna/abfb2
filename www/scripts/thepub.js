@@ -47,7 +47,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
            name = lbl.textContent.replace(/\s+/mg, ' ');
            console.log("lbl.textContent == "+lbl.textContent+"; href == "+href+"; idx=="+idx);//NFP
            names[idx] = name;
-           var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2").replace(href, null);
+           if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
+           else anchor = null;
            if(anchor){
                if(!locanchors[idx]) locanchors[idx] = [];
                locanchors[idx].push([anchor, name]);
@@ -62,7 +63,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
            console.log("a.textContent == "+a.textContent+"; href == "+href+"; idx=="+idx);//NFP
            if(a) name = a.textContent.replace(/\s+/mg, ' ');
            names[idx] = name;
-           var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2").replace(href, null);
+           if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
+           else anchor = null;
            if(anchor){
                if(!locanchors[idx]) locanchors[idx] = [];
                locanchors[idx].push([anchor, name]);

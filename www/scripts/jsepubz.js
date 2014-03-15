@@ -8,7 +8,6 @@ function (mimetypes, sharedf, sharedc) {
     var b64blobs = {};
     var notifier = null;
     var fsthref = null;
-    var opfPath, container, mimetype, opf, toc=null;
     var logger = function(text){console.log(text);};
     var srlzr = new XMLSerializer();
     function extract_data(blob, index, array, callback, params, mtype){
@@ -78,6 +77,7 @@ function (mimetypes, sharedf, sharedc) {
     function proceedcss(){
         var keyre = /^(ncx|toc)$/i;
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
+        var tocs = [];
         for(var key in opf.manifest){
            // try {
                 var mediaType = opf.manifest[key]["media-type"];
@@ -89,8 +89,7 @@ function (mimetypes, sharedf, sharedc) {
                     console.log("toc href=="+href);//NFP
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                    toc = xmlDocument(xml);
-                    sharedc.exec('bookng', 'got_toc')();
+                    tocs.push(xmlDocument(xml));
                 }
                 if (result !== undefined) {
                     console.log(href + " media type is " + mediaType + " addedd ok");//NFP
@@ -98,6 +97,14 @@ function (mimetypes, sharedf, sharedc) {
                 }
            // } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
         }
+        if(tocs.length===1) toc=tocs[0];
+        else
+            for(var i=0; i<tocs.length; i++){
+                if(/html/i.test(tocs[i].firstChild.tagName)) toc=tocs[i];
+            }
+        if(!toc) toc=tocs[0];
+        delete tocs;
+        sharedc.exec('bookng', 'got_toc')();
         var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
         var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");
         //2nd loop. css only.
@@ -300,7 +307,6 @@ function (mimetypes, sharedf, sharedc) {
     function postProcessCSS(href) {
         var file = files[href];
         var self = this;
-        //var isformat = /url.*?format.+?/gi;
         file = file.replace(/url\((.*?)\)/gi, function (str, url) {
             var format = '';
             if (/^data/i.test(url)) {
@@ -356,7 +362,6 @@ function (mimetypes, sharedf, sharedc) {
             image.setAttribute("src", getDataUri(src, href))
         }
         console.log("postProcessHTML: images done - 2");//NFP
-        //var head = doc.getElementsByTagName("head")[0];
         var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
             var link = links[i];
@@ -367,8 +372,6 @@ function (mimetypes, sharedf, sharedc) {
               //  inlineStyle.setAttribute("data-orig-href", link.getAttribute("href"));
                 var csshref = resolvePath(link.getAttribute("href"), href);
                 var css = files[csshref];
-                //css = css.replace(/\(\.\.\//g, "(");
-                //console.log("Got "+csshref+": \n"+css);//NFP
                 inlineStyle.appendChild(document.createTextNode(css));
 
                 link.parentNode.replaceChild(inlineStyle, link);
@@ -383,9 +386,10 @@ function (mimetypes, sharedf, sharedc) {
             var div = document.createElement('div');
             while(doc.firstChild) div.appendChild(doc.firstChild);
             sharedf.clean_tags(div, ["html"]);
-            //delete doc;
             var res = div;
-        } catch(e) { var res = doc; } 
+        } catch(e) { var res = doc; }
+        delete doc;
+        delete files[href];
         return srlzr.serializeToString(res);
     }
 
@@ -397,10 +401,8 @@ function (mimetypes, sharedf, sharedc) {
         console.log("dataHref == "+dataHref);//NFP
         if(b64blobs[dataHref]) {
             result = b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
-            //delete b64blobs[dataHref];
         } else { 
             result = "data:" + mediaType + "," + escape(files[dataHref]);
-            //delete files[dataHref];
         }
         return result;
     }
@@ -447,6 +449,8 @@ function (mimetypes, sharedf, sharedc) {
             var b64blobs = {};
             var notifier = null;
             var fsthref = null;
+            var toc = null;
+            var opfPath, container, mimetype, opf, toc=null;
         },
         processInSteps: function(_file, _notifier, _logger){
             file = _file;
