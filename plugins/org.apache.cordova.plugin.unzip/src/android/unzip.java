@@ -1,25 +1,26 @@
 package org.apache.cordova.plugin;
+import java.lang.System;
 
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
-//import org.apache.cordova.CordovaWebView;
-import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.BufferedInputStream;
-//import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.System;
 import android.util.Base64;
 import android.util.Log;
 
@@ -54,6 +55,11 @@ public class unzip extends CordovaPlugin {
             //android.util.Log.i("CordovaLog unzipSync", "Data is:\n\""+datas+"\"");
 
             ByteArrayInputStream is = new ByteArrayInputStream(args.getArrayBuffer(0));
+            JSONArray jfilelst = args.getJSONArray(1);
+            List<String> filelist = new ArrayList<String>();
+            for (int i=0; i<jfilelst.length(); i++) {
+                    filelist.add( jfilelst.getString(i) );
+            }
             // The inputstream is now pointing at the start of the actual zip file content.
             ZipInputStream zis = new ZipInputStream(is);//new BufferedInputStream(is));
 
@@ -67,9 +73,13 @@ public class unzip extends CordovaPlugin {
             //BufferedReader br = new BufferedReader(zis);
             while ((ze = zis.getNextEntry()) != null) 
             {
+                String compressedName = ze.getName();
+                if(!filelist.contains(compressedName)){
+                    zis.closeEntry();
+                    continue;
+                }
                 bo = new ByteArrayOutputStream();
                 i++;
-                String compressedName = ze.getName();
                 int sz = (int) ze.getSize();
                 outb = new byte[sz];
                 int count = 0;

@@ -10,16 +10,13 @@ define(
     opts_brd.textContent = '';
     var toc = document.createElement("div");
     var dtoc = document.createElement("div");
-    //var pincher = document.getElementById('pincher').cloneNode(true);
-    //pincher.style.order = "100";
     disable_prop(dtoc);
     toc.id = "toc";
     toc.style.width = "95%";
     dtoc.appendChild(toc);
     opts_brd_b.appendChild(dtoc);
     opts_brd_b.appendChild(lbl);
-    //opts_brd_b.appendChild(pincher);
-    var storage = null;// || 
+    var storage = null; 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
     try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available");}
@@ -87,15 +84,9 @@ define(
         catch(e) { datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('google'),1); callbacks[0](callbacks); }
     }
     function hassocket(callbacks){
-        //var cs = 0, ms = 0;
         callbacks.splice(0,1);
-        //try{ cs = chrome.socket } catch(e) { console.warn(e.stack);}
-        //try{ ms = navigator.mozTCPSocket} catch(e) { console.warn(e.stack);}
-        
         if(socket.check()===null){
             datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('socket'),1);
-            //delete datas['socket_host'];
-            //delete datas['socket_port'];
         } else {
             datas['dict_src'][0].splice(datas['dict_src'][0].indexOf('socket proxy'),1);
         }
@@ -106,7 +97,6 @@ define(
         _el.addEventListener("touchend", function(e){e.stopPropagation();}, true);
         _el.addEventListener("touchmove", function(e){e.stopPropagation();}, true);
     }
-    //var winstyle = element.currentStyle || window.getComputedStyle(element, null);
     function create_select(obj, name, elements, key, disp){
         var sel = document.createElement("select");
         var nm  = document.createElement("option");
@@ -118,12 +108,9 @@ define(
         sel.appendChild(nm);
         sel.id = key;
         sel.style.width = "80%";
-        //<device storage
         if(key==="dict_db"){
             sharedc.register('dict', 'got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
-            //dict.get_dbs();
         }else if(key==="dsfile"){
-            //if (navigator.getDeviceStorage) {
                 sel.addEventListener("change", 
                                 function (event){
                                     var fnm = event.target.options[event.target.selectedIndex].value;
@@ -143,7 +130,6 @@ define(
                                     values[evt.target.id] = value;
                                     dict.init_params({"db": values["dict_db"], "dictionary": values["dict_src"]});
                                     }, false);
-        //device storage>
         for(var eln in elements){
             var el = document.createElement("option");
             el.textContent = elements[eln];
@@ -194,7 +180,6 @@ define(
                     }
                 },null);
         }
-        //obj.appendChild(br);
         sp.appendChild(sel);
         disable_prop(inp);
         sp.appendChild(inp);
@@ -203,11 +188,9 @@ define(
     }
     function display(mode){
         if(mode==='show')
-            //opts_brd.parentNode.display='block';
             if(opts_brd_b.style.display==='none') opts_brd_b.style.display='block';
             else{opts_brd.parentNode.style.display='block';}
         if(mode==='hide')
-            //opts_brd.parentNode.display='none';
             if(opts_brd.parentNode.style.display!='none') opts_brd.parentNode.style.display='none';
             else opts_brd_b.style.display='none';
     }
@@ -244,21 +227,21 @@ define(
     function get_cr(keys, callback, evt){
         crstorage.get(keys, function(result){
                 for(var key in result){
-                    callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
+                    callback( key, result[key] );
                 }
-                if(evt) sharedc.exec('options', evt)();//evo.dispatchEvent(evt);
+                if(evt) sharedc.exec('options', evt)();
             });
     }
     function get_ls(keys, callback, evt){
         for(var key in keys){
-            callback( keys[key], storage.getItem(keys[key]) );//currentpp[ps[key]] = makepos(storage.getItem(key));
+            callback( keys[key], storage.getItem(keys[key]) );
         }
-        if(evt) sharedc.exec('options', evt)();//evo.dispatchEvent(evt);//got_pp_ev);
+        if(evt) sharedc.exec('options', evt)();
     }
     function get_opt(keys, callback, evt){
         if(hasStorage) get_ls(keys, callback, evt);
         else if(crstorage) get_cr(keys, callback, evt);
-        else if(evt) sharedc.exec('options', evt)();//evo.dispatchEvent(evt);
+        else if(evt) sharedc.exec('options', evt)();
     }
     function set_opt(key, p){
         if(hasStorage) set_ls(key, p);
@@ -366,17 +349,15 @@ define(
     }
 
     check_params([hasgoogle, hassocket, fill_params]);
-        //sp.className = "spflex";
-
     return{
             display:function(mode){
                 display(mode);
             },
             config:function(){
-                return values;//get_config();
+                return values;
             },
             bookfile:function(){
-                return file;//document.getElementById('file').files[0];
+                return file;
             },
             remove_opt:function(key){
                 remove_key(filename+"_"+key);
@@ -401,12 +382,10 @@ define(
             },
             getpp:function(){
                 getpp();
-                //callback( key, result[key] );//currentpp[ps[key]] = makepos(result[key]);
             },
             setpercent:function(percent){
                 if(isNaN(percent)) currentpp['percent'] = 0;
                 else currentpp['percent'] = percent;
-                //this.savepp();
                 lbl.textContent = parseInt(percent)+"% of current chapter";
             },
             msg:function(text){
@@ -419,7 +398,6 @@ define(
             setpage:function(page){
                 if(isNaN(page)) currentpp['page'] = 0;
                 else currentpp['page'] = page;
-                //this.savepp();
             },
             getpage:function(){
                 return currentpp['page'];

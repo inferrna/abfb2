@@ -62,7 +62,6 @@ function (mimetypes, sharedf, sharedc) {
     function proceedopf(){
         readOpf(files[opfPath]);
         var staff2ext = [];
-        //sharedf.reb.test(name);
         var keyre = /^(ncx|toc)$/i;
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         for(var key in opf.manifest){
@@ -79,7 +78,6 @@ function (mimetypes, sharedf, sharedc) {
         var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
         var tocs = [];
         for(var key in opf.manifest){
-           // try {
                 var mediaType = opf.manifest[key]["media-type"];
                 var href = opf.manifest[key]["href"];
                 var result = undefined;
@@ -95,7 +93,6 @@ function (mimetypes, sharedf, sharedc) {
                     console.log(href + " media type is " + mediaType + " addedd ok");//NFP
                     files[href] = result;
                 }
-           // } catch(e) { console.log("key is: "+key+"\nerror was:\n"+(e)); }
         }
         if(tocs.length===1) toc=tocs[0];
         else
@@ -158,7 +155,7 @@ function (mimetypes, sharedf, sharedc) {
             var reader = new FileReader();
             reader.onload = function(evt){
                     var zblob = window.btoa(evt.target.result);
-                    crunzip([zblob], function(itm){if(!(itm.name==="END" && itm.data==="END")){
+                    crunzip([zblob, filelist], function(itm){if(!(itm.name==="END" && itm.data==="END")){
                                                        fill_crdo(itm.data, itm.name);
                                                     } else {extcallback();}}); 
                 };
