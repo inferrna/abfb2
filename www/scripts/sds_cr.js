@@ -1,9 +1,10 @@
 define(
   ['require', 'sharedf'],
-  function(require, sharedf1){
+  function(require, sharedf){
     var options = null;
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
+    var named_entries = {};
     function parse_storage_cr(sel, obj){
         "use strict";
         document.addEventListener("deviceready", onDeviceReady, false);
@@ -21,9 +22,12 @@ define(
                         for (i=0; i<entries.length; i++) {
                             if(filere.test(entries[i].name) && entries[i].isFile){
                                 var nm  = document.createElement("option");
-                                nm.textContent = entries[i].fullPath;
+                                var fnm = entries[i].fullPath;//toURL();// 
+                                nm.textContent = fnm;
+                                named_entries[fnm] = entries[i];
                                 count++;
-                                options.msg("File found: " + entries[i].name);
+                                options.msg("File found: " + entries[i].name+" url is: "+entries[i].toURL());
+                                console.log("File found: " + entries[i].name+" url is: "+entries[i].toURL());//NFP
                                 sel.appendChild(nm);
                             }
                         }
@@ -62,12 +66,18 @@ define(
                  parse_storage_cr(sel, obj);
              },
              get:function(_fnm, callback){
-                 var fnm = _fnm.replace("file://", "");
-                 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, null);
-                 function gotFS(fileSystem){fileSystem.root.getFile(fnm, null, gotFileEntry, null);}
-                 function gotFileEntry(fileEntry){fileEntry.file(gotFile, null);}
+                 var fnm = _fnm;//.replace("cdvfile://", "/");
+                 console.log(fnm+" requested");//NFP
+                 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileEntry(named_entries[fnm]), fail);
+                 /*window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+                 function gotFS(fileSystem){
+                        console.log("fileSystem.root.fullPath:");//NFP
+                        console.log(fileSystem.root.fullPath);//NFP
+                        fileSystem.root.getFile(fnm, null, gotFileEntry, fail);
+                     }*/
+                 function gotFileEntry(fileEntry){fileEntry.file(gotFile, fail);}
                  function gotFile(file){callback(file);}
-                 function fail(error) { console.log("Unable to get the file: " + fnm + "got error: \n    "+JSON.stringify(error)); };
+                 function fail(error) { console.log("Unable to get the file: " + fnm + "\ngot error:\n"+JSON.stringify(error)); };
              }
     }
   }

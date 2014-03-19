@@ -1,6 +1,7 @@
 define(
   [],
   function(){
+      console.log("Starts sharedf");//NFP
     function clean_tag(doc, tags, tag){
             var tags = doc.getElementsByTagName(tag);
             for (var i = 0, il = tags.length; i < il; i++) {

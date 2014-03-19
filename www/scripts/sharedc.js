@@ -3,7 +3,7 @@ define(
   function(){
         if(!callbacks) {
             var callbacks = {};
-            console.log("init sharedf. must be only one");//NFP
+            console.log("init sharedc. must be only one");//NFP
         }
         return {
             register:function(module, funcname, func){
