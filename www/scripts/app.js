@@ -89,7 +89,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
-                                                book.foliant().get_fromopt(i);
+                                                var p = options.getpercent();
+                                                book.foliant().get_fromopt(i, p);
                                             });
     
     function fill_toc(html){
