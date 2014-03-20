@@ -72,8 +72,8 @@ function(stuff, sharedc){
              option:function(i){
                      return currentpage;
              },
-             get_fromopt:function(idx){
-                     return get_indexed_page(idx, 0.0000001);
+             get_fromopt:function(idx, prc){
+                     return get_indexed_page(idx, prc);
              },
              currentpage:function(){
                      return currentpage;

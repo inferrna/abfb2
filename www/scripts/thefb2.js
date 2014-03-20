@@ -123,11 +123,11 @@ function(stuff, sharedf, sharedc){
                      if(pages[currentpage]>-1 && !isNaN(pages[currentpage])) return currentpage;
                      return i;
              },
-             get_fromopt:function(idx){
+             get_fromopt:function(idx, prc){
                      var tidx = pages[idx];
                      console.log("idx=="+idx+" tidx=="+tidx+" pages=="+pages);//NFP
                      if(tidx>-1 && !isNaN(tidx)) currentpage = idx;
-                     return get_indexed_page(currentpage, 0.0000001);
+                     return get_indexed_page(currentpage, prc);
              },
              currentpage:function(){
                      return currentpage;

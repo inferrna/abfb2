@@ -92,7 +92,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
-                                                book.foliant().get_fromopt(i);
+                                                var prc = options.getpercent();
+                                                book.foliant().get_fromopt(i, prc);
                                             });
     
     function fill_toc(html){
@@ -107,7 +108,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
         sel.addEventListener("change", function (event){mtext.style.top="0px"; 
-                                                book.foliant().get_fromopt(event.target.selectedIndex);} );
+                                                book.foliant().get_fromopt(event.target.selectedIndex, 0.0000000000001);} );
         options.getpp();
     }
     function prc_from_anchor(anchor, prc){

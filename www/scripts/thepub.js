@@ -258,10 +258,10 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      if(currentpage<pages.length) return currentpage;
                      return i;
              },
-             get_fromopt:function(idx){
+             get_fromopt:function(idx, prc){
                      var tidx = pages[idx];
                      if(tidx>-1 && !isNaN(tidx))
-                        return get_indexed_page(idx, 0.0000001);
+                        return get_indexed_page(idx, prc);
              },
              currentpage:function(){
                      console.log("1. currentpage is "+currentpage);//NFP
