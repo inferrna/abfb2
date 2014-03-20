@@ -105,7 +105,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
         sel.addEventListener("change", function (event){mtext.style.top="0px"; 
-                                                book.foliant().get_fromopt(event.target.selectedIndex);} );
+                                                book.foliant().get_fromopt(event.target.selectedIndex, 0.00000000000000001);} );
         options.getpp();
     }
     function prc_from_anchor(anchor, prc){
