@@ -39,7 +39,7 @@
     position: fixed;
     /*left: -100%;*/
     outline: medium none;
-    z-index: 1050;
+    z-index: 128;
     padding:1px;
   }
   .flex {

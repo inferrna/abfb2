@@ -43,7 +43,7 @@ define(
                     var respj = JSON.parse(resptext);
                     if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
                     if( Object.keys(respj).indexOf("dict">-1) )      try{ resp += "<br>"+respj["dict"][0]["terms"].join(", ");}
-                    catch(e) {console.warn(e.stack);}
+                    catch(e) {console.warn("Got error:\n"+e.stack);}
                     if(seealso.length>0){
                         resp+="<br><b>Also look at:</b>";
                         callback(resp, seealso);
