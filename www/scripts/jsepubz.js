@@ -13,16 +13,13 @@ function (mimetypes, sharedf, sharedc) {
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
         if(files[index]) console.warn("dublicated index "+index);
-        console.log("Extracting "+index);//NFP
         if(reader.addEventListener){
             reader.addEventListener("loadend", function() {
-                   console.log("Extracted "+index);//NFP
                    array[index]=reader.result;
                    callback(params);
                 });
         } else {
             reader.onload = function(e){
-                    console.log("Extracted "+index);//NFP
                     array[index]=reader.result;
                     callback(params);
                 }
@@ -33,7 +30,6 @@ function (mimetypes, sharedf, sharedc) {
     }
     function fill_files(data, name, callback, params){
         params[1]++; //i++
-        console.log("Got: "+name+" binary ? "+sharedf.reb.test(name)+"; text ? "+sharedf.ret.test(name));//NFP
         if (sharedf.reb.test(name)){
             logger("extracting blob: " +name+"...");
             extract_data(data, name, b64blobs, callback, params, 'blob');
@@ -84,13 +80,11 @@ function (mimetypes, sharedf, sharedc) {
                 if (mediaType === "text/css") {
                     result = postProcessCSS(href);
                 } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key)) {
-                    console.log("toc href=="+href);//NFP
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     tocs.push(xmlDocument(xml));
                 }
                 if (result !== undefined) {
-                    console.log(href + " media type is " + mediaType + " addedd ok");//NFP
                     files[href] = result;
                 }
         }
@@ -117,7 +111,6 @@ function (mimetypes, sharedf, sharedc) {
                         var result = files[href];
                         for(var i=0; i<importnames.length; i++){
                             var incnm = base+importnames[i].replace(reincl, "$2");
-                            console.log("css)"+href + " includes "+incnm);//NFP
                             var result = result.replace(importnames[i], files[incnm]);
                         }
                         files[href] = result;
@@ -128,8 +121,6 @@ function (mimetypes, sharedf, sharedc) {
     }
     function proceedhtmlfst(href, clbk){
         unzipFiles([href], function(){
-                console.log("proceedhtmlfst clbk:");//NFP
-                console.log(clbk);//NFP
                 clbk(postProcessHTML(href));
                 delete files[href];
             });
@@ -149,7 +140,6 @@ function (mimetypes, sharedf, sharedc) {
             var exec = cordova.require('cordova/exec');
             crunzip = function(arr, callback) {
                 exec(callback, function(err) {
-                    console.log("Got error: '"+err+"' while exec unzip");//NFP
                 }, "unzip", "unzip", arr);
             };
             var reader = new FileReader();
@@ -164,20 +154,17 @@ function (mimetypes, sharedf, sharedc) {
             var filenames = [];
             var datas = [];
             function getdatas(params){
-                console.log("entries.length=="+params[0].length);//NFP
                 if(params[1]>=params[0].length){ extcallback(); return; }
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
                 console.log("getdatas "+entries[i].filename);
                 entries[i].getData(new zip.BlobWriter(), function (data) {
-                        console.log("unzip "+i);//NFP
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
                         i++;
                     }, function(current, total) {
                     });
             }
               var entriestg = gentries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;});
-              console.log("entriestg:");//NFP
               console.log(entriestg);
               getdatas([entriestg, 0, zipreader]);
         }
@@ -187,7 +174,6 @@ function (mimetypes, sharedf, sharedc) {
    function didUncompressAllFiles(notifier) {
             notifier(3);
             opfPath = getOpfPathFromContainer();
-            console.log("opfPath=="+opfPath);//NFP
             readOpf(files[opfPath]);
 
             notifier(4);
@@ -218,13 +204,7 @@ function (mimetypes, sharedf, sharedc) {
             spine: []
         };
         var metadatas = doc.getElementsByTagName("metadata")[0];
-        console.log("readOpf doc:");//NFP
-        console.log(doc);//NFP
-        console.log("readOpf metadatas:");//NFP
-        console.log(metadatas);//NFP
         var metadataNodes = metadatas.childNodes;
-        console.log("readOpf metadatas.childNodes:");//NFP
-        console.log(metadatas.childNodes);//NFP
 
         for (var i = 0, il = metadataNodes.length; i < il; i++) {
             var node = metadataNodes[i];
@@ -328,8 +308,6 @@ function (mimetypes, sharedf, sharedc) {
         if(!doc) return null;
         var title = doc.getElementsByTagName("header")[0] || doc.getElementsByTagName("title")[0] || doc.getElementsByTagName("h1")[0];
         if(!title) return null;
-        console.log("Got title:");//NFP
-        console.log(title);//NFP
         return title.textContent;
     }
     function postProcessHTML(href) {
@@ -338,7 +316,6 @@ function (mimetypes, sharedf, sharedc) {
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
-        console.log("postProcessHTML "+href+"\n doc=="+doc+"\n xml=="+xml.slice(0,120));//NFP
         var images = doc.getElementsByTagName("img");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -346,7 +323,6 @@ function (mimetypes, sharedf, sharedc) {
             if (/^data/.test(src)) { continue }
             image.setAttribute("src", getDataUri(src, href));
         }
-        console.log("postProcessHTML: images done - 1");//NFP
         images = doc.getElementsByTagName("image");
         for (var i = 0, il = images.length; i < il; i++) {
             var image = images[i];
@@ -358,7 +334,6 @@ function (mimetypes, sharedf, sharedc) {
             image.removeAttribute("height");
             image.setAttribute("src", getDataUri(src, href))
         }
-        console.log("postProcessHTML: images done - 2");//NFP
         var links = doc.getElementsByTagName("link");
         for (var i = 0, il = links.length; i < il; i++) {
             var link = links[i];
@@ -374,10 +349,8 @@ function (mimetypes, sharedf, sharedc) {
                 link.parentNode.replaceChild(inlineStyle, link);
             }
         }
-        console.log("postProcessHTML: links done");//NFP
         try{
             sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
-            console.log("postProcessHTML: clean tags done");//NFP
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
             var div = document.createElement('div');
@@ -395,7 +368,6 @@ function (mimetypes, sharedf, sharedc) {
         else var dataHref = url;
         var mediaType = mimetypes.getMimeType(dataHref);
         var result = '';
-        console.log("dataHref == "+dataHref);//NFP
         if(b64blobs[dataHref]) {
             result = b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
         } else { 
@@ -461,8 +433,6 @@ function (mimetypes, sharedf, sharedc) {
         restore_titles:function(badtitles, clbk){
             var hrefs = [];
             for(key in badtitles) hrefs.push(badtitles[key]);
-            console.log("Got bad hrefs:");//NFP
-            console.log(hrefs);//NFP
             unzipFiles(hrefs, function(){
                     clbk(hrefs.map(function(href){return extract_title(href);}));
                     hrefs.map(function(href){delete files[href];});

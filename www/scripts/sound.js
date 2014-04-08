@@ -9,7 +9,6 @@ define(
         function canplay(){
              if(audios[1]) audios[1].load();
              sndcnt.textContent = 1+"/"+urls.length;
-             console.log("snd.readyState=="+snd.readyState);//NFP
              sndbt.style.display = 'block';
         }
         function add_audios(cnt){

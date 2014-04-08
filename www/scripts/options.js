@@ -171,7 +171,6 @@ define(
                                                "phost": values['proxy_host'], "pport": values['proxy_port']});
                               dict.get_dbs(values["dict_src"]);}, false);
             get_opt(params, function(key, value){
-                    console.log(key+"=got="+value);//NFP 
                     if(value){ 
                         inp.value = value;
                         try { var evt = new Event('change');}
@@ -294,7 +293,6 @@ define(
             var keys = [];
             keys.push(key);
             crstorage.remove(keys, function(){
-                    console.log(key+" removed");//NFP
                 }) 
         }
     }
@@ -335,7 +333,6 @@ define(
         set_opt(prckey, currentpp['percent']);
         set_opt(pnmkey, currentpp['page']);
         set_opt(timekey, Date.now());
-        console.log("Saving percent: "+currentpp['percent']+", page: "+currentpp['page']);//NFP
     }
     function getpp(){
         currentpp = {'page':0, 'percent':0};

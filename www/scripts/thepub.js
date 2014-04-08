@@ -21,7 +21,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         if(window.XSLTProcessor)
             try {result = xsltp.transformToDocument(xml, doc);}
             catch(e){
-                console.log(e.stack);//NFP
             }
         return result;
     }
@@ -45,7 +44,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
            var href = cont.attributes['src'].value;
            idx = href.replace(sharedf.relf, "$2").replace(re1, "$1");
            name = lbl.textContent.replace(/\s+/mg, ' ');
-           console.log("lbl.textContent == "+lbl.textContent+"; href == "+href+"; idx=="+idx);//NFP
            names[idx] = name;
            if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
            else anchor = null;
@@ -60,7 +58,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
            var a = points[i].getElementsByTagName("a")[0];
            var href = a.getAttribute("href");
            idx = href.replace(sharedf.relf, "$2").replace(re1, "$1");
-           console.log("a.textContent == "+a.textContent+"; href == "+href+"; idx=="+idx);//NFP
            if(a) name = a.textContent.replace(/\s+/mg, ' ');
            names[idx] = name;
            if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
@@ -70,8 +67,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                locanchors[idx].push([anchor, name]);
            }
        }
-       console.log("js_toc locanchors:");//NFP
-       console.log(locanchors);//NFP
        var cnm = '';
        var j = 2;
        var k = 0;
@@ -87,8 +82,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
            else {badtitles[i] = hrefs[i]; j++;}
            sel.appendChild(opt);
            if(locanchors[idx]){
-               console.log("js_toc locanchors for "+idx+":");//NFP
-               console.log(locanchors[idx]);//NFP
                for(var c=0; c<locanchors[idx].length; c++){
                    k++;
                    var opt = document.createElement("option");
@@ -105,16 +98,12 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
        }
        div.appendChild(sel);
        epub.restore_titles(badtitles, function(titles){
-                console.log("Got titles:");//NFP
-                console.log(titles);//NFP
                 var sel = document.getElementById("tocselect");
                 if(sel) var options = sel.getElementsByTagName("option");
                 else return;
                 if(!options) return;
                 if(!options.length) return;
                 var i = 0;
-                console.log("Got options:");//NFP
-                console.log(options);//NFP
                 for(key in badtitles){
                     var j = parseInt(key);
                     if(titles[i] && options[j]) options[j].textContent = titles[i];
@@ -128,7 +117,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
     function load_jsepub(file){
         var Reader = new FileReader();
         Reader.onload = function(evt) {
-            console.log("Load input file");//NFP
             proceedepub(evt.target.result, file);
         };
         Reader.readAsBinaryString(file);
@@ -150,7 +138,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     msg = "Post processing";
                 } else if (step === 5) {
                     msg = "Finishing";
-                    console.log(msg);//NFP
                     sharedc.exec('book', 'got_book')();
                 }
                 // Render the "msg" here.
@@ -171,18 +158,12 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         var opf = epub.opf();
         var toc = epub.toc();
         var files = epub.files();
-        console.log("calling index "+index+"; percent: "+percent+"; opf:");//NFP
-        console.log(opf);//NFP
         if(index>-1){
-            console.log("files:");//NFP
-            console.log(files);//NFP
             if(opf && toc && files){
                 var idx = pages[index];
-                console.log("idx= "+idx+ "; anchor="+anchors[index]);//NFP
                 if(idx >= opf.spine.length) idx = 0;
                 var spine = opf.spine[idx];
                 var href = opf.manifest[spine]["href"];
-                console.log("idx= "+idx+ "; href="+href+" currentpage= "+currentpage);//NFP
                 if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
                 else var anchor = null;
                 if(oldhref===href){
@@ -207,8 +188,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             var hrefs = opf.spine.map(function(sp){ var fnm = opf.manifest[sp]['href'].replace(re1, "$1");
                                                     return fnm.replace(sharedf.relf, "$2");});
             var opts = contents.getElementsByTagName("option");
-            console.log("hrefs:");//NFP
-            console.log(hrefs);//NFP
             urls = []; pages = [];
             for(var i = 0; i < opts.length; i++) {
                 var url = opts[i].getAttribute('url');
@@ -219,10 +198,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
                 else pages.push(0);
             }
-            console.log("urls:");//NFP
-            console.log(urls);//NFP
-            console.log("anchors:");//NFP
-            console.log(anchors);//NFP
 
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];
@@ -264,7 +239,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                         return get_indexed_page(idx, prc);
              },
              currentpage:function(){
-                     console.log("1. currentpage is "+currentpage);//NFP
                      return currentpage;
              },
              next_page:function(diff){
@@ -283,11 +257,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
              },
              get_href_byidx:function(index){
                 var opf = epub.opf();
-                console.log("calling href by index "+index+"; opf:");//NFP
-                console.log(opf);//NFP
                 if(opf){
                     var idx = index>-1 ? pages[index] : 0;
-                    console.log("idx= "+idx+ "; pages="+pages);//NFP
                     if(idx >= opf.spine.length) idx = 0;
                     else currentpage = index;
                     var spine = opf.spine[idx];

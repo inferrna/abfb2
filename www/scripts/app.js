@@ -1,6 +1,5 @@
 require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedc', 'require', 'images', 'hammer'],
 function(uitouch, dict, options, book, stuff, sound, sharedc, require){
-    console.log("app.js loads");//NFP
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -92,9 +91,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     hammer(pop).on("dragdown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
-    console.log("VER 1");//NFP
-    hammer(helper).on("doubletap", function(evt){helper.style.display="none";});
-    helper.addEventListener("dblclick", function(e){helper.style.display="none";}, false);
+    hammer(helper).on("tap", function(evt){helper.style.display="none";});
+    helper.addEventListener("click", function(e){helper.style.display="none";}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
@@ -128,15 +126,19 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             fill_page(data, percent, false); 
             var sel = document.getElementById("tocselect");
             var newsel = book.foliant().option(sel.selectedIndex);
-            console.log("newsel for opt is "+newsel);//NFP
             if(sel.options[newsel]) sel.options[newsel].selected = true;
             options.display("hide");
         }
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
+<<<<<<< HEAD
                                                 var prc = options.getpercent();
                                                 book.foliant().get_fromopt(i, prc);
+=======
+                                                var p = options.getpercent();
+                                                book.foliant().get_fromopt(i, p);
+>>>>>>> 7442ed2e685807133941a0a7f886498b443fb414
                                             });
     
     function fill_toc(html){
@@ -151,7 +153,11 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
         sel.addEventListener("change", function (event){mtext.style.top="0px"; 
+<<<<<<< HEAD
                                                 book.foliant().get_fromopt(event.target.selectedIndex, 0.0000000000001);} );
+=======
+                                                book.foliant().get_fromopt(event.target.selectedIndex, 0.00000000000000001);} );
+>>>>>>> 7442ed2e685807133941a0a7f886498b443fb414
         options.getpp();
     }
     function prc_from_anchor(anchor, prc){
@@ -159,10 +165,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         if(!ancel) return prc;
         var antop = parseFloat(stuff.getStyle(ancel, 'top'));
         var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
-        console.log("anchors prc got from: ");//NFP
-        console.log(ancel);//NFP
-        console.log(antop);//NFP
-        console.log(cheight);//NFP
         return 100.0*antop/cheight;
     }
     function fill_page(data, percent, nosave){
