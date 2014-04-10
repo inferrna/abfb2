@@ -132,13 +132,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
-<<<<<<< HEAD
                                                 var prc = options.getpercent();
                                                 book.foliant().get_fromopt(i, prc);
-=======
-                                                var p = options.getpercent();
-                                                book.foliant().get_fromopt(i, p);
->>>>>>> 7442ed2e685807133941a0a7f886498b443fb414
                                             });
     
     function fill_toc(html){
@@ -153,11 +148,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
         sel.addEventListener("change", function (event){mtext.style.top="0px"; 
-<<<<<<< HEAD
-                                                book.foliant().get_fromopt(event.target.selectedIndex, 0.0000000000001);} );
-=======
                                                 book.foliant().get_fromopt(event.target.selectedIndex, 0.00000000000000001);} );
->>>>>>> 7442ed2e685807133941a0a7f886498b443fb414
         options.getpp();
     }
     function prc_from_anchor(anchor, prc){

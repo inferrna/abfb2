@@ -39,10 +39,13 @@ define(
                                 function(vl){ for(var i = 1; i < sel.options.length; i++){
                                                       var currentname = sel.options[i].value.replace(sharedf.relf, "$2");
                                                       if(currentname === vl){
+                                                          console.log("File "+currentname+" found");//NFP
                                                           sel.selectedIndex = i;
                                                           try { var evt = new Event('change');}
                                                           catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
                                                           sel.dispatchEvent(evt);
+                                                      } else {
+                                                          console.log("File "+vl+" not found in "+currentname);//NFP
                                                       }
                                                   } }, null);
                         } else {

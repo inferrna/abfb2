@@ -1,6 +1,6 @@
 define(
-  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc'],
-  function(dict, uitouch, socket, sdstorage, sharedc){
+  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc', 'sharedf'],
+  function(dict, uitouch, socket, sdstorage, sharedc, sharedf){
     "use strict";
     var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
@@ -114,7 +114,7 @@ define(
                 sel.addEventListener("change", 
                                 function (event){
                                     var fnm = event.target.options[event.target.selectedIndex].value;
-                                    filename = fnm.replace(fnmre, "$2");
+                                    filename = fnm.replace(sharedf.relf, "$2");
                                     sdstorage.get(fnm, function (_file) {
                                                                        file = _file;
                                                                        set_opt('last_file', filename);
