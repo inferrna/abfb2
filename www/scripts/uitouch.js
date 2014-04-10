@@ -106,6 +106,7 @@ define(
           if(!newtext) newtext = newtexts[j-1];
           if(!newtext) newtext = text;
           var realwords = newtext.match(/[\w\S]{4,99}/mg);
+          if(!realwords) return '';
           if(realwords.length<4) realwords = newtext.match(/[\w\S]{3,99}/mg);
           if(realwords.length<4) realwords = newtext.match(/[\w\S]{2,99}/mg);
           var idx = realwords.indexOf(word);

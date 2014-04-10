@@ -38,11 +38,20 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         else if (window.innerWidth<1024) txarea.style.backgroundImage='url(../images/back_small.jpg)';
         else txarea.style.backgroundImage='url(../images/back.jpg)';
     }
-    var drvhds = parseInt(Math.min(Math.floor(window.innerHeight/4), Math.floor(window.innerWidth/4)));
-    hammer(txarea).on("swipeleft", function(evt){uitouch.liftcol(mtext, -1); pop.style.display='none';});
-    hammer(txarea).on("swiperight", function(evt){uitouch.liftcol(mtext, 1); pop.style.display='none';});
-    hammer(txarea).on("swipeup", function(evt){options.display('hide'); pop.style.display='none';});
-    hammer(txarea).on("swipedown", function(evt){options.display('show'); pop.style.display='none';});
+    var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
+    function chkmv(evt){
+        console.log(evt.gesture.distance+" vs "+drvhds);
+        if(drvhds<evt.gesture.distance){
+            evt.gesture.stopDetect();
+            return true;
+        }
+        return false;
+    }
+    var dragopts = {"drag_min_distance": drvhds, "swipe_velocity":0.2};
+    hammer(txarea, dragopts).on("dragleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hammer(txarea, dragopts).on("dragright", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hammer(txarea, dragopts).on("dragup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
+    hammer(txarea, dragopts).on("dragdown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hammer(txarea).on("doubletap", function(evt){helper.style.display="block";});
     hammer(txarea).on("dblclick",  function(evt){helper.style.display="block";});
     document.getElementById("cross").addEventListener("click", function(evt){
