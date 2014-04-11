@@ -27,6 +27,8 @@
  */
 
 (function(obj) {
+	"use strict";
+    // Blob Shiv for Android Cordova compatibility
     obj.Blob = (function() {
         var nativeBlob = Blob;
 
@@ -54,9 +56,9 @@
                     return bb.getBlob(properties && properties.type ? properties.type : undefined);
                 };
             }
-            return true;
         };
     }());
+    
 	var ERR_BAD_FORMAT = "File format is not recognized.";
 	var ERR_ENCRYPTED = "File contains encrypted entry.";
 	var ERR_ZIP64 = "File is using Zip64 (4gb+ file size).";
@@ -114,7 +116,6 @@
 			return blob.mozSlice(index, index + length);
 		else if (blob.msSlice)
 			return blob.msSlice(index, index + length);
-        return -1;
 	}
 
 	function getDataHelper(byteLength, bytes) {
@@ -193,7 +194,7 @@
 		var that = this;
 
 		function init(callback) {
-			this.size = blob.size;
+			that.size = blob.size;
 			callback();
 		}
 
@@ -244,7 +245,11 @@
 				callback(e.target.result);
 			};
 			reader.onerror = onerror;
-			reader.readAsText(blob, encoding);
+			if (encoding) {
+				reader.readAsText(blob, encoding);
+			} else {
+				reader.readAsText(blob);
+			}
 		}
 
 		that.init = init;
@@ -291,25 +296,16 @@
 		var blob, that = this;
 
 		function init(callback) {
-			try {
-                blob = new Blob([], {type : contentType});
-            } catch(e) {
-                //console.warn(e.stack);
-                var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
-                blob = bb.getBlob(contentType);
-            }
+			blob = new Blob([], {
+				type : contentType
+			});
 			callback();
 		}
 
 		function writeUint8Array(array, callback) {
-			try {
-                blob = new Blob([ blob, appendABViewSupported ? array : array.buffer ], {type : contentType});
-            } catch(e) {
-                //console.warn(e.stack);
-                var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
-                bb.append(appendABViewSupported ? array : array.buffer);
-                blob = bb.getBlob(contentType);
-            }
+			blob = new Blob([ blob, appendABViewSupported ? array : array.buffer ], {
+				type : contentType
+			});
 			callback();
 		}
 
@@ -431,24 +427,11 @@
 			onend(outputSize, crc32.get());
 		}
 
-		if (obj.zip.useWebWorkers  && !window.cordova) {
+		if (obj.zip.useWebWorkers) {
 			worker = new Worker(obj.zip.workerScriptsPath + INFLATE_JS);
-            worker.onerror = function(event){
-                    throw new Error(event.message + " (" + event.filename + ":" + event.lineno + ")");
-            };
 			launchWorkerProcess(worker, reader, writer, offset, size, oninflateappend, onprogress, oninflateend, onreaderror, onwriteerror);
 		} else
-			launchProcess(
-                            new obj.zip.Inflater(), 
-                            reader, 
-                            writer, 
-                            offset, 
-                            size, 
-                            oninflateappend, 
-                            onprogress, 
-                            oninflateend, 
-                            onreaderror, 
-                            onwriteerror);
+			launchProcess(new obj.zip.Inflater(), reader, writer, offset, size, oninflateappend, onprogress, oninflateend, onreaderror, onwriteerror);
 		return worker;
 	}
 
@@ -469,7 +452,7 @@
 			launchWorkerProcess(worker, reader, writer, 0, reader.size, ondeflateappend, onprogress, ondeflateend, onreaderror, onwriteerror);
 		}
 
-		if (obj.zip.useWebWorkers && !window.cordova) {
+		if (obj.zip.useWebWorkers) {
 			worker = new Worker(obj.zip.workerScriptsPath + DEFLATE_JS);
 			worker.addEventListener(MESSAGE_EVENT, onmessage, false);
 			worker.postMessage({
@@ -544,7 +527,6 @@
 					(time & 0x001F) * 2, 0);
 		} catch (e) {
 		}
-        return -1;
 	}
 
 	function readCommonHeader(entry, data, index, centralDirectory, onerror) {
@@ -626,6 +608,11 @@
 		};
 
 		function seekEOCDR(offset, entriesCallback) {
+			if (reader.size <= offset) {
+				onerror(ERR_BAD_FORMAT);
+				return;
+			}
+
 			reader.readUint8Array(reader.size - offset, offset, function(bytes) {
 				var dataView = getDataHelper(bytes.length, bytes).view;
 				if (dataView.getUint32(0) != 0x504b0506) {
@@ -827,8 +814,38 @@
 			}
 		};
 	}
-    function isworker(){try{var sock = new Worker('scripts/inflate.js'); return true} catch(e){return false;}}
-    var haveworker = isworker();
+
+	function onerror_default(error) {
+		console.error(error);
+	}
+    function createGZipReader(reader, enerror) {
+	return {
+	    gunzip : function(writer, callback, onprogress, onreaderror, onwriteerror) {
+		reader.readUint8Array(0, 10, function(data){
+    		    if (data[0] != 31 && data[1]!=139) {
+			onerror(ERR_BAD_FORMAT);
+    			return;
+    		    }
+    		    if (data[2] != 8) {
+			onerror(ERR_BAD_FORMAT);
+    			return;
+    		    }
+    		    if (data[3] != 0) {
+			onerror(ERR_BAD_FORMAT);
+    			return;
+    		    }
+    		    writer.init(function() {
+    			worker = inflate(reader, writer, 10, reader.size-10-8, true, function(res){
+			    writer.getData(function(res) {
+				callback(res);
+			    });
+			}, onprogress, onreaderror, onwriteerror);
+    		    });
+		});
+	    }
+	};
+    }
+
 	obj.zip = {
 		Reader : Reader,
 		Writer : Writer,
@@ -839,17 +856,31 @@
 		Data64URIWriter : Data64URIWriter,
 		TextWriter : TextWriter,
 		createReader : function(reader, callback, onerror) {
+			onerror = onerror || onerror_default;
+
 			reader.init(function() {
 				callback(createZipReader(reader, onerror));
 			}, onerror);
 		},
 		createWriter : function(writer, callback, onerror, dontDeflate) {
+			onerror = onerror || onerror_default;
+			dontDeflate = !!dontDeflate;
+
 			writer.init(function() {
 				callback(createZipWriter(writer, onerror, dontDeflate));
 			}, onerror);
 		},
-		workerScriptsPath : "scripts/",//"scripts/zip/",
-		useWebWorkers : haveworker
+		createGZipReader : function(reader, callback, onerror) {
+			reader.init(function() {
+				callback(createGZipReader(reader, onerror));
+			}, onerror);
+		},
+		workerScriptsPath : "scripts/",
+		setWorkerScriptsPaths:function(paths){
+			INFLATE_JS = paths.inflate;
+			DEFLATE_JS = paths.deflate;
+		},
+		useWebWorkers : true
 	};
 
 })(this);

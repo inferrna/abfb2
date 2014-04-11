@@ -65,7 +65,7 @@ define(
         dreq.send();
     }
     function get_def(word){
-            lword = word.replace(/(^\s)|(\s$)/gm, "").replace(/(^)(\W*)(.*?)(\W*?)($)/, "$3$5");
+            lword = word.replace(/(^\s*)|(\s*$)/gm, "");
             if(cache[lword]) { console.log("Got from cache"); sharedc.exec('dict', 'got_def')(cache[lword], seealso);}
             else if(datas["dictionary"] === 'socket proxy') get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", sharedc.exec('dict', 'got_def'), '');
             else if (datas["dictionary"] === 'google') get_http(lword, googles, datas["google_base_url"], sharedc.exec('dict', 'got_def'), '');

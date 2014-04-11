@@ -218,6 +218,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
+        console.log("Got texts:");//NFP
+        console.log(texts);//NFP
         var pos = 0;
         if(el){
             if(disp!='none'){

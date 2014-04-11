@@ -30,14 +30,32 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
        var sel = document.createElement("select");
        sel.setAttribute("id", "tocselect");
        sel.style.width = "auto";
-       console.log("toc:");
-       console.log(toc);
+       console.log("toc:");//NFP
+       console.log(toc);//NFP
        var points = toc.getElementsByTagName("navPoint");
        var names = {};
        var name = '';
        var idx = '';
        var re1 = /(.+?)#(.*)/gi;
        var locanchors = {};
+       function get_phrs(idxs){
+           console.log("idxs:");//NFP
+           console.log(idxs);//NFP
+           var purehrefs = {};
+           idxs.map(function(hr){
+                    purehrefs[hr] = idxs.filter(function(_hr){
+                                return _hr ===  hr;
+                        }).length;
+               });
+           return purehrefs;
+       }
+       var idxs = Array.prototype.slice.call(points)
+                        .map(function(pt){ console.log(pt);//NFP
+                                          return  pt.getElementsByTagName("content")[0]
+                                                    .attributes['src'].value
+                                                    .replace(sharedf.relf, "$2")
+                                                    .replace(re1, "$1");});
+       var purehrefs = get_phrs(idxs);
        for(i=0; i<points.length; i++){
            var lbl = points[i].getElementsByTagName("navLabel")[0];
            var cont = points[i].getElementsByTagName("content")[0];
@@ -47,13 +65,20 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
            names[idx] = name;
            if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
            else anchor = null;
-           if(anchor){
+           if(anchor && purehrefs[idx]>1){
                if(!locanchors[idx]) locanchors[idx] = [];
                locanchors[idx].push([anchor, name]);
            }
        }
        var recl = /toc-.+/i;
        var points = toc.getElementsByTagName("li");
+       var idxs = Array.prototype.slice.call(points)
+                        .map(function(pt){ console.log(pt);//NFP
+                                          return  pt.getElementsByTagName("a")[0]
+                                                    .getAttribute("href")
+                                                    .replace(sharedf.relf, "$2")
+                                                    .replace(re1, "$1");});
+       purehrefs = get_phrs(idxs);
        for(i=0; i<points.length; i++){
            var a = points[i].getElementsByTagName("a")[0];
            var href = a.getAttribute("href");
@@ -62,7 +87,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
            names[idx] = name;
            if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
            else anchor = null;
-           if(anchor){
+           if(anchor && purehrefs[idx]>1){
                if(!locanchors[idx]) locanchors[idx] = [];
                locanchors[idx].push([anchor, name]);
            }
@@ -71,6 +96,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
        var j = 2;
        var k = 0;
        var badtitles = {};
+       console.log("purehrefs:");//NFP
+       console.log(purehrefs);//NFP
        for(i=0; i<hrefs.length; i++){
            var opt = document.createElement("option");
            opt.style.textIndent = "32px";
@@ -174,6 +201,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     epub.get_by_href(href, function(html){
                             oldhref=href;
                             currentpage = index;
+                            console.log("Got html:");//NFP
+                            console.log(html.slice(0,512));//NFP
                             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
                             else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
                         });

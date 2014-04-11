@@ -25,7 +25,11 @@ function (mimetypes, sharedf, sharedc) {
                 }
         }
         if(mtype==='blob') reader.readAsDataURL(blob);
-        else reader.readAsText(blob);
+        else{ 
+            console.log("Got blob while unzip "+index+":");//NFP
+            console.log(blob);//NFP
+            reader.readAsText(blob);
+        }
         delete reader;
     }
     function fill_files(data, name, callback, params){
@@ -313,6 +317,7 @@ function (mimetypes, sharedf, sharedc) {
     function postProcessHTML(href) {
         var xml = null;
         if(sharedf.reb.test(href)) return "<img src="+getDataUri(href)+">";
+        //console.log(files[href]);
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
