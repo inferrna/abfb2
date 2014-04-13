@@ -79,8 +79,14 @@ define(
                         console.log(fileSystem.root.fullPath);//NFP
                         fileSystem.root.getFile(fnm, null, gotFileEntry, fail);
                      }*/
-                 function gotFileEntry(fileEntry){fileEntry.file(gotFile, fail);}
-                 function gotFile(file){callback(file);}
+                 function gotFileEntry(fileEntry){
+                        console.log(fnm+" got entry");//NFP
+                        fileEntry.file(gotFile, fail);
+                     }
+                 function gotFile(file){ 
+                        console.log(fnm+" got ok");//NFP
+                        callback(file);
+                     }
                  function fail(error) { console.log("Unable to get the file: " + fnm + "\ngot error:\n"+JSON.stringify(error)); };
              }
     }

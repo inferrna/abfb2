@@ -45,14 +45,18 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipBlob(notifier) {
-        zip.createReader(new zip.BlobReader(file), function (_zipReader) {
-            zipreader = _zipReader;
-            _zipReader.getEntries(function (entries) {
-                  gentries = entries;
-                  gentries.map(function(entr){files[entr.filename]='';});
-                  unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
-                })
-            });
+        if(window.cordova){
+            unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
+        } else {
+            zip.createReader(new zip.BlobReader(file), function (_zipReader) {
+                zipreader = _zipReader;
+                _zipReader.getEntries(function (entries) {
+                      gentries = entries;
+                      gentries.map(function(entr){files[entr.filename]='';});
+                      unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
+                    })
+                });
+        }
     }
     function proceedcontainer(){
         container = files["META-INF/container.xml"];
@@ -132,6 +136,7 @@ function (mimetypes, sharedf, sharedc) {
 
     function unzipFiles(filelist, extcallback) {
         if(window.cordova){
+            console.log("Extract by cordova plugin");//NFP
             function fill_crdo(data, name){
                 if (sharedf.reb.test(name)){
                     logger("extracting blob: " +name+"...");
@@ -155,6 +160,7 @@ function (mimetypes, sharedf, sharedc) {
                 };
             reader.readAsBinaryString(file);
         } else {
+            console.log("Extract by zip.js");//NFP
             var filenames = [];
             var datas = [];
             function getdatas(params){
