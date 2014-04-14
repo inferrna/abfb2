@@ -41,7 +41,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
     function chkmv(evt){
         evt.gesture.preventDefault();
-        console.log(evt.gesture.distance+" vs "+drvhds);
+        console.log(evt.gesture.distance+" vs "+drvhds);//NFP
         if(drvhds<evt.gesture.distance){
             evt.gesture.stopDetect();
             return true;
@@ -49,10 +49,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         return false;
     }
     var dragopts = {"drag_min_distance": drvhds, "swipe_velocity":0.2};
-    hammer(txarea, dragopts).on("dragleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hammer(txarea, dragopts).on("dragright", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hammer(txarea, dragopts).on("dragup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
-    hammer(txarea, dragopts).on("dragdown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
+    hammer(txarea, dragopts).on("dragleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hammer(txarea, dragopts).on("dragright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hammer(txarea, dragopts).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
+    hammer(txarea, dragopts).on("dragdown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hammer(txarea).on("doubletap", function(evt){helper.style.display="block";});
     hammer(txarea).on("dblclick",  function(evt){helper.style.display="block";});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
@@ -83,9 +83,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         if(txt.length>1) fill_thumb(txt, els);
         else fill_thumb("Something went wrong. Please check your options.");
     });
-    sharedc.register('bookng', 'got_toc', function () {console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
-    sharedc.register('book', 'got_book', function () {console.log("Got book"); uitouch.init_scale();});
-    sharedc.register('options', 'got_file', function () {
+    sharedc.register('bookng', 'got_toc', function(){console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
+    sharedc.register('book', 'got_book', function(){console.log("Got book"); uitouch.init_scale();});
+    sharedc.register('options', 'got_file', function(){
             options.remove_old();
             options.display("hide");
             book.init(options.bookfile());
@@ -137,12 +137,12 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         document.getElementsByTagName('head')[0].appendChild(style);
         if(data[0]) mtext.innerHTML = data[0];
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
-        var cheight = stuff.getStyle(mtext, 'height');//window.getComputedStyle(marea, null);
+        var cheight = stuff.getStyle(mtext, 'height');
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
         }
         if(data[1]) percent = prc_from_anchor(data[1], percent);
-        else if(percent==='end') percent = 100.0*parseFloat(Math.max(cheight-parseInt(window.innerHeight), 0))/parseFloat(cheight);
+        else if(percent==='end') percent = 100.0*(parseFloat(cheight)+window.innerHeight*3)/parseFloat(cheight);
         mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {
             options.setpercent(percent);

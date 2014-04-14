@@ -30,8 +30,9 @@ define(
           var ptop, top;
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
+          console.log("stuff.getStyle(el, 'height')=="+stuff.getStyle(el, 'height'));//NFP
           var elh = Math.max(parseInt(stuff.getStyle(el, 'height')), wh);
-          if(el.style.top==='' || el.style.top==='undefined' || el.style.top===null) top = 0;
+          if(el.style.top) top=parseInt(el.style.top);
           else top = parseInt(stuff.getStyle(el, 'top'));
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
           var pageend = -parseInt(stuff.getStyle(el, 'height'));
@@ -39,17 +40,31 @@ define(
           var oldpercent = -100*parseInt(top)/elh;
           var percent = -100*parseFloat(newtop)/elh;
           var dtop = stuff.getStyle(el.parentNode, 'top')-top;
+          console.log("ptop=="+ptop);
+          console.log("dtop=="+dtop);
+          console.log("percent=="+percent);
+          console.log("pageend=="+pageend);
+          console.log("fs=="+fs);
+          console.log("wh=="+wh);
+          console.log("elh=="+elh);
+          console.log("dir=="+dir);
+          console.log("oldtop before=="+top);
+          console.log("newtop before=="+newtop);
           if(el.id==="maintext"){
               if(percent>100 || (dir===-1 && elh===wh)) {sharedc.exec('uitouch', 'next_chapter')(1); newtop=0;}
               else if (newtop>0) {
-                      if(dtop<=0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
+                      if(top===0) {sharedc.exec('uitouch', 'next_chapter')(-1); return;}
                       else newtop = 0;
                   } else {
                       if(newtop<pageend) newtop = pageend+ptop/2;
                       if (newtop>0) newtop = 0;
                   }
           }
+          console.log("newtop after=="+newtop);
           el.style.top = parseInt(newtop)+"px";
+          console.log("eltop after=="+stuff.getStyle(el, 'top'));
+          console.log("el.style.top after=="+el.style.top);
+
           if(el.id==="maintext"){
               percent = -100*parseFloat(newtop)/elh;
               options.setpercent(percent);
