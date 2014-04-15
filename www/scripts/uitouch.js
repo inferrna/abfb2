@@ -31,11 +31,11 @@ define(
           var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
           console.log("stuff.getStyle(el, 'height')=="+stuff.getStyle(el, 'height'));//NFP
-          var elh = Math.max(parseInt(stuff.getStyle(el, 'height')), wh);
+          var elh = Math.max(el.scrollHeight, wh);
           if(el.style.top) top=parseInt(el.style.top);
           else top = parseInt(stuff.getStyle(el, 'top'));
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
-          var pageend = -parseInt(stuff.getStyle(el, 'height'));
+          var pageend = -parseInt(el.scrollHeight);
           var newtop = top + dir*(ptop-fs);
           var oldpercent = -100*parseInt(top)/elh;
           var percent = -100*parseFloat(newtop)/elh;
@@ -64,6 +64,7 @@ define(
           el.style.top = parseInt(newtop)+"px";
           console.log("eltop after=="+stuff.getStyle(el, 'top'));
           console.log("el.style.top after=="+el.style.top);
+          console.log("el.scrollTop after=="+el.scrollTop);
 
           if(el.id==="maintext"){
               percent = -100*parseFloat(newtop)/elh;

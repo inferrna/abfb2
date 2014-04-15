@@ -136,21 +136,21 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight-64)+'px; max-width:'+parseInt(window.innerWidth-64)+'px; overflow:hidden}';
         document.getElementsByTagName('head')[0].appendChild(style);
         if(data[0]) mtext.innerHTML = data[0];
+        mtext.style.width = 'auto';
+        mtext.style.height = 'auto';
+        mtext.style.display = 'block';
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
-        var cheight = stuff.getStyle(mtext, 'height');
+        var cheight = mtext.scrollHeight;//stuff.getStyle(mtext, 'height');
         if(!nosave) {
             options.setpage(book.foliant().currentpage());
         }
         if(data[1]) percent = prc_from_anchor(data[1], percent);
-        else if(percent==='end') percent = 100.0*(parseFloat(cheight)+window.innerHeight*3)/parseFloat(cheight);
+        else if(percent==='end') percent = 100.0*parseFloat(cheight-window.innerHeight/2)/cheight;
         mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave) {
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }
-        mtext.style.width = 'auto';
-        mtext.style.height = 'auto';
-        mtext.style.display = 'block';
         return mtext;
     }
     function fill_thumb(text, els){
