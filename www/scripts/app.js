@@ -15,6 +15,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = 'img { max-height: '+(window.innerHeight-64)+'px; max-width:'+(window.innerWidth-64)+'px; overflow:hidden}';
+    document.getElementsByTagName('head')[0].appendChild(style);
     txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
     txarea.style.width = window.innerWidth+"px";
     fl_text.style.width =  "auto";
@@ -131,10 +135,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         return 100.0*antop/cheight;
     }
     function fill_page(data, percent, nosave){
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        style.innerHTML = 'img { max-height: '+parseInt(window.innerHeight-64)+'px; max-width:'+parseInt(window.innerWidth-64)+'px; overflow:hidden}';
-        document.getElementsByTagName('head')[0].appendChild(style);
         if(data[0]) mtext.innerHTML = data[0];
         mtext.style.width = 'auto';
         mtext.style.height = 'auto';

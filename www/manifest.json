@@ -5,7 +5,7 @@
   "default_locale": "en",
   "version": "0.36.6",
   "minimum_chrome_version": "25",
-  "permissions": [ "app.window", "*://translate.google.com/*", "storage", "fileSystem", {"socket": ["tcp-connect:*:2628"]}],
+  "permissions": [ "app.window", "*://translate.google.com/*", "*://borgu.org*", "storage", "fileSystem", {"socket": ["tcp-connect:*:2628"]}],
   "optional_permissions": [ "webRequest" ],
   "icons": {
     "16": "images/b.png",

@@ -166,7 +166,8 @@ define(
             inp.type = 'text';
             inp.addEventListener("change",
                 function(evt){get_config(); var input = evt.target; set_opt(input.id, input.value); 
-                              dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"], "port": parseInt(values["socket_port"]),
+                              dict.init_params({"dictionary": values["dict_src"], "host": values["socket_host"],
+                                               "port": parseInt(values["socket_port"]),
                                                "sl": values["lang_f"], "hl": values["lang_t"], "tl": values["lang_t"],
                                                "phost": values['proxy_host'], "pport": values['proxy_port']});
                               dict.get_dbs(values["dict_src"]);}, false);
@@ -265,8 +266,10 @@ define(
         sels.map(function(sl){set_sel_vl(sl);});
     }
     function add_dbs(sel, _nm, txt){
-        var _txt = txt.replace(/\ /g, "_._").replace(/(\s|\0)+/g, "\n").replace(/_\._/g, " ").replace(/\"/g, "");
-        var count = parseInt(txt.replace(/\s+/g, " ").replace(/(.*110.+?)(\d*)(.+?databases present.*)/, "$2"));
+        var _txt = txt.replace(/\ /g, "_._").replace(/(\s|\0)+/g, "\n")
+                      .replace(/_\._/g, " ").replace(/\"/g, "");
+        var count = parseInt(txt.replace(/\s+/g, " ")
+                                .replace(/(.*110.+?)(\d*)(.+?databases present.*)/, "$2"));
         var arr = _txt.split("\n").filter(function(el){return el!='';});
         var start = arr.indexOf("250 ok")-2;
         if(isNaN(count) || start<0) { console.warn("No db count or start in "+txt); return; }

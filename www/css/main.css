@@ -23,6 +23,8 @@
   }
   #pop {
     display: none;
+    align: left;
+    text-align: left;
     /*-webkit-flex-direction: column;
     flex-direction: column;
     flex-grow: 3;
@@ -109,6 +111,8 @@
   }
   .spflex {
     height: auto;
+    align: left;
+    text-align: left;
     padding: 1px;
     display: -webkit-flex;
     display: flex;
