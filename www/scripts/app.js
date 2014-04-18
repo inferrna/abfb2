@@ -44,19 +44,18 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     }
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
     function chkmv(evt){
-        evt.gesture.preventDefault();
         console.log(evt.gesture.distance+" vs "+drvhds);//NFP
+        evt.gesture.preventDefault();
         if(drvhds<evt.gesture.distance){
             evt.gesture.stopDetect();
             return true;
         }
         return false;
     }
-    var dragopts = {"drag_min_distance": drvhds, "swipe_velocity":0.2};
-    hammer(txarea, dragopts).on("dragleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hammer(txarea, dragopts).on("dragright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hammer(txarea, dragopts).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
-    hammer(txarea, dragopts).on("dragdown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
+    hammer(txarea).on("dragleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hammer(txarea).on("dragright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hammer(txarea).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
+    hammer(txarea).on("dragdown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hammer(txarea).on("doubletap", function(evt){helper.style.display="block";});
     hammer(txarea).on("dblclick",  function(evt){helper.style.display="block";});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
@@ -67,7 +66,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     hammer(pop).on("dragdown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
-    hammer(helper).on("tap pinchin pinchout dragleft dragright dragup dragdown", function(evt){helper.style.display="none";});
+    hammer(helper).on("click tap pinchin pinchout dragleft dragright dragup dragdown", function(evt){helper.style.display="none";});
     helper.addEventListener("click", function(e){helper.style.display="none";}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
