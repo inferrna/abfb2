@@ -167,7 +167,7 @@ function (mimetypes, sharedf, sharedc) {
                 if(params[1]>=params[0].length){ extcallback(); return; }
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
-                console.log("getdatas "+entries[i].filename);
+                console.log("getdatas "+entries[i].filename);//NFP
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
                         i++;
@@ -175,7 +175,7 @@ function (mimetypes, sharedf, sharedc) {
                     });
             }
               var entriestg = gentries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;});
-              console.log(entriestg);
+              console.log(entriestg);//NFP
               getdatas([entriestg, 0, zipreader]);
         }
 

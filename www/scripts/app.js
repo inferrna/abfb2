@@ -56,8 +56,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     hammer(txarea).on("dragright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
     hammer(txarea).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
     hammer(txarea).on("dragdown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hammer(txarea).on("doubletap", function(evt){helper.style.display="block";});
-    hammer(txarea).on("dblclick",  function(evt){helper.style.display="block";});
     hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);});
     hammer(mtext).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);});
     hammer(pop).on("dragleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
@@ -67,7 +65,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     hammer(helper).on("click tap pinchin pinchout dragleft dragright dragup dragdown", function(evt){helper.style.display="none";});
-    helper.addEventListener("click", function(e){helper.style.display="none";}, false);
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
