@@ -26,8 +26,6 @@ function (mimetypes, sharedf, sharedc) {
         }
         if(mtype==='blob') reader.readAsDataURL(blob);
         else{ 
-            console.log("Got blob while unzip "+index+":");//NFP
-            console.log(blob);//NFP
             reader.readAsText(blob);
         }
         delete reader;
@@ -136,7 +134,6 @@ function (mimetypes, sharedf, sharedc) {
 
     function unzipFiles(filelist, extcallback) {
         if(window.cordova){
-            console.log("Extract by cordova plugin");//NFP
             function fill_crdo(data, name){
                 if (sharedf.reb.test(name)){
                     logger("extracting blob: " +name+"...");
@@ -160,14 +157,12 @@ function (mimetypes, sharedf, sharedc) {
                 };
             reader.readAsBinaryString(file);
         } else {
-            console.log("Extract by zip.js");//NFP
             var filenames = [];
             var datas = [];
             function getdatas(params){
                 if(params[1]>=params[0].length){ extcallback(); return; }
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
-                console.log("getdatas "+entries[i].filename);//NFP
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
                         i++;
@@ -175,7 +170,6 @@ function (mimetypes, sharedf, sharedc) {
                     });
             }
               var entriestg = gentries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;});
-              console.log(entriestg);//NFP
               getdatas([entriestg, 0, zipreader]);
         }
 

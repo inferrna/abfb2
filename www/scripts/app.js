@@ -44,7 +44,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     }
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
     function chkmv(evt){
-        console.log(evt.gesture.distance+" vs "+drvhds);//NFP
         evt.gesture.preventDefault();
         if(drvhds<evt.gesture.distance){
             evt.gesture.stopDetect();
@@ -177,8 +176,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
-        console.log("Got texts:");//NFP
-        console.log(texts);//NFP
         var pos = 0;
         if(el){
             if(disp!='none'){

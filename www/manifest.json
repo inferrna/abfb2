@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
-  "version": "0.36.6",
+  "version": "0.37",
   "minimum_chrome_version": "25",
   "permissions": [ "app.window", "*://translate.google.com/*", "*://borgu.org*", "storage", "fileSystem", {"socket": ["tcp-connect:*:2628"]}],
   "optional_permissions": [ "webRequest" ],
