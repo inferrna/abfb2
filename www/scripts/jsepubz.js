@@ -77,6 +77,28 @@ function (mimetypes, sharedf, sharedc) {
         }
         unzipFiles(staff2ext, proceedcss);
     }
+    function parse_toc(toc, base){
+       var points = toc.getElementsByTagName("navPoint");
+       var tocels = [];
+       for(i=0; i<points.length; i++){
+           var tocel = {}
+           var lbl = points[i].getElementsByTagName("navLabel")[0];
+           var cont = points[i].getElementsByTagName("content")[0];
+           tocel['href'] = resolvePath(cont.attributes['src'].value, base);
+           tocel['name'] = lbl.textContent.replace(/\s+/mg, ' ');
+           tocels.push(tocel)
+       }
+       var recl = /toc-.+/i;
+       var points = toc.getElementsByTagName("li");
+       for(i=0; i<points.length; i++){
+           var tocel = {}
+           var a = points[i].getElementsByTagName("a")[0];
+           tocel['href'] = resolvePath(a.getAttribute("href"), base);
+           tocel['name'] = a.textContent.replace(/\s+/mg, ' ');
+           tocels.push(tocel)
+       }
+       return tocels;
+    }
     function proceedcss(){
         var oldtocre = /.+?\.ncx/i;
         var newtocre = /.*?(toc\.xhtml|nav\.xhtml)/i;
@@ -91,24 +113,26 @@ function (mimetypes, sharedf, sharedc) {
                 } else if (mediaType === "application/x-dtbncx+xml" || newtocre.test(href) || key==='toc') {
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                    newtocs.push(xmlDocument(xml));
+                    newtocs.push([xmlDocument(xml), href]);
                 } else if (oldtocre.test(href) || key==='ncx') {
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                    oldtocs.push(xmlDocument(xml));
+                    oldtocs.push([xmlDocument(xml), href]);
                 }
                 if (result !== undefined) {
                     files[href] = result;
                 }
         }
-        if(newtocs.length===1) toc=newtocs[0];
-        else if(newtocs.length>1)
-            for(var i=0; i<tocs.length; i++){
-                if(/html/i.test(newtocs[i].firstChild.tagName)) toc=newtocs[i];
+        if(newtocs.length===1) eltoc=newtocs[0];
+        else if(newtocs.length>1){
+            eltoc=newtocs[0];
+            for(var i=0; i<newtocs.length; i++){
+                if(newtocs[i].firstChild && /html/i.test(newtocs[i].firstChild.tagName))
+                    eltoc=newtocs[i];
             }
-        else if(oldtocs.length) toc=oldtocs[0];
-        if(!toc) toc=tocs[0];
-        delete tocs;
+        }
+        else if(oldtocs.length) var eltoc=oldtocs[0];
+        toc = parse_toc(eltoc[0], eltoc[1]);
         sharedc.exec('bookng', 'got_toc')();
         var reincl = /(.{0,16}@import\s+?[\"\']?)(\w+?\.css)([\"\']?.{0,2}?;)/i;
         var fnm = href.replace(/(.+?\/)+(.*?\.css)/i, "$2");

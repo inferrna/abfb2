@@ -4,6 +4,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
     var pageids = [];
     var pages = [];
     var anchors = {};
+    var tocels = []
     var currentpage = 0;
     var oldhref = null;
     var epub = null;
@@ -24,132 +25,20 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             }
         return result;
     }
-    function js_toc(toc, hrefs){
-        //var doc = new DOMParser().parseFromString(xml, "text/xml");
+    function js_toc(tocels, hrefs){
        var div = document.createElement("div");
        var sel = document.createElement("select");
        sel.setAttribute("id", "tocselect");
        sel.style.width = "auto";
-       console.log("toc:");//NFP
-       console.log(toc);//NFP
-       var points = toc.getElementsByTagName("navPoint");
-       var names = {};
-       var name = '';
-       var idx = '';
-       var re1 = /(.+?)#(.*)/;
-       var locanchors = {};
-       function get_phrs(idxs){
-           console.log("idxs:");//NFP
-           console.log(idxs);//NFP
-           var phrs = {};
-           idxs.map(function(hr){
-                    phrs[hr] = idxs.filter(function(_hr){
-                                return _hr ===  hr;
-                        }).length;
-               });
-           console.log("phrs:");//NFP
-           console.log(phrs);//NFP
-           return phrs;
-       }
-       var idxs = Array.prototype.slice.call(points)
-                        .map(function(pt){ 
-                                          console.log(pt);//NFP
-                                          return  pt.getElementsByTagName("content")[0]
-                                                    .attributes['src'].value
-                                                    .replace(sharedf.relf, "$2")
-                                                    .replace(re1, "$1");});
-       var purehrefs = get_phrs(idxs);
-       for(i=0; i<points.length; i++){
-           var lbl = points[i].getElementsByTagName("navLabel")[0];
-           var cont = points[i].getElementsByTagName("content")[0];
-           var href = cont.attributes['src'].value;
-           idx = href.replace(sharedf.relf, "$2").replace(re1, "$1");
-           name = lbl.textContent.replace(/\s+/mg, ' ');
-           names[idx] = name;
-           if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
-           else anchor = null;
-           console.log("anchor1:");//NFP
-           console.log(anchor);//NFP
-           if(anchor && purehrefs[idx]>1){
-               if(!locanchors[idx]) locanchors[idx] = [];
-               locanchors[idx].push([anchor, name]);
-           }
-       }
-       var recl = /toc-.+/i;
-       var points = toc.getElementsByTagName("li");
-       var idxs = Array.prototype.slice.call(points)
-                        .map(function(pt){ 
-                                          console.log(pt);//NFP
-                                          return  pt.getElementsByTagName("a")[0]
-                                                    .getAttribute("href")
-                                                    .replace(sharedf.relf, "$2")
-                                                    .replace(re1, "$1");});
-       purehrefs = get_phrs(idxs);
-       console.log("locanchors:");//NFP
-       console.log(locanchors);//NFP
-       for(i=0; i<points.length; i++){
-           var a = points[i].getElementsByTagName("a")[0];
-           var href = a.getAttribute("href");
-           idx = href.replace(sharedf.relf, "$2").replace(re1, "$1");
-           if(a) name = a.textContent.replace(/\s+/mg, ' ');
-           names[idx] = name;
-           if(re1.test(href)) var anchor = href.replace(sharedf.relf, "$2").replace(re1, "$2");
-           else anchor = null;
-           console.log("anchor2:");//NFP
-           console.log(anchor);//NFP
-           console.log("href2:");//NFP
-           console.log(href);//NFP
-           console.log(re1.test(href));//NFP
-           if(anchor && purehrefs[idx]>1){
-               if(!locanchors[idx]) locanchors[idx] = [];
-               locanchors[idx].push([anchor, name]);
-           }
-       }
-       var cnm = '';
-       var j = 2;
-       var k = 0;
-       var badtitles = {};
-       console.log("locanchors:");//NFP
-       console.log(locanchors);//NFP
-       for(i=0; i<hrefs.length; i++){
+       for(i=0; i<tocels.length; i++){
            var opt = document.createElement("option");
            opt.style.textIndent = "32px";
-           opt.setAttribute("id", k);
-           opt.setAttribute('url', hrefs[i]);
-           idx = hrefs[i].replace(sharedf.relf, "$2").replace(re1, "$1");
-           opt.textContent = names[idx] || cnm+" - "+j;
-           if(names[idx]){cnm = names[idx]; j = 2;}
-           else {badtitles[i] = hrefs[i]; j++;}
+           opt.setAttribute('id', i);
+           opt.setAttribute('url', tocels[i]['href']);
+           opt.textContent = tocels[i]['name'];
            sel.appendChild(opt);
-           if(locanchors[idx]){
-               for(var c=0; c<locanchors[idx].length; c++){
-                   k++;
-                   var opt = document.createElement("option");
-                   opt.style.textIndent = "32px";
-                   opt.setAttribute("id", k);
-                   opt.setAttribute('url', hrefs[i]);
-                   anchors[k] = locanchors[idx][c][0];
-                   opt.textContent = locanchors[idx][c][1] || names[idx]+" - "+(c+2) || cnm+" - "+j;
-                   j++;
-                   sel.appendChild(opt);
-               }
-           }
-           k++;
        }
        div.appendChild(sel);
-       epub.restore_titles(badtitles, function(titles){
-                var sel = document.getElementById("tocselect");
-                if(sel) var options = sel.getElementsByTagName("option");
-                else return;
-                if(!options) return;
-                if(!options.length) return;
-                var i = 0;
-                for(key in badtitles){
-                    var j = parseInt(key);
-                    if(titles[i] && options[j]) options[j].textContent = titles[i];
-                    i++;
-                }
-           });
        return div;
     }
     //var evo = document.createElement("br");
@@ -200,12 +89,13 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         var files = epub.files();
         if(index>-1){
             if(opf && toc && files){
-                var idx = pages[index];
-                if(idx >= opf.spine.length) idx = 0;
-                var spine = opf.spine[idx];
-                var href = opf.manifest[spine]["href"];
-                if(anchors[index] && anchors[index]!="null") var anchor = anchors[index];
-                else var anchor = null;
+                var re1 = /(.+?)#(.*)/i;
+                var href = toc[index]['href'].replace(re1, "$1");
+                var anchor = toc[index]['href'].replace(re1, "$2").replace(toc[index]['href'], '');
+                console.log("href == "+href+"; anchor == "+anchor);//NFP
+                //var idx = pages[index];
+                //var spine = opf.spine[idx];
+                //var href = opf.manifest[spine]["href"];
                 if(oldhref===href){
                     currentpage = index;
                     if(percent) sharedc.exec('bookng', 'got_fstfile')([null, anchor], percent);
@@ -296,6 +186,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      anchors = [];
                      currentpage = 0;
                      oldhref = null;
+                     tocels = [];
              },
              get_href_byidx:function(index){
                 var opf = epub.opf();
