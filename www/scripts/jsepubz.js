@@ -78,29 +78,35 @@ function (mimetypes, sharedf, sharedc) {
         unzipFiles(staff2ext, proceedcss);
     }
     function proceedcss(){
-        var keyre = /^(ncx|toc)$/i;
-        var tocre = /.+?\.ncx|toc\.xhtml|nav\.xhtml/i;
-        var tocs = [];
+        var oldtocre = /.+?\.ncx/i;
+        var newtocre = /.*?(toc\.xhtml|nav\.xhtml)/i;
+        var oldtocs = [];
+        var newtocs = [];
         for(var key in opf.manifest){
                 var mediaType = opf.manifest[key]["media-type"];
                 var href = opf.manifest[key]["href"];
                 var result = undefined;
                 if (mediaType === "text/css") {
                     result = postProcessCSS(href);
-                } else if( mediaType === "application/x-dtbncx+xml" || tocre.test(href) || keyre.test(key)) {
+                } else if (mediaType === "application/x-dtbncx+xml" || newtocre.test(href) || key==='toc') {
                     try {xml = decodeURIComponent(escape(files[href]));}
                     catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
-                    tocs.push(xmlDocument(xml));
+                    newtocs.push(xmlDocument(xml));
+                } else if (oldtocre.test(href) || key==='ncx') {
+                    try {xml = decodeURIComponent(escape(files[href]));}
+                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
+                    oldtocs.push(xmlDocument(xml));
                 }
                 if (result !== undefined) {
                     files[href] = result;
                 }
         }
-        if(tocs.length===1) toc=tocs[0];
-        else
+        if(newtocs.length===1) toc=newtocs[0];
+        else if(newtocs.length>1)
             for(var i=0; i<tocs.length; i++){
-                if(/html/i.test(tocs[i].firstChild.tagName)) toc=tocs[i];
+                if(/html/i.test(newtocs[i].firstChild.tagName)) toc=newtocs[i];
             }
+        else if(oldtocs.length) toc=oldtocs[0];
         if(!toc) toc=tocs[0];
         delete tocs;
         sharedc.exec('bookng', 'got_toc')();
