@@ -335,10 +335,10 @@ function (mimetypes, sharedf, sharedc) {
                 if(/\.(ttf$)/.test(url)) format = " format('truetype')";
                 if(/\.(eot$)/.test(url)) format = " format('embedded-opentype')";
                 if(/\.(woff$)/.test(url)) format = " format('woff')";
-                return "url('" + dataUri + "')"+format;
+                return "url('" + dataUri + "')"+format+"\n";
             }
         });
-        return file;
+        return file.replace(/body/gi, '#epubcont');
     }
     function extract_title(href){
         var xml = null;
@@ -395,6 +395,7 @@ function (mimetypes, sharedf, sharedc) {
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
             var div = document.createElement('div');
+            div.id = "epubcont";
             while(doc.firstChild) div.appendChild(doc.firstChild);
             sharedf.clean_tags(div, ["html"]);
             var res = div;
