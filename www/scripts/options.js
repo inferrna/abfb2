@@ -396,6 +396,7 @@ define(
             setpercent:function(percent){
                 if(isNaN(percent)) currentpp['percent'] = 0;
                 else currentpp['percent'] = percent;
+                rng.value = Math.round(currentpp['percent']);
                 lbl.textContent = parseInt(percent)+"% of current chapter";
             },
             msg:function(text){
