@@ -6,6 +6,7 @@ define(
     var opts_brd_b = document.getElementById('options_block');
     var lbl = document.createElement("label");
     var rng = document.createElement("input");
+    var rngbr = document.createElement("br");
     var fnmre = /(.*)?\/(.+)/;
     lbl.style.order = "99";
     opts_brd.textContent = '';
@@ -17,13 +18,13 @@ define(
     dtoc.appendChild(toc);
     opts_brd_b.appendChild(dtoc);
     opts_brd_b.appendChild(lbl);
-    rng.type="range"; rng.max=100; rng.min=0; rng.value=0; rng.style.height="5px"; rng.style.width="43%"; rng.style.borderRadius="48px";
-    rng.style.backgroundColor="#010203"; rng.style.margin="1px"; rng.style.position="absolute";
-    rng.style.right="16px"; rng.style.border="1px";
+    rng.type="range"; rng.max=100; rng.min=0; rng.value=0; rng.style.height="5px"; rng.style.width="98%"; rng.style.borderRadius="48px";
+    rng.style.backgroundColor="#010203"; rng.style.margin="1px"; rng.style.border="1px";
     rng.onchange = function(evt){sharedc.exec('options', 'ch_range')(evt.target.value)};
     rng.oninput = function(evt){lbl.textContent = 'Go to '+evt.target.value+'%';};
     lbl.textContent = "No books open";
     opts_brd_b.appendChild(lbl);
+    opts_brd_b.appendChild(rngbr);
     opts_brd_b.appendChild(rng);
     var storage = null; 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}

@@ -4,7 +4,7 @@
   font-weight: bold;
   src:url("data:font/otf;");
   }*/
-
+  .bar {background: #679;}
   input { padding: 2px; }
   input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}
   label { padding: 2px; }
