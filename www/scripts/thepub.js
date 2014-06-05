@@ -92,7 +92,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 var re1 = /(.+?)#(.*)/i;
                 var href = toc[index]['href'].replace(re1, "$1");
                 var anchor = toc[index]['href'].replace(re1, "$2").replace(toc[index]['href'], '');
-                console.log("href == "+href+"; anchor == "+anchor);//NFP
                 //var idx = pages[index];
                 //var spine = opf.spine[idx];
                 //var href = opf.manifest[spine]["href"];
@@ -104,8 +103,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     epub.get_by_href(href, function(html){
                             oldhref=href;
                             currentpage = index;
-                            console.log("Got html:");//NFP
-                            console.log(html.slice(0,128));//NFP
                             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
                             else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
                         });
