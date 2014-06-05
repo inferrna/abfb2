@@ -171,16 +171,17 @@ define(
       function selectword(x, y, rec){
           "use strict";
           max_Y = y;
+          var off = -1;
           if(document.caretPositionFromPoint) {
               var cp = document.caretPositionFromPoint(x, y);
               if(cp){
-                var off = cp.offset;
+                off = cp.offset;
                 var el = cp.offsetNode;
               }
           } else if(document.caretRangeFromPoint) {
               var cp = document.caretRangeFromPoint(x, y);
               if(cp){
-                  var off = cp.startOffset;
+                  off = cp.startOffset;
                   var el = cp.commonAncestorContainer;
               }
           } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
@@ -188,9 +189,10 @@ define(
               var goff = get_off(x, y);
               if(goff){var off = goff[0]; el = goff[1];}
           }
-          if(el && off){
+          if(el && off>-1){
               var txt = el.textContent;//new String(el.textContent);
               try {
+                  console.log("off=="+off);//NFP
                   var sel = window.getSelection();
                   sel.removeAllRanges();
                   var rng = document.createRange();
@@ -198,14 +200,16 @@ define(
                   rng.setStart(el, off);
                   rng.setEnd(el, off+1);
                   if(rng.expand){
+                      console.log("rng.expand and sel.addRange");//NFP
                       rng.expand("word");
                       sel.addRange( rng );
                       selected_word = sel.toString();
                   } else {
+                      console.log("sel.modify and sel.collapseToStart");//NFP
                       sel.addRange(rng);
-                      sel.modify("extend", "backward", "word");
-                      sel.collapseToStart();
                       sel.modify("extend", "forward", "word");
+                      sel.collapseToEnd();
+                      sel.modify("extend", "backward", "word");
                       selected_word = sel.toString();
                   }
               } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
