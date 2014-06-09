@@ -78,9 +78,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             options.display("show");
             book.foliant().next_page(diff);
         });
-    sharedc.register('dict', 'got_def', function (txt, els) {
-        dict.push_cache(txt);
-        if(txt.length>1) fill_thumb(txt, els);
+    sharedc.register('dict', 'got_def', function (txt, word, els) {
+        if(txt.length>1) fill_thumb(txt, word, els);
         else fill_thumb("Something went wrong. Please check your options.");
     });
     sharedc.register('bookng', 'got_toc', function(){console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
@@ -152,7 +151,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         }
         return mtext;
     }
-    function fill_thumb(text, els){
+    function fill_thumb(text, word, els){
         if(text.length > 1){
             var cl = document.getElementById('pts');
             var el = document.getElementById('pop');
@@ -173,7 +172,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             sndbt.style.display = 'block';
             uitouch.dragpop(-1);
             sndbt.style.display = 'none';
-            sound.get_sound(dict.lword(), dict.lang());
+            sound.get_sound(word, dict.lang());
         } else {el.style.display = 'none';}
     }
     function thumb_block(mY, texts, disp) {

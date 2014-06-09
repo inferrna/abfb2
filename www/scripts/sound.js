@@ -15,7 +15,7 @@ define(
             for(var i=0; i<(1+cnt-audios.length); i++){
                 var snd = document.createElement("audio");
                 var j = audios.length+i;
-                snd.addEventListener("canplay", function(){if(audios[j+1]) audios[j+1].load();});
+                //snd.addEventListener("canplay", function(){if(audios[j+1]) audios[j+1].load();});
                 audios.push(snd);
             }
         }
