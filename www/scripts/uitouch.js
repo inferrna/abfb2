@@ -222,13 +222,9 @@ define(
       function chscale(cf, apply){
             "use strict";
             if(isNaN(scale) || !scale) scale = 1.0;
-            var _scale = cf;
-            if(_scale > 8.0 || _scale < 0.25 || isNaN(_scale)){
-                console.warn("Illegal scale factor: "+_scale+". cf is "+cf);
-                return;
-            }
-            options.msg("Current scale factor = "+scale);
-            if(apply===1) scale = _scale;
+            var newscale = cf*scale;
+            scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
+            console.log("scale == "+scale)//NFP
       }
       function apply_scale(){
             "use strict";

@@ -4,22 +4,58 @@
         "uninstalled": []
     },
     "config_munge": {
-        "res/xml/config.xml": {
-            "/*": {
-                "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>": 1,
-                "<feature name=\"Echo\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.Echo\" /></feature>": 1,
-                "<plugin name=\"Echo\" value=\"org.apache.cordova.plugin.Echo\" />": 1,
-                "<feature name=\"XSLT\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.XSLT\" /></feature>": 1,
-                "<plugin name=\"XSLT\" value=\"org.apache.cordova.plugin.XSLT\" />": 1,
-                "<feature name=\"unzip\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.unzip\" /></feature>": 1,
-                "<plugin name=\"unzip\" value=\"org.apache.cordova.plugin.unzip\" />": 1
-            }
-        },
-        "AndroidManifest.xml": {
-            "/*": {
-                "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />": 1,
-                "<uses-permission android:name=\"android.permission.INTERNET\"></uses-permission>": 1,
-                "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"></uses-permission>": 1
+        "files": {
+            "res/xml/config.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Echo\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.Echo\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<plugin name=\"Echo\" value=\"org.apache.cordova.plugin.Echo\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"XSLT\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.XSLT\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<plugin name=\"XSLT\" value=\"org.apache.cordova.plugin.XSLT\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"unzip\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.unzip\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<plugin name=\"unzip\" value=\"org.apache.cordova.plugin.unzip\" />",
+                            "count": 1
+                        }
+                    ]
+                }
+            },
+            "AndroidManifest.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.INTERNET\"></uses-permission>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"></uses-permission>",
+                            "count": 1
+                        }
+                    ]
+                }
             }
         }
     },

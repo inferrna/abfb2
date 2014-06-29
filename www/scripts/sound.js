@@ -23,6 +23,7 @@ define(
             nidx = idx+1;
             idx = nidx < urls.length ? nidx : 0;
             if(urls[idx]){
+                audios[idx].load();
                 audios[idx].play();
                 sndcnt.textContent = (idx+1)+"/"+urls.length;
             }
