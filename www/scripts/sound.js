@@ -32,7 +32,6 @@ define(
                             idx = nidx < urls.length ? nidx : 0;
                             sndcnt.textContent = (idx+1)+"/"+urls.length;
                         } else {
-                            console.log(audios[idx]);//NFP
                         }
                     }, 250);
                 window.setTimeout(function(){clearInterval(intrvl);}, 5000);
@@ -65,8 +64,6 @@ define(
                    var url = "http://borgu.org:8082/sound?word="+lword+"&lang="+lang;
                    var dreq = new XMLHttpRequest({mozSystem: true});
                    dreq.onload = function (event) {
-                            console.log("some sounds loaded from "+url+":");//NFP
-                            console.log(event.target.responseText);//NFP
                             urls = JSON.parse(event.target.responseText);
                             word = lword;
                             if(urls.length > audios.length) add_audios(urls.length);
@@ -74,8 +71,6 @@ define(
                                 audios[i].src = urls[i];
                             }
                             if(urls.length>0){
-                                console.log("urls:");//NFP
-                                console.log(urls);//NFP
                                 sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
                                 /*if(snd.readyState<3) sndcnt.textContent = 'Wait';
                                 else sndcnt.textContent = 1+"/"+urls.length;*/
