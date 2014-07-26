@@ -16,33 +16,41 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
     var style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = 'img { max-height: '+(window.innerHeight-64)+'px; max-width:'+(window.innerWidth-64)+'px; overflow:hidden}';
     document.getElementsByTagName('head')[0].appendChild(style);
-    txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
-    txarea.style.width = window.innerWidth+"px";
-    fl_text.style.width =  "auto";
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
     var nosnd = document.getElementById('nosnd');
     var pts = document.getElementById("pts");
     var pop = document.getElementById("pop");
     var helper = document.getElementById("helper");
-    mtext.style.top = "0px";
-    txarea.style.backgroundSize = '100%';
-    helper.style.height = window.innerHeight+"px";
-    helper.style.width = window.innerWidth+"px";
-    if ( window.cordova ) {
-        var images = require("images");
-        if(window.innerWidth<512) txarea.style.backgroundImage = 'url('+images.img_tiny+')';
-        else if (window.innerWidth<1024) txarea.style.backgroundImage = 'url('+images.img_small+')';
-        else txarea.style.backgroundImage = 'url('+images.img+')';
-    } else {
-        if(window.innerWidth<512) txarea.style.backgroundImage='url(../images/back_tiny.jpg)';
-        else if (window.innerWidth<1024) txarea.style.backgroundImage='url(../images/back_small.jpg)';
-        else txarea.style.backgroundImage='url(../images/back.jpg)';
+    function set_sizes(){
+        console.log("Sets sizes");
+        document.getElementsByTagName('head')[0].removeChild(style);
+        style.type = 'text/css';
+        style.innerHTML = 'img { max-height: '+(window.innerHeight-64)+'px; max-width:'+(window.innerWidth-64)+'px; overflow:hidden}';
+        document.getElementsByTagName('head')[0].appendChild(style);
+        txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
+        txarea.style.width = window.innerWidth+"px";
+        fl_text.style.width =  "auto";
+        mtext.style.top = "0px";
+        txarea.style.backgroundSize = '100%';
+        helper.style.height = window.innerHeight+"px";
+        helper.style.width = window.innerWidth+"px";
+        if ( window.cordova ) {
+            var images = require("images");
+            if(window.innerWidth<512) txarea.style.backgroundImage = 'url('+images.img_tiny+')';
+            else if (window.innerWidth<1024) txarea.style.backgroundImage = 'url('+images.img_small+')';
+            else txarea.style.backgroundImage = 'url('+images.img+')';
+        } else {
+            if(window.innerWidth<512) txarea.style.backgroundImage='url(../images/back_tiny.jpg)';
+            else if (window.innerWidth<1024) txarea.style.backgroundImage='url(../images/back_small.jpg)';
+            else txarea.style.backgroundImage='url(../images/back.jpg)';
+        }
     }
-    var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
+    window.onresize = function(){
+            set_sizes();
+            fill_page([], options.getpercent(), true);
+        };
     function chkmv(evt){
         evt.gesture.preventDefault();
         if(drvhds<evt.gesture.distance){
@@ -51,6 +59,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         }
         return false;
     }
+    //screen.onmozorientationchange = set_sizes;
+    set_sizes();
+    var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
     hammer(txarea).on("dragleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
     hammer(txarea).on("dragright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
     hammer(txarea).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
