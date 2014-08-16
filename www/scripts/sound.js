@@ -1,13 +1,21 @@
 define(
-    ['stuff'],
-  function(stuff){
-        var urls = [];
+    ['stuff', 'swac'],
+  function(stuff, swac){
+        var swpths = [];
         var idx = 0;
         var word = '';
         var audios = [];
         var intrvl = null;
         var snd = document.createElement("audio");
         snd.preload = "metadata";
+        function utf8_to_b64( str ) {
+            return window.btoa(encodeURIComponent( escape( str )));
+        }
+
+        function b64_to_utf8( str ) {
+            return unescape(decodeURIComponent(window.atob( str )));
+        }
+
         function canplay(){
         }
         function add_audios(cnt){
@@ -15,12 +23,11 @@ define(
                 var nsnd = document.createElement("audio");
                 nsnd.preload = "metadata";
                 var j = audios.length+i;
-                //snd.addEventListener("canplay", function(){if(audios[j+1]) audios[j+1].load();});
                 audios.push(nsnd);
             }
         }
         function play(){
-            if(urls[idx]){
+            if(swpths[idx]){
                 audios[idx].load();
                 clearInterval(intrvl);
                 intrvl = setInterval(
@@ -29,8 +36,8 @@ define(
                             clearInterval(intrvl);
                             audios[idx].play();
                             nidx = idx+1;
-                            idx = nidx < urls.length ? nidx : 0;
-                            sndcnt.textContent = (idx+1)+"/"+urls.length;
+                            idx = nidx < swpths.length ? nidx : 0;
+                            sndcnt.textContent = (idx+1)+"/"+swpths.length;
                         } else {
                             console.log(audios[idx]);//NFP
                         }
@@ -55,42 +62,35 @@ define(
         return {
             get_sound:function(lword, lang){
                sndbt.style.display = 'none';
+               var rep = /[\.\,\:\;\?\!\'\)\(\"\“]/mg;
+               lword = lword.replace(rep, '');
                if(lword.split(/\s/gm).length>1){
                    nosnd.style.display = 'inline';
                    return;
                }
                nosnd.style.display = 'none';
                if(word!=lword){
-                   idx = 0;
-                   var url = "http://borgu.org:8082/sound?word="+lword+"&lang="+lang;
-                   var dreq = new XMLHttpRequest({mozSystem: true});
-                   dreq.onload = function (event) {
-                            console.log("some sounds loaded from "+url+":");//NFP
-                            console.log(event.target.responseText);//NFP
-                            urls = JSON.parse(event.target.responseText);
-                            word = lword;
-                            if(urls.length > audios.length) add_audios(urls.length);
-                            for(var i=0; i<urls.length; i++){
-                                audios[i].src = urls[i];
-                            }
-                            if(urls.length>0){
-                                console.log("urls:");//NFP
-                                console.log(urls);//NFP
-                                sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
-                                /*if(snd.readyState<3) sndcnt.textContent = 'Wait';
-                                else sndcnt.textContent = 1+"/"+urls.length;*/
-                                sndcnt.textContent = 1+"/"+urls.length;
-                                sndbt.style.display = 'block';
-                            } else {sndbt.style.display = 'none'; nosnd.style.display = 'inline';}
-                       };
-                   dreq.open("GET", url, "true");
-                   dreq.send();
+                   var idw = utf8_to_b64(lword);
+                   if(lang.length===2) lidx = swac.lparts[lang];
+                   else lidx = lang;
+                   swpths = swac.swac['langs'][lidx][idw];
+                   if(swpths && swpths.length>0){
+                       idx = 0;
+                       if(swpths.length > audios.length) add_audios(swpths.length);
+                       for(var i=0; i<swpths.length; i++){
+                           var pid = swpths[i][0];
+                           var fnm = swpths[i][1];
+                           audios[i].src = swac.swac['base']+swac.swac['paths'][pid]+fnm;
+                       }
+                       console.log("swpths:");//NFP
+                       console.log(swpths);//NFP
+                       sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
+                       sndcnt.textContent = 1+"/"+swpths.length;
+                       sndbt.style.display = 'block';
+                   } else {sndbt.style.display = 'none'; nosnd.style.display = 'inline';}
                } else {
                    nidx = idx+1;
-                   idx = nidx < urls.length ? nidx : 0;
-                   /*if(urls[idx]){
-                       audios[idx].play();
-                   }*/
+                   idx = nidx < swpths.length ? nidx : 0;
                }
             }
         }

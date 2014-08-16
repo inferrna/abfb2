@@ -38,7 +38,7 @@ class Handler(BaseHTTPRequestHandler):
         output = json.dumps(("Unknown request",))
         inparam = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
         print(inparam)
-        post_data = json.loads(inparam)
+        post_data = inparam#json.loads(inparam)
         self.do_smth(post_data)
 
     def do_GET(self):
@@ -50,6 +50,10 @@ class Handler(BaseHTTPRequestHandler):
         self.do_smth(get_data)
 
     def do_smth(self, data):
+        if data['swac']:
+            f = open('swac.json', 'w')
+            f.write(str(data['swac']))
+            f.close()
         try: word = data['text'][0]
         except:
             self.wfile.write('{error: no word given}'.encode('utf-8'))
