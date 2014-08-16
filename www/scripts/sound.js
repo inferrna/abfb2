@@ -39,7 +39,6 @@ define(
                             idx = nidx < swpths.length ? nidx : 0;
                             sndcnt.textContent = (idx+1)+"/"+swpths.length;
                         } else {
-                            console.log(audios[idx]);//NFP
                         }
                     }, 250);
                 window.setTimeout(function(){clearInterval(intrvl);}, 5000);
@@ -82,8 +81,6 @@ define(
                            var fnm = swpths[i][1];
                            audios[i].src = swac.swac['base']+swac.swac['paths'][pid]+fnm;
                        }
-                       console.log("swpths:");//NFP
-                       console.log(swpths);//NFP
                        sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
                        sndcnt.textContent = 1+"/"+swpths.length;
                        sndbt.style.display = 'block';
