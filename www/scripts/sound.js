@@ -58,6 +58,7 @@ define(
         sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
         sndbt.style.width = sndbt.style.height;
         sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
+        console.log(swac.words('ita')());
 
         return {
             get_sound:function(lword, lang){
