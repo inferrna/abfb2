@@ -1,6 +1,6 @@
 define(
-    ['stuff', 'swac'],
-  function(stuff, swac){
+    ['sharedc', 'stuff', 'swac'],
+  function(sharedc, stuff, swac){
         var swpths = [];
         var idx = 0;
         var word = '';
@@ -58,7 +58,27 @@ define(
         sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
         sndbt.style.width = sndbt.style.height;
         sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
-        console.log(swac.words('ita')());
+        sharedc.register('dict', 'change_lng', function(lang){
+                   if(lang.length===2) var lidx = swac.lparts[lang];
+                   else var lidx = lang;
+                   swac.init(lidx, got_swac);
+        });
+        function got_swac(swpths){
+               if(swpths && swpths.length>0){
+                   idx = 0;
+                   if(swpths.length > audios.length) add_audios(swpths.length);
+                   for(var i=0; i<swpths.length; i++){
+                       var pid = swpths[i][0];
+                       var fnm = swpths[i][1];
+                       audios[i].src = swac.swac['base']+swac.swac['paths'][pid]+fnm;
+                   }
+                   console.log("swpths:");//NFP
+                   console.log(swpths);//NFP
+                   sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
+                   sndcnt.textContent = 1+"/"+swpths.length;
+                   sndbt.style.display = 'block';
+               } else {sndbt.style.display = 'none'; nosnd.style.display = 'inline';}
+        }
 
         return {
             get_sound:function(lword, lang){
@@ -72,23 +92,7 @@ define(
                nosnd.style.display = 'none';
                if(word!=lword){
                    var idw = utf8_to_b64(lword);
-                   if(lang.length===2) lidx = swac.lparts[lang];
-                   else lidx = lang;
-                   swpths = swac.swac['langs'][lidx][idw];
-                   if(swpths && swpths.length>0){
-                       idx = 0;
-                       if(swpths.length > audios.length) add_audios(swpths.length);
-                       for(var i=0; i<swpths.length; i++){
-                           var pid = swpths[i][0];
-                           var fnm = swpths[i][1];
-                           audios[i].src = swac.swac['base']+swac.swac['paths'][pid]+fnm;
-                       }
-                       console.log("swpths:");//NFP
-                       console.log(swpths);//NFP
-                       sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
-                       sndcnt.textContent = 1+"/"+swpths.length;
-                       sndbt.style.display = 'block';
-                   } else {sndbt.style.display = 'none'; nosnd.style.display = 'inline';}
+                   swac.get(idw);
                } else {
                    nidx = idx+1;
                    idx = nidx < swpths.length ? nidx : 0;

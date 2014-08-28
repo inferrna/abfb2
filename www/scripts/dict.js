@@ -10,7 +10,7 @@ define(
         google_proxy_url: '/t?client=Firefox&',
         local_base_url: "http://192.168.0.2:8082/?",//?text=+"value"+"&dict="+"!"+"&host="+"localhost"+"&port="+"2628";
         dictionary: '',
-        sl: 'en',
+        sl: '',
         tl: 'ru',
         hl: 'ru',
         ie: 'UTF-8',
@@ -122,12 +122,14 @@ define(
         },
         lang:function(){return datas["sl"]},
         init_params:function(params){
+            var oldl = datas["sl"];
             for (var key in params) datas[key] = (params[key] != null ? params[key] : datas[key]);
             for (var key in googles) googles[key] = datas[key];
             for (var key in locals){
                 locals[key] = datas[key];
             }
             cache = {};
+            if(datas["sl"]!==oldl) sharedc.exec('dict', 'change_lng')(datas["sl"]);
         }
     };
   }
