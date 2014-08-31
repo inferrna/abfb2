@@ -192,7 +192,6 @@ define(
           if(el && off>-1){
               var txt = el.textContent;//new String(el.textContent);
               try {
-                  console.log("off=="+off);//NFP
                   var sel = window.getSelection();
                   sel.removeAllRanges();
                   var rng = document.createRange();
@@ -200,12 +199,10 @@ define(
                   rng.setStart(el, off);
                   rng.setEnd(el, off+1);
                   if(rng.expand){
-                      console.log("rng.expand and sel.addRange");//NFP
                       rng.expand("word");
                       sel.addRange( rng );
                       selected_word = sel.toString();
                   } else {
-                      console.log("sel.modify and sel.collapseToStart");//NFP
                       sel.addRange(rng);
                       sel.modify("extend", "forward", "word");
                       sel.collapseToEnd();
@@ -224,7 +221,6 @@ define(
             if(isNaN(scale) || !scale) scale = 1.0;
             var newscale = cf*scale;
             scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
-            console.log("scale == "+scale)//NFP
       }
       function apply_scale(){
             "use strict";
