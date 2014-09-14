@@ -68,16 +68,16 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     hammer(txarea).on("dragright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
     hammer(txarea).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
     hammer(txarea).on("dragdown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hammer(mtext).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);
-                                              percentage.textContent = Math.round(100*options.getpercent())+"%";});
-    hammer(mtext).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);
-                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
-    hammer(mtext).on("pinchstart", function(evt){
+    hammer(txarea).on("pinchstart", function(evt){
         console.log("pinchstart");//NFP
         percentage.style.display='block';});
-    hammer(mtext).on("pinchend", function(evt){
+    hammer(txarea).on("pinchend", function(evt){
         console.log("pinchend");//NFP
         percentage.style.display='none';});
+    hammer(txarea).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);
+                                              percentage.textContent = Math.round(100*options.getpercent())+"%";});
+    hammer(txarea).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);
+                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
     hammer(pop).on("dragleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
     hammer(pop).on("dragright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
     hammer(pop).on("dragup",   function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
