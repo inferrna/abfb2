@@ -223,6 +223,7 @@ define(
             "use strict";
             if(isNaN(scale) || !scale) scale = 1.0;
             var newscale = cf*scale;
+            if(Math.abs(1.0 - newscale) < 0.04) newscale = 1.0;
             scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
             console.log("scale == "+scale)//NFP
       }
@@ -308,8 +309,8 @@ define(
               else if (Code===38) {options.display('hide'); pop.style.display='none';}
               else if (Code===40) options.display('show');
               else if ([107,109,187,189].indexOf(Code)!=-1) {
-                  var cf = Code===107||Code===187 ? 1.075 : 1.0/1.075;
-                  chscale(cf*scale, 1);
+                  var cf = Code===107||Code===187 ? 1.05 : 1.0/1.05;
+                  chscale(cf);
                   apply_scale();
               }
           },
@@ -325,7 +326,8 @@ define(
               sharedc.exec('uitouch', 'got_selection')([selected_word, '']);
           },
           doscale:function(cf){
-              chscale(Math.sqrt(Math.sqrt(cf)), 1);
+              cf = cf > 1.05 ? 1.05 : cf < 1/1.05 ? 1/1.05 : cf;
+              chscale(cf, 1);
               apply_scale();
           },
           init_scale:function(){
