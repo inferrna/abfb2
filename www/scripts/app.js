@@ -53,7 +53,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             fill_page([], options.getpercent(), true);
         };
     function chkmv(evt){
-        console.log(evt.gesture.distance+" vs "+drvhds);//NFP
         evt.gesture.preventDefault();
         if(drvhds<evt.gesture.distance){
             evt.gesture.stopDetect();
@@ -69,10 +68,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     hammer(txarea).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
     hammer(txarea).on("dragdown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hammer(txarea).on("pinchstart", function(evt){
-        console.log("pinchstart");//NFP
         percentage.style.display='block';});
     hammer(txarea).on("pinchend", function(evt){
-        console.log("pinchend");//NFP
         percentage.style.display='none';});
     hammer(txarea).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);
                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
@@ -199,8 +196,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
-        console.log("Got texts:");//NFP
-        console.log(texts);//NFP
         var pos = 0;
         if(el){
             if(disp!='none'){
