@@ -26,7 +26,7 @@ function(stuff, sharedf, sharedc){
         });
     }
 
-    var xsl = parsr.parseFromString(stuff.fb2xsl.replace(/&quot;/g,'"').replace(/&amp;/g,'\''), 'text/xml');
+    var xsl = parsr.parseFromString(unescape(stuff.fb2xsl), 'text/xml');
     if(window.XSLTProcessor){
         var xsltp = new XSLTProcessor();
         xsltp.importStylesheet(xsl);
@@ -34,11 +34,13 @@ function(stuff, sharedf, sharedc){
         //var jsxml = require('jsxml');
     }
     function transxsl(xmls, xsls, callback){
+        console.log("xsl is");//NFP
+        console.log(unescape(stuff.fb2xsl));//NFP
         if(window.XSLTProcessor) {
             var xml = parsr.parseFromString(xmls, 'text/xml');
             callback(xsltp.transformToFragment(xml, document));
-        } else if(transavail==='cordova') cordova_trans(xsls, xmls, callback);
-        else callback(parsr.parseFromString(jsxml.transReady(xmls, xsls), "text/html"));
+        } //else if(transavail==='cordova') cordova_trans(xsls, xmls, callback);
+        //else callback(parsr.parseFromString(jsxml.transReady(xmls, xsls), "text/html"));
     }
 
 
@@ -55,8 +57,9 @@ function(stuff, sharedf, sharedc){
             fb2.appendChild(resultDocument);
             //fb2 = resultDocument;
             var divlist = fb2.getElementsByTagName('div');
-            var re = /TOC_.+/g;
+            var re = /TOC_.*/;
             sharedf.clean_tags(fb2, ['script', 'a']);
+            console.log(divlist[1].textContent);
             for(var i = 0; i < divlist.length; i++)
                 if(re.test(divlist[i].getAttribute('id'))){ 
                     divs.push(divlist[i]);//.getAttribute('id'));
@@ -90,14 +93,19 @@ function(stuff, sharedf, sharedc){
             var options = fb2.getElementsByTagName('option');
             options[0].setAttribute('disabled', '');
             options[0].setAttribute('selected', '');
-            var values = [];
-            for(var i = 0; i<divs.length; i++)
+            var idx, lastidx=0, values = [];
+            for(var i = 0; i<divs.length; i++){
                 values.push(divs[i].getAttribute('id'));
+                console.log(divs[i].getAttribute('id')+" pushed");//NFP
+            }
             for(var i = 0; i<options.length; i++){
-                var idx  = values.indexOf(options[i].getAttribute('did'));
-                if(idx>-1) pages.push(idx);
-                else if(pages.length>1) pages.push(pages[pages.length-1]);
-                else pages.push(0);
+                idx  = values.indexOf(options[i].getAttribute('did'));
+                console.log("index for "+options[i].getAttribute('did')+" is "+idx);//NFP
+                if(idx>-1){
+                    pages.push(idx);
+                    lastidx = idx;
+                } else pages.push(lastidx);
+                
             }
             toc.setAttribute('id', 'tocselect');
             result.appendChild(toc);
