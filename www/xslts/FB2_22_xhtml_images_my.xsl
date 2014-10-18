@@ -12,7 +12,7 @@
 
 				<xsl:for-each select="fb:description/fb:title-info/fb:annotation">
 
-					<div>
+					<div id="TOC_{generate-id()}">
 						<xsl:call-template name="annotation"/>
 					</div>
 					<hr/>
@@ -63,7 +63,7 @@
 		<!--      <br/> -->
 	</xsl:template>
 	<!-- toc template -->
-	<xsl:template match="fb:section|fb:body" mode="toc">
+	<xsl:template match="fb:section" mode="toc">
 		<xsl:choose>
 			<xsl:when test="name()='body' and position()=1 and not(fb:title)">
 				<xsl:apply-templates select="fb:section" mode="toc"/>
@@ -85,7 +85,7 @@
 	</xsl:template>
 	<!-- body -->
 	<xsl:template match="fb:body">
-		<div><xsl:apply-templates/></div>
+		<div id="TOC_{generate-id()}"><xsl:apply-templates/></div>
 	</xsl:template>
 
 	<xsl:template match="fb:section">
@@ -148,7 +148,7 @@
 	</xsl:template>
 	<!-- p -->
 	<xsl:template match="fb:p">
-		<div align="justify"><xsl:if test="@id">
+		<div id="TOC_{generate-id()}" align="justify"><xsl:if test="@id">
 				<xsl:element name="a">
 					<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
 				</xsl:element>
@@ -276,7 +276,7 @@
 	</xsl:template>
 	<!-- image -->
 	<xsl:template match="fb:image" name="image">
-		<div align="center">
+		<div id="TOC_{generate-id()}" align="center">
 			<img border="1">
 				<xsl:choose>
 					<xsl:when test="starts-with(@xlink:href,'#')">
