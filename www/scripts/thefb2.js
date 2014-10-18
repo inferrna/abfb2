@@ -39,7 +39,8 @@ function(stuff, sharedf, sharedc){
         if(window.XSLTProcessor) {
             var xml = parsr.parseFromString(xmls, 'text/xml');
             callback(xsltp.transformToFragment(xml, document));
-        } //else if(transavail==='cordova') cordova_trans(xsls, xmls, callback);
+        } 
+        //else if(transavail==='cordova') cordova_trans(xsls, xmls, callback);
         //else callback(parsr.parseFromString(jsxml.transReady(xmls, xsls), "text/html"));
     }
 
@@ -55,14 +56,13 @@ function(stuff, sharedf, sharedc){
         var serializer = new XMLSerializer();
         transxsl(fb2File, serializer.serializeToString(xsl), function(resultDocument){
             fb2.appendChild(resultDocument);
-            //fb2 = resultDocument;
             var divlist = fb2.getElementsByTagName('div');
             var re = /TOC_.*/;
             sharedf.clean_tags(fb2, ['script', 'a']);
             console.log(divlist[1].textContent);
             for(var i = 0; i < divlist.length; i++)
                 if(re.test(divlist[i].getAttribute('id'))){ 
-                    divs.push(divlist[i]);//.getAttribute('id'));
+                    divs.push(divlist[i]);
             } 
             sharedc.exec('book','got_book')();
             sharedc.exec('bookng', 'got_toc')();
@@ -78,7 +78,7 @@ function(stuff, sharedf, sharedc){
     function get_indexed_page(index, percent){
         if(index>-1){
             var idx = pages[index];
-            var ch = divs[idx];//document.getElementById(pages[index]);
+            var ch = divs[idx];
             try {
                 var html = srlzr.serializeToString(ch);
                 currentpage = index;
@@ -88,7 +88,7 @@ function(stuff, sharedf, sharedc){
             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, null], percent);
             else        sharedc.exec('bookng', 'got_fstfile')([html, null]);
         }else{
-            var result = document.createElement('div');//document.createDocumentFragment();;//document.createElement('div');
+            var result = document.createElement('div');
             var toc = fb2.getElementsByTagName('select')[0].cloneNode(true);
             var options = fb2.getElementsByTagName('option');
             options[0].setAttribute('disabled', '');
@@ -109,7 +109,7 @@ function(stuff, sharedf, sharedc){
             }
             toc.setAttribute('id', 'tocselect');
             result.appendChild(toc);
-            return result;//docFragment;//contents;
+            return result;
         }
     }
     return {
@@ -139,7 +139,7 @@ function(stuff, sharedf, sharedc){
                     return get_indexed_page(page, prc);
              },
              init:function(){
-                    fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
+                    fb2 = document.createElement('div');
                     pages = [];
                     divs = [];
                     currentpage = 0;
