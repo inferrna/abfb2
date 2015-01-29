@@ -7,7 +7,7 @@ define(
         var retxt = /[\w\W]+\.txt/;
         var repub = /[\w\W]+\.(epub|zip)/;
         var refb2 = /[\w\W]+\.fb2/;
-        var filename = 'name';
+        var filename = '';
         return {
                  init:function(file) {
                          if(file) filename = file.name;

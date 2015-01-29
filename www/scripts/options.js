@@ -122,23 +122,33 @@ define(
             sharedc.register('dict', 'got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
         }else if(key==="dsfile"){
                 sel.addEventListener("change", 
-                                function (event){
-                                    var fnm = event.target.options[event.target.selectedIndex].value;
-                                    filename = fnm.replace(sharedf.relf, "$2");
+                            function (event){
+                                console.log("Book selection event fired "); //NFP
+                                var fnm = event.target.options[event.target.selectedIndex].value;
+                                var _filename = fnm.replace(sharedf.relf, "$2");
+                                if(_filename != filename){
+                                    filename = _filename;
                                     sdstorage.get(fnm, function (_file) {
-                                                                       file = _file;
-                                                                       set_opt('last_file', filename);
-                                                                       set_opt(filename+"_time", Date.now());
-                                                                       sharedc.exec('options', 'got_file')();} );
-                                }, false);
+                                                                   file = _file;
+                                                                   set_opt('last_file', filename);
+                                                                   set_opt(filename+"_time", Date.now());
+                                                                   sharedc.exec('options', 'got_file')();});
+                                }
+                            }, false);
                 sdstorage.parse(sel, obj);
             return sel;
         } 
-        sel.addEventListener("change", function(evt){get_config(); draw_deps(evt.target);
-                                    var value = evt.target.options[evt.target.selectedIndex].value;
-                                    set_opt("sel_"+sel.id, value); 
-                                    values[evt.target.id] = value;
-                                    dict.init_params({"db": values["dict_db"], "dictionary": values["dict_src"]});
+        sel.addEventListener("change", function(evt){
+                                    console.log("Selection event fired "+ !event.target.disabled); //NFP
+                                    if(event.target.disabled === true) {
+                                        event.target.disabled = false;
+                                    } else {
+                                        get_config(); draw_deps(evt.target);
+                                        var value = evt.target.options[evt.target.selectedIndex].value;
+                                        set_opt("sel_"+sel.id, value); 
+                                        values[evt.target.id] = value;
+                                        dict.init_params({"db": values["dict_db"], "dictionary": values["dict_src"]});
+                                    }
                                     }, false);
         for(var eln in elements){
             var el = document.createElement("option");

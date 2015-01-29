@@ -50,6 +50,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     }
     window.onresize = function(){
             set_sizes();
+            console.log("Call for percent from window.onresize"); //NFP
             fill_page([], options.getpercent(), true);
         };
     function chkmv(evt){
@@ -75,8 +76,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         console.log("pinchend");//NFP
         percentage.style.display='none';});
     hammer(txarea).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);
+                                              console.log("Call for percent from pinchin"); //NFP
                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
     hammer(txarea).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);
+                                               console.log("Call for percent from pinchout"); //NFP
                                                percentage.textContent = Math.round(100*options.getpercent())+"%";});
     hammer(pop).on("dragleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
     hammer(pop).on("dragright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
@@ -112,17 +115,27 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         });
     sharedc.register('bookng', 'got_fstfile', function(data, prc){
         if(data){
-            if(prc) var percent = prc;
-            else var percent = options.getpercent();
-            fill_page(data, percent, false); 
+            if(prc) { 
+                var percent = prc;
+            } else {
+                console.log("Call for percent from bookng:got_fstfile"); //NFP
+                var percent = options.getpercent();
+            }
+            console.log("Fill page with percent "+percent); //NFP
             var sel = document.getElementById("tocselect");
             var newsel = book.foliant().option(sel.selectedIndex);
-            if(sel.options[newsel]) sel.options[newsel].selected = true;
+            fill_page(data, percent, false);
+            if(sel.options[newsel]) {
+                sel.disabled = true;
+                sel.options[newsel].selected = true;
+                sel.disabled = false;
+            }
             options.display("hide");
         }
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
+                                                console.log("Call for percent from options:got_pp"); //NFP
                                                 var prc = options.getpercent();
                                                 book.foliant().get_fromopt(i, prc);
                                             });
@@ -131,6 +144,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
                                         });
  
     function fill_toc(html){
+        console.log("Create TOC from ");//NFP
+        console.log(html);//NFP
         var opts = document.getElementById("options_block");
         var toc = document.getElementById("toc");
         var dtoc = toc.parentNode;
@@ -141,31 +156,44 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
         dtoc.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
         sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
-        sel.addEventListener("change", function (event){mtext.style.top="0px"; 
-                                                book.foliant().get_fromopt(event.target.selectedIndex, 0.00000000000000001);} );
+        sel.addEventListener("change", function (event){
+                                                if(event.target.disabled === true) {
+                                                    event.target.disabled = false;
+                                                    console.log("Dummy fired TOC selection change"); //NFP
+                                                } else {
+                                                    mtext.style.top="0px";
+                                                    options.setpercent(0);
+                                                    book.foliant().get_fromopt(event.target.selectedIndex);
+                                                    console.log("Fired TOC selection change"); //NFP
+                                                }  
+                                       });
         options.getpp();
     }
     function prc_from_anchor(anchor, prc){
+        console.log("Got"); //NFP
+        console.log("anchor "+anchor); //NFP
+        console.log("prc "+prc); //NFP
         var ancel = document.getElementById(anchor);
-        if(!ancel) return prc;
+        if(!ancel) 
+            if(!prc) return 0;
+            else return prc;
         var antop = parseFloat(stuff.getStyle(ancel, 'top'));
         var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
         return 100.0*antop/cheight;
     }
     function fill_page(data, percent, nosave){
+        if(percent<0) percent=0;
         if(data[0]) mtext.innerHTML = data[0];
         mtext.style.width = 'auto';
         mtext.style.height = 'auto';
         mtext.style.display = 'block';
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         var cheight = mtext.scrollHeight;//stuff.getStyle(mtext, 'height');
-        if(!nosave) {
-            options.setpage(book.foliant().currentpage());
-        }
-        if(data[1]) percent = prc_from_anchor(data[1], percent);
+        if(!nosave) options.setpage(book.foliant().currentpage());
+        if(data[1] && !percent) percent = prc_from_anchor(data[1], percent);
         else if(percent==='end') percent = 100.0*parseFloat(cheight-window.innerHeight/2)/cheight;
         mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
-        if(!nosave) {
+        if(!nosave){
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }
