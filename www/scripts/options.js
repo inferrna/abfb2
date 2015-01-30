@@ -122,9 +122,9 @@ define(
             sharedc.register('dict', 'got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
         }else if(key==="dsfile"){
                 sel.addEventListener("change", 
-                            function (event){
+                            function (evt){
                                 console.log("Book selection event fired "); //NFP
-                                var fnm = event.target.options[event.target.selectedIndex].value;
+                                var fnm = evt.target.options[evt.target.selectedIndex].value;
                                 var _filename = fnm.replace(sharedf.relf, "$2");
                                 if(_filename != filename){
                                     filename = _filename;
@@ -139,9 +139,9 @@ define(
             return sel;
         } 
         sel.addEventListener("change", function(evt){
-                                    console.log("Selection event fired "+ !event.target.disabled); //NFP
-                                    if(event.target.disabled === true) {
-                                        event.target.disabled = false;
+                                    console.log("Selection event fired "+ !evt.target.disabled); //NFP
+                                    if(evt.target.disabled === true) {
+                                        evt.target.disabled = false;
                                     } else {
                                         get_config(); draw_deps(evt.target);
                                         var value = evt.target.options[evt.target.selectedIndex].value;

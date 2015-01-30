@@ -330,17 +330,22 @@ define(
               chscale(cf, 1);
               apply_scale();
           },
-          init_scale:function(){
-              options.get_opt('scale', function(sc){
-                      var _scale = parseFloat(sc);
-                      if(_scale > 0.25 && _scale < 8.0 || !isNaN(_scale) ){
-                          scale = _scale;
-                          chscale(1.0);
+          init_scale:function(newscale){
+              if(newscale && newscale > 0.25 && newscale < 8.0){
+                  scale = newscale;
+                  apply_scale();
+              } else {
+                  options.get_opt('scale', function(sc){
+                          var _scale = parseFloat(sc);
+                          if(_scale > 0.25 && _scale < 8.0 || !isNaN(_scale) ){
+                              scale = _scale;
+                              chscale(1.0);
+                          } else {
+                              scale = 1.0;
+                          }
                           apply_scale();
-                      } else {
-                          scale = 1.0;
-                      }
-                  }, true);
+                      }, true);
+              }
 
           }
       }

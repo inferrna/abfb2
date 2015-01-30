@@ -15,6 +15,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
+    console.log("Got hammer"); //NFP
+    console.log(hammer);
     var style = document.createElement('style');
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
@@ -53,11 +55,16 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
             console.log("Call for percent from window.onresize"); //NFP
             fill_page([], options.getpercent(), true);
         };
+    var hammerelements = {};
     function chkmv(evt){
-        console.log(evt.gesture.distance+" vs "+drvhds);//NFP
-        evt.gesture.preventDefault();
-        if(drvhds<evt.gesture.distance){
-            evt.gesture.stopDetect();
+        console.log(evt.distance+" vs "+drvhds);//NFP
+        evt.srcEvent.preventDefault();
+        if(drvhds<evt.distance){
+            //console.log(hammerelements);
+            //console.log(evt.target.id);
+            for(var key in hammerelements) {
+                hammerelements[key].stop();
+            }
             return true;
         }
         return false;
@@ -65,29 +72,59 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     //screen.onmozorientationchange = set_sizes;
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
-    hammer(txarea).on("dragleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hammer(txarea).on("dragright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hammer(txarea).on("dragup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
-    hammer(txarea).on("dragdown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hammer(txarea).on("pinchstart", function(evt){
+    var hmctxarea = new hammer.Manager(txarea, {});/*
+            recognizers: [
+            // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
+            [hammer.Pan, { direction: hammer.DIRECTION_ALL}  ],
+            [hammer.Pinch],
+            [hammer.Tap],
+            [hammer.Swipe,{ direction: hammer.DIRECTION_ALL }]
+        ]} );*/
+    console.log("hmctxarea");
+    console.log(hmctxarea);
+    //hmctxarea.get('pan').set({ direction: hammer.DIRECTION_ALL });
+    //hmctxarea.get('swipe').set({ direction: hammer.DIRECTION_ALL });
+    hammerelements[txarea.id] = hmctxarea;
+    hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
+    hmctxarea.add( new hammer.Pinch() );
+    hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
+    hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
+    hmctxarea.on("doubletap", function(evt){
+            console.log("doubletap detected");//NFP
+            options.set_opt('scale', 1.0);
+            uitouch.init_scale(1.0);
+        });
+    hmctxarea.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hmctxarea.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
+    hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
+    hmctxarea.on("pinchstart", function(evt){
         console.log("pinchstart");//NFP
         percentage.style.display='block';});
-    hammer(txarea).on("pinchend", function(evt){
+    hmctxarea.on("pinchend", function(evt){
         console.log("pinchend");//NFP
         percentage.style.display='none';});
-    hammer(txarea).on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);
+    hmctxarea.on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);
                                               console.log("Call for percent from pinchin"); //NFP
                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
-    hammer(txarea).on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);
+    hmctxarea.on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);
                                                console.log("Call for percent from pinchout"); //NFP
                                                percentage.textContent = Math.round(100*options.getpercent())+"%";});
-    hammer(pop).on("dragleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
-    hammer(pop).on("dragright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
-    hammer(pop).on("dragup",   function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
-    hammer(pop).on("dragdown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
+    var hammerpop = new hammer.Manager(pop, {
+            recognizers: [
+            // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
+            [hammer.Pan, { direction: hammer.DIRECTION_ALL } ],
+            [hammer.Tap]
+    ]});
+    hammerelements[pop.id] = hammerpop;
+    hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
+    hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
+    hammerpop.on("panup",   function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
+    hammerpop.on("pandown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
-    hammer(helper).on("click tap pinchin pinchout dragleft dragright dragup dragdown", function(evt){helper.style.display="none";});
+    var hammerhelper = new hammer(helper);
+    hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){helper.style.display="none";});
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
