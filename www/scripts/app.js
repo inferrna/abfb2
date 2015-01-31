@@ -89,7 +89,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     hmctxarea.add( new hammer.Pinch() );
     hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
     hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
-    hmctxarea.on("doubletap", function(evt){
+    hmctxarea.on("doubletap doubleclick", function(evt){
             console.log("doubletap detected");//NFP
             options.set_opt('scale', 1.0);
             uitouch.init_scale(1.0);
