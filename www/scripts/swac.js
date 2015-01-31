@@ -6,11 +6,8 @@ return {
     lparts:lparts,
     swac:swac,
     init:function(lng, callback){
-        console.log('Init new lang '+lng);//NFP
         worker = new Worker('scripts/swaclangs/'+lng+'.js');
         worker.onmessage = function(event) {
-              console.log('Got message from worker');//NFP
-              console.log(event.data);//NFP
               callback(event.data);
         };
     },

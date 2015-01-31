@@ -123,7 +123,6 @@ define(
         }else if(key==="dsfile"){
                 sel.addEventListener("change", 
                             function (evt){
-                                console.log("Book selection event fired "); //NFP
                                 var fnm = evt.target.options[evt.target.selectedIndex].value;
                                 var _filename = fnm.replace(sharedf.relf, "$2");
                                 if(_filename != filename){
@@ -139,7 +138,6 @@ define(
             return sel;
         } 
         sel.addEventListener("change", function(evt){
-                                    console.log("Selection event fired "+ !evt.target.disabled); //NFP
                                     if(evt.target.disabled === true) {
                                         evt.target.disabled = false;
                                     } else {

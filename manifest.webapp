@@ -1,5 +1,5 @@
 {
-  "version": "0.1",
+  "version": "0.45",
   "name": "Ab FB2 reader",
   "description": "An fb2 reader app",
   "launch_path": "/popuptest.html",
