@@ -64,6 +64,7 @@ function (mimetypes, sharedf, sharedc) {
         unzipFiles([opfPath], proceedopf);
     }
     function proceedopf(){
+        console.log("call to read opf");
         readOpf(files[opfPath]);
         var staff2ext = [];
         var keyre = /^(ncx|toc)$/i;
@@ -80,12 +81,14 @@ function (mimetypes, sharedf, sharedc) {
     function parse_toc(toc, base){
        var points = toc.getElementsByTagName("navPoint");
        var tocels = [];
+       var namerefs = {};
        for(i=0; i<points.length; i++){
            var tocel = {}
            var lbl = points[i].getElementsByTagName("navLabel")[0];
            var cont = points[i].getElementsByTagName("content")[0];
            tocel['href'] = resolvePath(cont.attributes['src'].value, base);
            tocel['name'] = lbl.textContent.replace(/\s+/mg, ' ');
+           namerefs[tocel['href']] = tocel['name'];
            tocels.push(tocel)
        }
        var recl = /toc-.+/i;
@@ -95,8 +98,34 @@ function (mimetypes, sharedf, sharedc) {
            var a = points[i].getElementsByTagName("a")[0];
            tocel['href'] = resolvePath(a.getAttribute("href"), base);
            tocel['name'] = a.textContent.replace(/\s+/mg, ' ');
+           namerefs[tocel['href']] = tocel['name'];
            tocels.push(tocel)
        }
+       var number = 0;
+       var lastname = '';
+       //if(opf.guide.length){
+           var newtocels = [];
+           for(_key in opf.guide){
+               key = resolvePath(_key, base); 
+               var tocel = {};
+               tocel['href'] = key;
+               if(key in namerefs) {
+                   tocel['name'] = namerefs[key];
+                   lastname = namerefs[key];
+                   number = 1;
+               } else {
+                   if(number > 0){
+                       tocel['name'] = lastname.slice(0, 11)+'.. '+number+'.';
+                       number+=1;
+                   } else {
+                       tocel['name'] = opf.guide[key];
+                   }
+               }
+               newtocels.push(tocel)
+           }
+           if(newtocels.length > tocels.length) tocels = newtocels;
+       //}
+       delete namerefs, tocel;
        return tocels;
     }
     function proceedcss(){
@@ -241,7 +270,8 @@ function (mimetypes, sharedf, sharedc) {
         opf = {
             metadata: {},
             manifest: {},
-            spine: []
+            spine: [],
+            guide: {}
         };
         var metadatas = doc.getElementsByTagName("metadata")[0];
         var metadataNodes = metadatas.childNodes;
@@ -282,6 +312,17 @@ function (mimetypes, sharedf, sharedc) {
             var node = spineEntries[i];
             opf.spine.push(node.getAttribute("idref"));
         }
+        var guide = doc.getElementsByTagName("guide")[0];
+        if(!guide) return;
+        else var guideEntries = guide.getElementsByTagName("reference");
+
+        for (var i = 0, il = guideEntries.length; i < il; i++) {
+            var node = guideEntries[i];
+            opf.guide[node.getAttribute("href")] = node.getAttribute("title");
+        }
+        console.log("opf.guide.length is "+opf.guide.length);//NFP
+        console.log("opf.guide is ");//NFP
+        console.log(opf.guide);//NFP
     }
 
     function resolvePath(path, referrerLocation) {
@@ -306,10 +347,10 @@ function (mimetypes, sharedf, sharedc) {
 
     function findMediaTypeByHref(href) {
         // Best guess if it's not in the manifest. (Those bastards.)
-        var match = href.match(/\.(jpeg|jpg|gif|png|bmp)$/i);
+        var imgmatch = href.match(/\.(jpeg|jpg|gif|png|bmp)$/i);
         var matchttf = href.match(/\.(ttf)$/);
         var matchotf = href.match(/\.(otf)$/);
-        if(match) return "image/" + match[1];
+        if(imgmatch) return "image/" + match[1];
         else if(matchttf) return "font/ttf";
         else if(matchotf) return "font/otf";
         for (var key in opf.manifest) {
