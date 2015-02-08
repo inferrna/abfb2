@@ -8,9 +8,18 @@ define(
         "use strict";
         var pics = navigator.getDeviceStorage('sdcard');
         // Let's browse all the images available
-        var cursor = pics.enumerate();
+        var paths = ['books', 'Books', 'Library', 'library', 'Download', 'download'];
         var count = 0;
-        cursor.onsuccess = function () {
+        for(var p in paths){
+            var cursor = pics.enumerate({'path': paths[p]});
+            cursor.onsuccess = onsuccess;
+            cursor.onerror = onerror;
+        }
+        function onerror() {
+          console.warn("No file found "+this.error);
+          options.msg(badtext);
+        }
+        function onsuccess() {
             function g_or_b(err){
                 "use strict";
                 if(count>0) {
@@ -58,10 +67,6 @@ define(
                 return;
             }
             //dict.get_dbs();
-        }
-        cursor.onerror = function () {
-          console.warn("No file found "+this.error);
-          options.msg(badtext);
         }
     }
     return {

@@ -86,7 +86,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     //hmctxarea.get('swipe').set({ direction: hammer.DIRECTION_ALL });
     hammerelements[txarea.id] = hmctxarea;
     hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
-    hmctxarea.add( new hammer.Pinch() );
+    hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
     hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
     hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
     hmctxarea.on("doubletap doubleclick", function(evt){
@@ -104,10 +104,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedc, require){
     hmctxarea.on("pinchend", function(evt){
         console.log("pinchend");//NFP
         percentage.style.display='none';});
-    hmctxarea.on("pinchin", function(evt){uitouch.doscale(evt.gesture.scale);
+    hmctxarea.on("pinchin", function(evt){uitouch.doscale(Math.sqrt(evt.scale));
                                               console.log("Call for percent from pinchin"); //NFP
                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
-    hmctxarea.on("pinchout", function(evt){uitouch.doscale(evt.gesture.scale);
+    hmctxarea.on("pinchout", function(evt){uitouch.doscale(Math.sqrt(evt.scale));
                                                console.log("Call for percent from pinchout"); //NFP
                                                percentage.textContent = Math.round(100*options.getpercent())+"%";});
     var hammerpop = new hammer.Manager(pop, {
