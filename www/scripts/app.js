@@ -1,5 +1,5 @@
-require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'images', 'hammer'],
-function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require){
+require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'advanced', 'require', 'hammer'],
+function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced, require){
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -26,40 +26,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require){
     var pop = document.getElementById("pop");
     var helper = document.getElementById("helper");
     var percentage = document.getElementById("percentage");
-    var Canvas = document.createElement("canvas");
-    Canvas.id = "mybackgr";
-    var imageObj = new Image();
-
-    imageObj.onload = function() {
-          Canvas.height = this.height;
-          Canvas.width = this.width;
-          var ctx = Canvas.getContext('2d');
-          ctx.drawImage(this, 0, 0);
-          console.log("Iage loaded");//NFP
-          var pixels = ctx.getImageData(0, 0, Canvas.width, Canvas.height);
-          var all = pixels.data.length;
-          var lsum = 0.0;
-          var newlsum = 0.0;
-          for (var i = 0; i < all; i += 4) {
-                var r = pixels.data[i];
-                var g = pixels.data[i+1];
-                var b = pixels.data[i+2];
-                var hsl = sharedf.rgbToHsv(r, g, b);
-                lsum += hsl[2];
-                hsl[2] = 1.0 - hsl[2];
-                newlsum += hsl[2];
-                var rgb = sharedf.hsvToRgb(hsl[0], hsl[1], hsl[2]);
-                pixels.data[i]   = rgb[0];
-                pixels.data[i+1] = rgb[1];
-                pixels.data[i+2] = rgb[2];
-          }
-          var clravg = Math.round(Math.abs(lsum-newlsum)*255/(Canvas.width*Canvas.height));
-          console.log("clravg==", clravg);//NFP
-          ctx.putImageData(pixels, 0, 0);
-      //console.log(Canvas.toDataURL('image/jpg'));//NFP
-          txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
-          txarea.style.color = "rgb("+clravg+", "+clravg+", "+clravg+")";
-    }; 
     function set_sizes(){
         console.log("Sets sizes");
         document.getElementsByTagName('head')[0].removeChild(style);
@@ -68,21 +34,11 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require){
         document.getElementsByTagName('head')[0].appendChild(style);
         txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
         txarea.style.width = window.innerWidth+"px";
+        helper.style.height = window.innerHeight+"px";
+        helper.style.width = window.innerWidth+"px";
         fl_text.style.width =  "auto";
         mtext.style.top = "0px";
         txarea.style.backgroundSize = '100%';
-        helper.style.height = window.innerHeight+"px";
-        helper.style.width = window.innerWidth+"px";
-        //if ( window.cordova ) {
-            var images = require("images");
-            if(window.innerWidth<512) imageObj.src = images.img_tiny;
-            else if (window.innerWidth<1024) imageObj.src = images.img_small;
-            else imageObj.src = images.img;
-        /*} else {
-            if(window.innerWidth<512) imageObj.src = '../images/back_tiny.jpg';
-            else if (window.innerWidth<1024) imageObj.src = '../images/back_small.jpg';
-            else imageObj.src = '../images/back.jpg';
-        }*/
     }
     window.onresize = function(){
             set_sizes();

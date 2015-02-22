@@ -380,7 +380,7 @@ define(
                 return file;
             },
             remove_opt:function(key){
-                remove_key(filename+"_"+key);
+                remove_key(key);
             },
             set_opt:function(key, val, file){
                 var param;

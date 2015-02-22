@@ -4,6 +4,7 @@ define(
     var options = null;
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
+    var filenames = [];
     function parse_storage_ff(sel, obj){
         "use strict";
         var pics = navigator.getDeviceStorage('sdcard');
@@ -46,11 +47,14 @@ define(
             }
             try{
                 if(filere.test(file.name)){
-                    var nm  = document.createElement("option");
-                    nm.textContent = file.name;
-                    count++;
-                    options.msg("File found: " + file.name);
-                    sel.appendChild(nm);
+                    if(filenames.indexOf(file.name)===-1){
+                        var nm  = document.createElement("option");
+                        nm.textContent = file.name;
+                        count++;
+                        options.msg("File found: " + file.name);
+                        sel.appendChild(nm);
+                        filenames.push(file.name);
+                    }
                 }
             }catch(e) {
                 g_or_b("unknown");
