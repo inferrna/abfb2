@@ -3,16 +3,35 @@ define(
     function(sharedc, sharedf, options, images){
         console.log("advanced loaded");//NFP
         var advanced = document.getElementById('advanced');
+        advanced.style.display = "none";
+        var switchdictclr = document.getElementById('switchdictclr');
         var switchmode = document.getElementById('switchmode');
         var switchmtxt = document.getElementById('switchmtxt');
         var switchback = document.getElementById('switchback');
         var switchbtxt = document.getElementById('switchbtxt');
         var customimg  = document.getElementById('customimg');
+        var pts = document.getElementById('pts');
         var txarea = document.getElementById('txtarea');
+        var clrs = [[222,211,165], [235,232,200], [209,200,148]];
+        var opts_brd_b = document.getElementById('options');
+        var advbtn = document.createElement("div");
+        advbtn.type="range"; advbtn.style.height="15px"; advbtn.style.position="absolute";
+        advbtn.style.width="18%"; advbtn.style.borderRadius="3px"; advbtn.style.right="1%";
+        advbtn.style.backgroundColor="#010203"; advbtn.style.margin="1px"; advbtn.style.border="1px";
+        opts_brd_b.appendChild(advbtn);
+        advbtn.onclick = function(){
+            if(advanced.style.display === "none"){
+                advanced.style.display = "block";
+            } else {
+                advanced.style.display = "none";
+            }
+        }
+
         var Canvas = document.createElement("canvas");
         Canvas.id = "mybackgr";
         var imageObj = new Image();
         var currentmode = "day";
+        var currentdmode = "day";
         var currentback = "";
         customimg.onchange = function(evt){
             var imageurl = window.URL.createObjectURL(evt.target.files[0])
@@ -33,6 +52,20 @@ define(
               set_default_back();
           }
           e.preventDefault(); // prevent navigation to "#"
+        }, false);
+
+        switchdictclr.addEventListener("click", function (e) {
+          console.log("switchdictclr clicked");//NFP
+          if (currentdmode === "day"){
+              pts.className = "bcol revgradient";
+              currentdmode = "night";
+          } else {
+              pts.className = "bcol gradient";
+              currentdmode = "day";
+          }
+          setback();
+          e.preventDefault(); // prevent navigation to "#"
+
         }, false);
 
         switchmode.addEventListener("click", function (e) {
@@ -84,8 +117,8 @@ define(
               if(currentmode != "day"){ 
                   lsum = 0.0;
                   if(avgl < 0.49){
-                    c = 2.0;
-                    add = 0.25
+                    c = 0.3; //Protect from div by zero.
+                    add = 0.7;
                   } else {
                     c = lmax/5.0;
                     add = 0.0;
@@ -95,7 +128,7 @@ define(
                       var g = pixels.data[i+1];
                       var b = pixels.data[i+2];
                       var hsl = sharedf.rgbToHsv(r, g, b);
-                      hsl[2] = Math.min(1.0,(add+hsl[2])*c);
+                      hsl[2] = Math.min(1.0, add+hsl[2]*c);
                       lsum += hsl[2];
                       var rgb = sharedf.hsvToRgb(hsl[0], hsl[1], hsl[2]);
                       pixels.data[i]   = rgb[0];

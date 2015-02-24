@@ -26,6 +26,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     var pop = document.getElementById("pop");
     var helper = document.getElementById("helper");
     var percentage = document.getElementById("percentage");
+    var advanced = document.getElementById('advanced');
     function set_sizes(){
         console.log("Sets sizes");
         document.getElementsByTagName('head')[0].removeChild(style);
@@ -86,8 +87,14 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
         });
     hmctxarea.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
     hmctxarea.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){options.display('hide'); pop.style.display='none';}});
+    hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){
+            options.display('hide');
+            pop.style.display='none';
+            advanced.style.display="none";
+        }});
     hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
+    hmctxarea.on("tap", function(evt){
+        advanced.style.display="none";});
     hmctxarea.on("pinchstart", function(evt){
         console.log("pinchstart");//NFP
         percentage.style.display='block';});
@@ -111,10 +118,15 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
     hammerpop.on("panup",   function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
     hammerpop.on("pandown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
-    mtext.addEventListener("click", function(e){uitouch.handleClick(e);}, false);
+    mtext.addEventListener("click", function(e){
+            advanced.style.display="none";
+            uitouch.handleClick(e);
+        }, false);
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     var hammerhelper = new hammer(helper);
-    hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){helper.style.display="none";});
+    hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
+            helper.style.display="none";
+        });
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
