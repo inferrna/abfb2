@@ -77,6 +77,27 @@
   }
   .popflex > div
   {
+      background-color: #EEEEEE;
+      overflow:hidden;
+      width: 98%; /* To make the transition work nicely.  (Transitions to/from
+                      "width:auto" are buggy in Gecko and Webkit, at least.
+                      See http://bugzil.la/731886 for more info.) */
+
+  }
+  .dpopflex > div:active
+  {
+    background-color: #223311;
+  }
+  .dpopflex {
+    position: relative;
+    top: 1px;
+    padding: 1px;
+    display: -webkit-flex;
+    display: flex;
+  }
+  .dpopflex > div
+  {
+      background-color: #111111;
       overflow:hidden;
       width: 98%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
@@ -85,8 +106,7 @@
   }
   .popflex > div:active
   {
-    background: #DDEECC;
-    color: #113322;
+    background-color: #DDEECC;
   }
   .hrefs {
     position:absolute;

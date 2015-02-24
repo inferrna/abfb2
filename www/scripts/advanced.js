@@ -11,6 +11,7 @@ define(
         var switchbtxt = document.getElementById('switchbtxt');
         var customimg  = document.getElementById('customimg');
         var pts = document.getElementById('pts');
+        var pt = document.getElementById('pt');
         var txarea = document.getElementById('txtarea');
         var clrs = [[222,211,165], [235,232,200], [209,200,148]];
         var opts_brd_b = document.getElementById('options');
@@ -59,10 +60,12 @@ define(
           console.log(e.target.checked);//NFP
           if (e.target.checked){
               pts.className = "bcol revgradient";
+              pt.className = "dpopflex";
               e.target.checked = true;
               options.set_opt("switchdictclr", "true");
           } else {
               pts.className = "bcol gradient";
+              pt.className = "popflex";
               e.target.checked = false;
               options.set_opt("switchdictclr", "false");
           }
