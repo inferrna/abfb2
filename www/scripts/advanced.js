@@ -54,35 +54,39 @@ define(
           e.preventDefault(); // prevent navigation to "#"
         }, false);
 
-        switchdictclr.addEventListener("click", function (e) {
-          console.log("switchdictclr clicked");//NFP
-          if (currentdmode === "day"){
+        switchdictclr.addEventListener("change", function (e) {
+          console.log("e.target.checked");//NFP
+          console.log(e.target.checked);//NFP
+          if (e.target.checked){
               pts.className = "bcol revgradient";
-              currentdmode = "night";
+              e.target.checked = true;
+              options.set_opt("switchdictclr", "true");
           } else {
               pts.className = "bcol gradient";
-              currentdmode = "day";
+              e.target.checked = false;
+              options.set_opt("switchdictclr", "false");
           }
-          setback();
           e.preventDefault(); // prevent navigation to "#"
 
         }, false);
 
-        switchmode.addEventListener("click", function (e) {
-          console.log("switchmode clicked");//NFP
-          if (currentmode === "day"){
+        switchmode.addEventListener("change", function (e) {
+          console.log("switchmode checked");//NFP
+          if (e.target.checked){
               currentmode = "night";
+              options.set_opt("switchmode", "true");
           } else {
               currentmode = "day";
+              options.set_opt("switchmode", "false");
           }
-          setback();
+          setback(currentmode);
           e.preventDefault(); // prevent navigation to "#"
         }, false);
 
         imageObj.onload = function() {
               Canvas.height = this.height;
               Canvas.width = this.width;
-              setback();
+              setback(currentmode);
         };
 
         function daymode(){
@@ -93,7 +97,7 @@ define(
               txarea.style.color = "#000000";
         }
 
-        function setback(){
+        function setback(mode){
               var ctx = Canvas.getContext('2d');
               ctx.drawImage(imageObj, 0, 0);
               var pixels = ctx.getImageData(0, 0, Canvas.width, Canvas.height);
@@ -114,7 +118,7 @@ define(
               var c = 0.0;
               var add = 0.0;
               var avgl = 4*lsum/all;
-              if(currentmode != "day"){ 
+              if(mode === "night"){ 
                   lsum = 0.0;
                   if(avgl < 0.49){
                     c = 0.3; //Protect from div by zero.
@@ -168,7 +172,27 @@ define(
                     } else {
                         set_default_back();
                     }
+                    options.get_opt("switchmode", function(value){
+                                    var evt = document.createEvent('Event'); 
+                                    evt.initEvent('change', true, true);
+                                    if(value==="true"){
+                                        switchmode.checked = true;
+                                    } else {
+                                        switchmode.checked = false;
+                                    }
+                                    switchmode.dispatchEvent(evt);
+                            });
             });
+        options.get_opt("switchdictclr", function(value){
+                        var evt = document.createEvent('Event'); 
+                        evt.initEvent('change', true, true);
+                        if(value==="true"){
+                            switchdictclr.checked = true;
+                        } else {
+                            switchdictclr.checked = false;
+                        }
+                        switchdictclr.dispatchEvent(evt);
+                });
         return {
         }
     }
