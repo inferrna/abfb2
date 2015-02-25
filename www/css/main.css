@@ -158,6 +158,10 @@
     font-size:small;
     word-wrap:normal;
     position: relative;
+    min-height: 98% !important;
+    min-width: 98%;
+    width: 98%;
+    right: 1pt;
     margin-left: 1px;
     margin-right: 1px;
 /*    text-shadow:#aaa 0px 0.3px 0, #aaa 0px -0.3px 0px, #aaa 0.3px 0px 0px, #aaa -0.3px 0px 0px;*/

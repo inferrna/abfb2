@@ -144,10 +144,8 @@ define(
               }
               avgl = 4*lsum/all;
               if(avgl < 0.49){
-                  color = "#dddddd";
-              } else {
-                  var rgb = sharedf.hsvToRgb(0, 0, Math.min(0.85, avgl+0.65))
-                  color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')'
+                  var rgb = sharedf.hsvToRgb(0, 0, Math.min(0.9, avgl+0.7))
+                  color = 'rgb('+parseInt(rgb[0])+', '+parseInt(rgb[1])+', '+parseInt(rgb[2])+')'
               }
               ctx.putImageData(pixels, 0, 0);
               txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
