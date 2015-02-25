@@ -42,7 +42,7 @@
     /*left: -100%;*/
     outline: medium none;
     z-index: 128;
-    padding:1px;
+    margin:1px;
   }
   .flex {
     position: relative;
@@ -71,7 +71,6 @@
   .popflex {
     position: relative;
     top: 1px;
-    padding: 1px;
     display: -webkit-flex;
     display: flex;
   }
@@ -79,7 +78,7 @@
   {
       background-color: #EEEEEE;
       overflow:hidden;
-      width: 98%; /* To make the transition work nicely.  (Transitions to/from
+      width: 100%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
                       See http://bugzil.la/731886 for more info.) */
 
@@ -99,7 +98,7 @@
   {
       background-color: #111111;
       overflow:hidden;
-      width: 98%; /* To make the transition work nicely.  (Transitions to/from
+      width: 100%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
                       See http://bugzil.la/731886 for more info.) */
 
@@ -116,7 +115,7 @@
     height: auto;
     align: left;
     text-align: left;
-    padding: 1px;
+    margin: 1px;
     display: -webkit-flex;
     display: flex;
     flex-direction: column;
@@ -154,6 +153,7 @@
   }
 
   .bcol {
+    padding: 4pt;
     overflow:hidden;
     font-size:small;
     word-wrap:normal;
@@ -161,7 +161,7 @@
     min-height: 98% !important;
     min-width: 98%;
     width: 98%;
-    right: 1pt;
+    right: 4pt;
     margin-left: 1px;
     margin-right: 1px;
 /*    text-shadow:#aaa 0px 0.3px 0, #aaa 0px -0.3px 0px, #aaa 0.3px 0px 0px, #aaa -0.3px 0px 0px;*/

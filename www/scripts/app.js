@@ -37,6 +37,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
         txarea.style.width = window.innerWidth+"px";
         helper.style.height = window.innerHeight+"px";
         helper.style.width = window.innerWidth+"px";
+        pop.style.width = window.innerWidth+"px";
+        pop.style.minWidth = window.innerWidth+"px";
+        pts.style.width = window.innerWidth-4+"px";
+        pts.style.minWidth = window.innerWidth-4+"px";
         fl_text.style.width =  "auto";
         mtext.style.top = "0px";
         txarea.style.backgroundSize = '100%';
