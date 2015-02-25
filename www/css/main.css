@@ -84,9 +84,9 @@
                       See http://bugzil.la/731886 for more info.) */
 
   }
-  .dpopflex > div:active
+  .popflex > div:active
   {
-    background-color: #223311;
+    background-color: #DDEECC;
   }
   .dpopflex {
     position: relative;
@@ -104,9 +104,9 @@
                       See http://bugzil.la/731886 for more info.) */
 
   }
-  .popflex > div:active
+  .dpopflex > div:active
   {
-    background-color: #DDEECC;
+    background-color: #223311;
   }
   .hrefs {
     position:absolute;
@@ -164,35 +164,35 @@
   }
   .revgradient {
     color: rgb(248,248,248);
-    background-image:         linear-gradient(right , rgb(33,31,24) 0%, rgb(20,20,17) 50%, rgb(46,44,32) 100%);
-    background-image:      -o-linear-gradient(right , rgb(33,31,24) 0%, rgb(20,20,17) 50%, rgb(46,44,32) 100%);
-    background-image:    -moz-linear-gradient(right , rgb(33,31,24) 0%, rgb(20,20,17) 50%, rgb(46,44,32) 100%);
-    background-image: -webkit-linear-gradient(right , rgb(33,31,24) 0%, rgb(20,20,17) 50%, rgb(46,44,32) 100%);
-    background-image:     -ms-linear-gradient(right , rgb(33,31,24) 0%, rgb(20,20,17) 50%, rgb(46,44,32) 100%);
+    background-image:         linear-gradient(right, #1e1a15  0%, #272420 50%, #231e18 100%);
+    background-image:      -o-linear-gradient(right, #1e1a15  0%, #272420 50%, #231e18 100%);
+    background-image:    -moz-linear-gradient(right, #1e1a15  0%, #272420 50%, #231e18 100%);
+    background-image: -webkit-linear-gradient(right, #1e1a15  0%, #272420 50%, #231e18 100%);
+    background-image:     -ms-linear-gradient(right, #1e1a15  0%, #272420 50%, #231e18 100%);
 
     background-image: -webkit-gradient(
         linear,
         right top,
         left top,
-        color-stop(0,   rgb(33,31,24)),
-        color-stop(0.5, rgb(20,20,17)),
-        color-stop(1,   rgb(46,44,32))
+        color-stop(0,   #1e1a15),
+        color-stop(0.5, #272420),
+        color-stop(1,   #231e18)
     );
   }
   .gradient {
     color: rgb(0,0,0);
-    background-image:         linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
-    background-image:      -o-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
-    background-image:    -moz-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
-    background-image: -webkit-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
-    background-image:     -ms-linear-gradient(right , rgb(222,211,165) 0%, rgb(235,232,200) 50%, rgb(209,200,148) 100%);
+    background-image:         linear-gradient(right, #b99d7f  0%, #ead8c1 50%, #d7b693 100%);
+    background-image:      -o-linear-gradient(right, #b99d7f  0%, #ead8c1 50%, #d7b693 100%);
+    background-image:    -moz-linear-gradient(right, #b99d7f  0%, #ead8c1 50%, #d7b693 100%);
+    background-image: -webkit-linear-gradient(right, #b99d7f  0%, #ead8c1 50%, #d7b693 100%);
+    background-image:     -ms-linear-gradient(right, #b99d7f  0%, #ead8c1 50%, #d7b693 100%);
 
     background-image: -webkit-gradient(
         linear,
         right top,
         left top,
-        color-stop(0,   rgb(222,211,165)),
-        color-stop(0.5, rgb(235,232,200)),
-        color-stop(1,   rgb(209,200,148))
+        color-stop(0,   #b99d7f),
+        color-stop(0.5, #ead8c1),
+        color-stop(1,   #d7b693)
     );
   }

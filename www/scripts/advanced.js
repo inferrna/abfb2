@@ -12,14 +12,19 @@ define(
         var customimg  = document.getElementById('customimg');
         var pts = document.getElementById('pts');
         var pt = document.getElementById('pt');
+        var pop = document.getElementById('pop');
         var txarea = document.getElementById('txtarea');
-        var clrs = [[222,211,165], [235,232,200], [209,200,148]];
         var opts_brd_b = document.getElementById('options');
-        var advbtn = document.createElement("div");
-        advbtn.type="range"; advbtn.style.height="15px"; advbtn.style.position="absolute";
-        advbtn.style.width="18%"; advbtn.style.borderRadius="3px"; advbtn.style.right="1%";
-        advbtn.style.backgroundColor="#010203"; advbtn.style.margin="1px"; advbtn.style.border="1px";
+        var advbtn = document.createElement("button");
         opts_brd_b.appendChild(advbtn);
+        //advbtn.type="range";
+        advbtn.className = "";
+        advbtn.style.height = Math.round(48*(window.devicePixelRatio || 1.0))+"px"; advbtn.style.position="absolute";
+        advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.right="1%";
+        advbtn.style.backgroundColor = "";
+        advbtn.style.backgroundRepeat = "no-repeat";
+        advbtn.style.backgroundSize = advbtn.style.height +" "+ advbtn.style.width
+        advbtn.style.backgroundImage = 'url('+images.book_svg+')'; advbtn.style.margin="1px"; advbtn.style.border="1px";
         advbtn.onclick = function(){
             if(advanced.style.display === "none"){
                 advanced.style.display = "block";
@@ -61,11 +66,13 @@ define(
           if (e.target.checked){
               pts.className = "bcol revgradient";
               pt.className = "dpopflex";
+              pop.style.backgroundColor = "#000000";
               e.target.checked = true;
               options.set_opt("switchdictclr", "true");
           } else {
               pts.className = "bcol gradient";
               pt.className = "popflex";
+              pop.style.backgroundColor = "#bdbdbd";
               e.target.checked = false;
               options.set_opt("switchdictclr", "false");
           }
@@ -91,14 +98,6 @@ define(
               Canvas.width = this.width;
               setback(currentmode);
         };
-
-        function daymode(){
-              var ctx = Canvas.getContext('2d');
-              ctx.drawImage(imageObj, 0, 0);
-              console.log("Iage loaded");//NFP
-              txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
-              txarea.style.color = "#000000";
-        }
 
         function setback(mode){
               var ctx = Canvas.getContext('2d');
@@ -145,7 +144,10 @@ define(
               }
               avgl = 4*lsum/all;
               if(avgl < 0.49){
-                  color = "#eeeeee";
+                  color = "#dddddd";
+              } else {
+                  var rgb = sharedf.hsvToRgb(0, 0, Math.min(0.85, avgl+0.65))
+                  color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')'
               }
               ctx.putImageData(pixels, 0, 0);
               txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';

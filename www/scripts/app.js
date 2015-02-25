@@ -116,8 +116,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     hammerelements[pop.id] = hammerpop;
     hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
     hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
-    hammerpop.on("panup",   function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
-    hammerpop.on("pandown", function(evt){uitouch.dragpop(evt.gesture.center.pageY);});
+    hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
     mtext.addEventListener("click", function(e){
             advanced.style.display="none";
             uitouch.handleClick(e);
