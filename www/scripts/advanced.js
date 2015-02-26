@@ -17,7 +17,8 @@ define(
         var opts_brd_b = document.getElementById('options');
         var advbtn = document.createElement("button");
         opts_brd_b.appendChild(advbtn);
-        //advbtn.type="range";
+        console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
+        console.log(sharedf.hsvToRgb(0.3, 0.5, 0.7));//NFP
         advbtn.className = "";
         advbtn.style.height = Math.round(48*(window.devicePixelRatio || 1.0))+"px"; advbtn.style.position="absolute";
         advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.right="1%";
@@ -145,7 +146,7 @@ define(
               avgl = 4*lsum/all;
               if(avgl < 0.49){
                   var rgb = sharedf.hsvToRgb(0, 0, Math.min(0.9, avgl+0.7))
-                  color = 'rgb('+parseInt(rgb[0])+', '+parseInt(rgb[1])+', '+parseInt(rgb[2])+')'
+                  color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')'
               }
               ctx.putImageData(pixels, 0, 0);
               txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';

@@ -1,7 +1,7 @@
 define(
-  [],
-  function(){
-      console.log("Starts sharedf");//NFP
+  ['asmfuncs'],
+  function(asmfuncs){
+    console.log("Starts sharedf");//NFP
     function clean_tag(doc, tags, tag){
             var tags = doc.getElementsByTagName(tag);
             for (var i = 0, il = tags.length; i < il; i++) {
@@ -166,8 +166,8 @@ define(
             relf: /(.*?\/)+(.+?)/gi,
             rgbToHsl:rgbToHsl,
             hslToRgb:hslToRgb,
-            rgbToHsv:rgbToHsv,
-            hsvToRgb:hsvToRgb
+            rgbToHsv:asmfuncs.rgbToHsv,
+            hsvToRgb:asmfuncs.hsvToRgb
     }
   }
 );
