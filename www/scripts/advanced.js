@@ -1,6 +1,6 @@
 define(
-    ['sharedc', 'sharedf', 'options', 'images'],
-    function(sharedc, sharedf, options, images){
+    ['sharedc', 'sharedf', 'options', 'images', 'asmfuncs'],
+    function(sharedc, sharedf, options, images, asmfuncs){
         console.log("advanced loaded");//NFP
         var advanced = document.getElementById('advanced');
         advanced.style.display = "none";
@@ -104,23 +104,19 @@ define(
               var ctx = Canvas.getContext('2d');
               ctx.drawImage(imageObj, 0, 0);
               var pixels = ctx.getImageData(0, 0, Canvas.width, Canvas.height);
-              var all = pixels.data.length;
+              var len = Canvas.width*4; //In bytes
               var lsum = 0.0;
               var lmax = 0.0;
               var lmin = 1.0;
               var color = "#000000"
-              for (var i = 0; i < all; i += 4) {
-                  var r = pixels.data[i];
-                  var g = pixels.data[i+1];
-                  var b = pixels.data[i+2];
-                  var hsl = sharedf.rgbToHsv(r, g, b);
-                  if(hsl[2]>lmax) lmax = hsl[2];
-                  if(hsl[2]<lmin) lmin = hsl[2];
-                  lsum += hsl[2];
-              }
-              var c = 0.0;
-              var add = 0.0;
-              var avgl = 4*lsum/all;
+              var bs = asmfuncs.bufsize;
+              var cnt = Math.floor(bs/len);
+              console.log("cnt === ", cnt);//NFP
+              console.log("bs === ", bs);//NFP
+              console.log("w*h*4 ", Canvas.width*4*Canvas.height);//NFP
+              var minm = asmfuncs.minmaxv(pixels.data, cnt*Canvas.width*4, Canvas.height/cnt);
+              lmax = minm[0]; lmin = minm[1]; avgl = minm[2];
+              console.log(lmax, lmin, avgl);//NFP
               if(mode === "night"){ 
                   lsum = 0.0;
                   if(avgl < 0.49){
@@ -130,24 +126,14 @@ define(
                     c = lmax/5.0;
                     add = 0.0;
                   }
-                  for (var i = 0; i < all; i += 4) {
-                      var r = pixels.data[i];
-                      var g = pixels.data[i+1];
-                      var b = pixels.data[i+2];
-                      var hsl = sharedf.rgbToHsv(r, g, b);
-                      hsl[2] = Math.min(1.0, add+hsl[2]*c);
-                      lsum += hsl[2];
-                      var rgb = sharedf.hsvToRgb(hsl[0], hsl[1], hsl[2]);
-                      pixels.data[i]   = rgb[0];
-                      pixels.data[i+1] = rgb[1];
-                      pixels.data[i+2] = rgb[2];
-                  }
+                  minm = asmfuncs.applyscale(pixels.data, cnt*Canvas.width*4, Canvas.height/cnt, c, add);
+                  lmax = minm[0]; lmin = minm[1]; avgl = minm[2];
               }
-              avgl = 4*lsum/all;
               if(avgl < 0.49){
                   var rgb = sharedf.hsvToRgb(0, 0, Math.min(0.9, avgl+0.7))
                   color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')'
               }
+              console.log(lmax, lmin, avgl);//NFP
               ctx.putImageData(pixels, 0, 0);
               txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
               txarea.style.color = color;

@@ -8,9 +8,58 @@ define(
         var imulf = stdlib.Math.imul;
         var minf = stdlib.Math.min;
         var floorf = stdlib.Math.floor;
+        var froundf = stdlib.Math.fround;
         var maxf = stdlib.Math.max;
         var res32f = new stdlib.Float32Array(heap);
         var res8u = new stdlib.Uint8Array(heap);
+        var inp8u = new stdlib.Uint8Array(heap);
+        function processl(len, c, add){
+            len = len|0;
+            c = +c;
+            add = +add;
+            var i = 0;
+            var max = 0.0;
+            var min = 1.0;
+            var avg = 0.0;
+            i = 0|0;
+            for(i = 0; ~~i<~~len; i = (i+4)|0){
+                rgbToHsv(inp8u[(i+0+256)|0]|0, inp8u[(i+1+256)|0]|0, inp8u[(i+2+256)|0]|0);
+                res32f[2<<2>>2] = +minf(1.0, add + +res32f[2<<2>>2]*c);
+                if(+res32f[2<<2>>2] > +max){
+                    max = +res32f[2<<2>>2];
+                } else if(+res32f[2<<2>>2] < +min){
+                    min = +res32f[2<<2>>2];
+                }
+                avg = avg + +res32f[2<<2>>2];
+                hsvToRgb(+res32f[0<<2>>2], +res32f[1<<2>>2], +res32f[2<<2>>2]);
+                inp8u[(i+0+256)|0] = res8u[0|0];
+                inp8u[(i+1+256)|0] = res8u[1|0];
+                inp8u[(i+2+256)|0] = res8u[2|0];
+            }
+            res32f[0<<2>>2] = max;
+            res32f[1<<2>>2] = min;
+            res32f[2<<2>>2] = avg;
+        }
+        function getmaxv(len){
+            len = len|0;
+            var i = 0;
+            var max = 0.0;
+            var min = 1.0;
+            var avg = 0.0;
+            i = 0|0;
+            for(i = 0; ~~i<~~len; i = (i+4)|0){
+                rgbToHsv(inp8u[(i+0+256)|0]|0, inp8u[(i+1+256)|0]|0, inp8u[(i+2+256)|0]|0);
+                if(+res32f[2<<2>>2] > +max){
+                    max = +res32f[2<<2>>2];
+                } else if(+res32f[2<<2>>2] < +min){
+                    min = +res32f[2<<2>>2];
+                }
+                avg = avg + +res32f[2<<2>>2];
+            }
+            res32f[0<<2>>2] = max;
+            res32f[1<<2>>2] = min;
+            res32f[2<<2>>2] = avg;
+        }
         function hsvToRgb(h, s, v){
             h = +h;
             s = +s;
@@ -83,11 +132,14 @@ define(
         }
         return {
             rgbToHsv:rgbToHsv,
-            hsvToRgb:hsvToRgb
+            hsvToRgb:hsvToRgb,
+            getmaxv:getmaxv,
+            processl:processl
         }
     }
     var buffer = new ArrayBuffer(256*1024);
     var array  = new Float32Array(buffer);
+    var inp8array   = new Uint8Array(buffer, 256);
     var res3farray  = new Float32Array(buffer, 0, 3);
     var res3iarray  = new Uint8Array(buffer, 0, 3);
     var asm_funcs = AsmFuncs(window, 0, buffer);
@@ -104,7 +156,53 @@ define(
         hsvToRgb: function(h, s, v){
             asm_funcs.hsvToRgb(h, s, v);
             return res3iarray;
-        }
+        },
+        minmaxv: function(arr, len, cnt){
+            var res, max=0.0, min=1.0, avg=0.0;
+            var start, end, truelen, maxl = arr.byteLength;
+            console.log(" minmaxv got:");//NFP
+            console.log(arr);//NFP
+            console.log(len);//NFP
+            console.log(cnt);//NFP
+            for(var i=0; i<cnt; i++){
+                start = len*i;
+                end = Math.min(maxl, start+len);
+                truelen = end - start;
+                inp8array.set( arr.subarray(start, end) );
+                asm_funcs.getmaxv(truelen);
+                if(max < res3farray[0]) max = res3farray[0];
+                if(min > res3farray[1]) min = res3farray[1];
+                avg += res3farray[2];
+            }
+            avg = 4*avg / (len*cnt);
+            console.log("max, min, avg", max, min, avg);//NFP
+            return [max, min, avg];
+        },
+        applyscale: function(arr, len, cnt, c, add){
+            var res, max=0.0, min=1.0, avg=0.0;
+            var start, end, truelen, maxl = arr.byteLength;
+            console.log(" minmaxv got:");//NFP
+            console.log(arr);//NFP
+            console.log(len);//NFP
+            console.log(cnt);//NFP
+            for(var i=0; i<cnt; i++){
+                start = len*i;
+                end = Math.min(maxl, start+len);
+                truelen = end - start;
+                inp8array.set( arr.subarray(start, end) );
+                asm_funcs.processl(truelen, c, add);
+                arr.subarray(start, end)
+                            .set(inp8array.subarray(0, truelen));
+                if(max < res3farray[0]) max = res3farray[0];
+                if(min > res3farray[1]) min = res3farray[1];
+                avg += res3farray[2];
+            }
+            avg = 4*avg / (len*cnt);
+            console.log("max, min, avg", max, min, avg);//NFP
+            return [max, min, avg];
+        },
+        bufsize: inp8array.byteLength
+
     }
   }
 );
