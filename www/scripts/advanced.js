@@ -42,6 +42,13 @@ define(
                   Canvas.width = window.innerWidth;//this.width;
                   var ctx = Canvas.getContext('2d');
                   ctx.drawImage(this, 0, 0);
+                  if(currentback === "custom"){
+                      if(1.3*Canvas.height*Canvas.width < this.height*this.width){
+                           options.set_opt("background", Canvas.toDataURL('image/jpg'));
+                      } else {
+                           options.set_opt("background", this.src);
+                      }
+                  }
                   setback(currentmode, Canvas);
                   delete Canvas, imageObj;
             };
@@ -52,7 +59,6 @@ define(
         var currentback = "";
         customimg.onchange = function(evt){
             var imageurl = window.URL.createObjectURL(evt.target.files[0])
-            options.set_opt("background", imageurl);
             set_image(imageurl);
             currentback = "custom";
             switchbtxt.textContent = "Default background";
@@ -60,8 +66,8 @@ define(
 
         switchback.addEventListener("click", function (e) {
           console.log("switchback clicked");//NFP
-          if (currentback === "default"){
-              if (customimg) {
+          if(currentback === "default"){
+              if(customimg) {
                 customimg.click();
               }
           } else {
@@ -114,13 +120,18 @@ define(
 
 
         function setback(mode, Canvas){
+              if(currentback === "default" && mode === "day"){
+                  txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
+                  txarea.style.color = "#000000";
+                  return 0;
+              }
               var ctx = Canvas.getContext('2d');
               var pixels = ctx.getImageData(0, 0, Canvas.width, Canvas.height);
               var len = Canvas.width*4; //In bytes
               var lsum = 0.0;
               var lmax = 0.0;
               var lmin = 1.0;
-              var color = "#000000"
+              var color = "#000000";
               var bs = asmfuncs.bufsize;
               var cnt = Math.floor(bs/len);
               console.log("cnt === ", cnt);//NFP
@@ -132,8 +143,8 @@ define(
               if(mode === "night"){ 
                   lsum = 0.0;
                   if(avgl < 0.49){
-                    c = 0.3; //Protect from div by zero.
-                    add = 0.7;
+                    c = 0.5; //Protect from div by zero.
+                    add = 0.5;
                   } else {
                     c = lmax/5.0;
                     add = 0.0;
@@ -165,6 +176,7 @@ define(
                     }*/
                     currentback = "default";
                     switchbtxt.textContent = "Change background";
+                    options.remove_opt("background");
         }
         options.get_opt("background", function(value){
                     if(value){
