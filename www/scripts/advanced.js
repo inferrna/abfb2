@@ -33,17 +33,27 @@ define(
                 advanced.style.display = "none";
             }
         }
-
-        var Canvas = document.createElement("canvas");
-        Canvas.id = "mybackgr";
-        var imageObj = new Image();
+        function set_image(src){
+            var imageObj = new Image();
+            imageObj.onload = function() {
+                  var Canvas = document.createElement("canvas");
+                  Canvas.id = "mybackgr";
+                  Canvas.height = window.innerHeight;//this.height;
+                  Canvas.width = window.innerWidth;//this.width;
+                  var ctx = Canvas.getContext('2d');
+                  ctx.drawImage(this, 0, 0);
+                  setback(currentmode, Canvas);
+                  delete Canvas, imageObj;
+            };
+            imageObj.src = src;
+        }
         var currentmode = "day";
         var currentdmode = "day";
         var currentback = "";
         customimg.onchange = function(evt){
             var imageurl = window.URL.createObjectURL(evt.target.files[0])
             options.set_opt("background", imageurl);
-            imageObj.src = imageurl;
+            set_image(imageurl);
             currentback = "custom";
             switchbtxt.textContent = "Default background";
         }
@@ -90,19 +100,21 @@ define(
               currentmode = "day";
               options.set_opt("switchmode", "false");
           }
-          setback(currentmode);
+          options.get_opt("background", function(value){
+            if(value){
+                set_image(value);
+                currentback = "custom";
+                switchbtxt.textContent = "Default background";
+            } else {
+                set_default_back();
+            }
+          });
           e.preventDefault(); // prevent navigation to "#"
         }, false);
 
-        imageObj.onload = function() {
-              Canvas.height = this.height;
-              Canvas.width = this.width;
-              setback(currentmode);
-        };
 
-        function setback(mode){
+        function setback(mode, Canvas){
               var ctx = Canvas.getContext('2d');
-              ctx.drawImage(imageObj, 0, 0);
               var pixels = ctx.getImageData(0, 0, Canvas.width, Canvas.height);
               var len = Canvas.width*4; //In bytes
               var lsum = 0.0;
@@ -143,9 +155,9 @@ define(
         function set_default_back(){
                     //if ( window.cordova ) {
                         var images = require("images");
-                        if(window.innerWidth<512) imageObj.src = images.img_tiny;
-                        else if (window.innerWidth<1024) imageObj.src = images.img_small;
-                        else imageObj.src = images.img;
+                        if(window.innerWidth<512) set_image(images.img_tiny);
+                        else if (window.innerWidth<1024) set_image(images.img_small);
+                        else set_image(images.img);
                     /*} else {
                         if(window.innerWidth<512) imageObj.src = '../images/back_tiny.jpg';
                         else if (window.innerWidth<1024) imageObj.src = '../images/back_small.jpg';
@@ -156,7 +168,7 @@ define(
         }
         options.get_opt("background", function(value){
                     if(value){
-                        imageObj.src = value;
+                        set_image(value);
                         currentback = "custom";
                         switchbtxt.textContent = "Default background";
                     } else {
