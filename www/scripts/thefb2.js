@@ -34,8 +34,6 @@ function(stuff, sharedf, sharedc){
         //var jsxml = require('jsxml');
     }
     function transxsl(xmls, xsls, callback){
-        console.log("xsl is");//NFP
-        console.log(unescape(stuff.fb2xsl));//NFP
         if(window.XSLTProcessor) {
             var xml = parsr.parseFromString(xmls, 'text/xml');
             callback(xsltp.transformToFragment(xml, document));
@@ -96,11 +94,9 @@ function(stuff, sharedf, sharedc){
             var idx, lastidx=0, values = [];
             for(var i = 0; i<divs.length; i++){
                 values.push(divs[i].getAttribute('id'));
-                console.log(divs[i].getAttribute('id')+" pushed");//NFP
             }
             for(var i = 0; i<options.length; i++){
                 idx  = values.indexOf(options[i].getAttribute('did'));
-                console.log("index for "+options[i].getAttribute('did')+" is "+idx);//NFP
                 if(idx>-1){
                     pages.push(idx);
                     lastidx = idx;

@@ -1,7 +1,6 @@
 define(
     ['sharedc', 'sharedf', 'options', 'images', 'asmfuncs'],
     function(sharedc, sharedf, options, images, asmfuncs){
-        console.log("advanced loaded");//NFP
         var advanced = document.getElementById('advanced');
         advanced.style.display = "none";
         var switchdictclr = document.getElementById('switchdictclr');
@@ -17,8 +16,6 @@ define(
         var opts_brd_b = document.getElementById('options');
         var advbtn = document.createElement("button");
         opts_brd_b.appendChild(advbtn);
-        console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
-        console.log(sharedf.hsvToRgb(0.3, 0.5, 0.7));//NFP
         advbtn.className = "";
         advbtn.style.height = Math.round(48*(window.devicePixelRatio || 1.0))+"px"; advbtn.style.position="absolute";
         advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.right="1%";
@@ -65,7 +62,6 @@ define(
         }
 
         switchback.addEventListener("click", function (e) {
-          console.log("switchback clicked");//NFP
           if(currentback === "default"){
               if(customimg) {
                 customimg.click();
@@ -78,8 +74,6 @@ define(
         }, false);
 
         switchdictclr.addEventListener("change", function (e) {
-          console.log("e.target.checked");//NFP
-          console.log(e.target.checked);//NFP
           if (e.target.checked){
               pts.className = "bcol revgradient";
               pt.className = "dpopflex";
@@ -98,7 +92,6 @@ define(
         }, false);
 
         switchmode.addEventListener("change", function (e) {
-          console.log("switchmode checked");//NFP
           if (e.target.checked){
               currentmode = "night";
               options.set_opt("switchmode", "true");
@@ -134,12 +127,8 @@ define(
               var color = "#000000";
               var bs = asmfuncs.bufsize;
               var cnt = Math.floor(bs/len);
-              console.log("cnt === ", cnt);//NFP
-              console.log("bs === ", bs);//NFP
-              console.log("w*h*4 ", Canvas.width*4*Canvas.height);//NFP
               var minm = asmfuncs.minmaxv(pixels.data, cnt*Canvas.width*4, Canvas.height/cnt);
               lmax = minm[0]; lmin = minm[1]; avgl = minm[2];
-              console.log(lmax, lmin, avgl);//NFP
               if(mode === "night"){ 
                   lsum = 0.0;
                   if(avgl < 0.49){
@@ -156,7 +145,6 @@ define(
                   var rgb = sharedf.hsvToRgb(0, 0, Math.min(0.9, avgl+0.7))
                   color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')'
               }
-              console.log(lmax, lmin, avgl);//NFP
               ctx.putImageData(pixels, 0, 0);
               txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
               txarea.style.color = color;
