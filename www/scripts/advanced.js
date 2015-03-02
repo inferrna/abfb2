@@ -16,11 +16,10 @@ define(
         var txarea = document.getElementById('txtarea');
         var opts_brd_b = document.getElementById('options');
         var advbtn = document.createElement("button");
-        opts_brd_b.appendChild(advbtn);
         console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
         console.log(sharedf.hsvToRgb(0.3, 0.5, 0.7));//NFP
         advbtn.className = "";
-        advbtn.style.height = Math.round(48*(window.devicePixelRatio || 1.0))+"px"; advbtn.style.position="absolute";
+        advbtn.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px"; advbtn.style.position="fixed";
         advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.right="1%";
         advbtn.style.backgroundColor = "";
         advbtn.style.backgroundRepeat = "no-repeat";
@@ -33,6 +32,7 @@ define(
                 advanced.style.display = "none";
             }
         }
+        opts_brd_b.appendChild(advbtn);
         function set_image(src){
             var imageObj = new Image();
             imageObj.onload = function() {

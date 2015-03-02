@@ -63,11 +63,6 @@
                       See http://bugzil.la/731886 for more info.) */
 
   }
-  .flex > div:active
-  {
-    background: #EEDDCC;
-    color: #112233;
-  }
   .popflex {
     position: relative;
     top: 1px;
@@ -82,10 +77,6 @@
                       "width:auto" are buggy in Gecko and Webkit, at least.
                       See http://bugzil.la/731886 for more info.) */
 
-  }
-  .popflex > div:active
-  {
-    background-color: #DDEECC;
   }
   .dpopflex {
     position: relative;
@@ -102,10 +93,6 @@
                       "width:auto" are buggy in Gecko and Webkit, at least.
                       See http://bugzil.la/731886 for more info.) */
 
-  }
-  .dpopflex > div:active
-  {
-    background-color: #223311;
   }
   .hrefs {
     position:absolute;
@@ -147,9 +134,6 @@
   .spflex > div {
     width: 100%;
     background-color: rgba(255,255,255,0.1);
-  }
-  .spflex:active {
-    background-color: rgba(200,200,255,0.5);
   }
 
   .bcol {

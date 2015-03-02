@@ -97,7 +97,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
             advanced.style.display="none";
         }});
     hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hmctxarea.on("tap", function(evt){
+    hmctxarea.on("tap click", function(evt){
         advanced.style.display="none";});
     hmctxarea.on("pinchstart", function(evt){
         console.log("pinchstart");//NFP
@@ -106,10 +106,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
         console.log("pinchend");//NFP
         percentage.style.display='none';});
     hmctxarea.on("pinchin", function(evt){uitouch.doscale(Math.sqrt(evt.scale));
-                                              console.log("Call for percent from pinchin"); //NFP
+                                              console.log("evt.scale is", evt.scale); //NFP
                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
     hmctxarea.on("pinchout", function(evt){uitouch.doscale(Math.sqrt(evt.scale));
-                                               console.log("Call for percent from pinchout"); //NFP
+                                               console.log("evt.scale is", evt.scale); //NFP
                                                percentage.textContent = Math.round(100*options.getpercent())+"%";});
     var hammerpop = new hammer.Manager(pop, {
             recognizers: [
@@ -117,14 +117,18 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
             [hammer.Pan, { direction: hammer.DIRECTION_ALL } ],
             [hammer.Tap]
     ]});
+    var hammermtext = new hammer.Manager(mtext, {
+            recognizers: [
+            [hammer.Tap]
+    ]});
     hammerelements[pop.id] = hammerpop;
+    hammerelements[mtext.id] = hammermtext;
     hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
     hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
-    mtext.addEventListener("click", function(e){
+    hammermtext.on("click tap", function(e){
             advanced.style.display="none";
-            uitouch.handleClick(e);
-        }, false);
+            uitouch.handleClick(e);});
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     var hammerhelper = new hammer(helper);
     hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){

@@ -292,9 +292,9 @@ define(
               }
           },
           handleClick:function(evt){
-              selectword(evt.clientX, evt.clientY);
-              targimg.style.left = (evt.pageX-targimg.width/2)+"px";
-              targimg.style.top = (evt.pageY-targimg.height/2)+"px";
+              selectword(evt.center.x, evt.center.y);
+              targimg.style.left = (evt.x-targimg.width/2)+"px";
+              targimg.style.top = (evt.y-targimg.height/2)+"px";
               targimg.style.display = 'block';
               window.setTimeout(function(){targimg.style.display = 'none';}, 1024);
           },
