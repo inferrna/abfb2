@@ -13,7 +13,8 @@ define(
         var pts = document.getElementById('pts');
         var pt = document.getElementById('pt');
         var pop = document.getElementById('pop');
-        var txarea = document.getElementById('fl_text');//txtarea');
+        var fltext = document.getElementById('fl_text');//txtarea');
+        var txarea = document.getElementById('txtarea');
         var opts_brd_b = document.getElementById('options');
         var advbtn = document.createElement("button");
         console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
@@ -123,8 +124,9 @@ define(
 
         function setback(mode, Canvas){
               if(currentback === "default" && mode === "day"){
-                  txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
-                  txarea.style.color = "#000000";
+                  fltext.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
+                  fltext.style.color = "#000000";
+                  txarea.className = "gradient";
                   return 0;
               }
               var ctx = Canvas.getContext('2d');
@@ -145,9 +147,11 @@ define(
               if(mode === "night"){ 
                   lsum = 0.0;
                   if(avgl < 0.49){
+                    txarea.className = "revgradient";
                     c = 0.5; //Protect from div by zero.
                     add = 0.5;
                   } else {
+                    txarea.className = "gradient";
                     c = lmax/5.0;
                     add = 0.0;
                   }
@@ -160,8 +164,8 @@ define(
               }
               console.log(lmax, lmin, avgl);//NFP
               ctx.putImageData(pixels, 0, 0);
-              txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
-              txarea.style.color = color;
+              fltext.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
+              fltext.style.color = color;
               delete pixels;
         }
 
