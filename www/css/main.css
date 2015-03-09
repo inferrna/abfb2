@@ -139,7 +139,7 @@
   .bcol {
     padding: 4pt;
     overflow:hidden;
-    font-size:small;
+    font-size:0.75em;
     word-wrap:normal;
     position: relative;
     min-height: 98% !important;

@@ -379,6 +379,13 @@ function (mimetypes, sharedf, sharedc) {
                 return "url('" + dataUri + "')"+format+"\n";
             }
         });
+        file = file.replace(/xx\-small/gi, '0.333em')
+                   .replace(/x\-small/gi, '0.5em')
+                   .replace(/small/gi, '0.75em')
+                   .replace(/medium/gi, '1em')
+                   .replace(/large/gi, '1.5em')
+                   .replace(/x\-large/gi, '2em')
+                   .replace(/xx\-large/gi, '3em');
         return file.replace(/body/gi, '#epubcont');
     }
     function extract_title(href){

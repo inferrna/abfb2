@@ -13,7 +13,7 @@ define(
         var pts = document.getElementById('pts');
         var pt = document.getElementById('pt');
         var pop = document.getElementById('pop');
-        var txarea = document.getElementById('txtarea');
+        var txarea = document.getElementById('fl_text');//txtarea');
         var opts_brd_b = document.getElementById('options');
         var advbtn = document.createElement("button");
         console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
@@ -40,6 +40,8 @@ define(
                   Canvas.id = "mybackgr";
                   Canvas.height = window.innerHeight;//this.height;
                   Canvas.width = window.innerWidth;//this.width;
+                  console.log("window.innerHeight is "+window.innerHeight);//NFP
+                  console.log("window.outerHeight is "+window.outerHeight);//NFP
                   var ctx = Canvas.getContext('2d');
                   ctx.drawImage(this, 0, 0);
                   if(currentback === "custom"){

@@ -28,14 +28,13 @@ define(
       function liftcol(el, dir) {
           "use strict";
           var ptop, top;
-          var fs = parseInt(stuff.getStyle(el, 'font-size'));
           var wh = parseInt(window.innerHeight);
           var elh = Math.max(el.scrollHeight, wh);
           if(el.style.top) top=parseInt(el.style.top);
           else top = parseInt(stuff.getStyle(el, 'top'));
           ptop = parseInt(el.parentNode.parentNode.offsetHeight);
           var pageend = -parseInt(el.scrollHeight);
-          var newtop = top + dir*(ptop-fs);
+          var newtop = Math.ceil(top + dir*(ptop*(1.0-scale*0.025)));
           var oldpercent = -100*parseInt(top)/elh;
           var percent = -100*parseFloat(newtop)/elh;
           var dtop = stuff.getStyle(el.parentNode, 'top')-top;
@@ -230,30 +229,32 @@ define(
       function apply_scale(){
             "use strict";
             var txarea = document.getElementById('txtarea');
-            //var txarea = mtext.parentNode;
-            var nw = parseInt(window.innerWidth)/scale;
-            var nh = parseInt(window.innerHeight)/scale;
-            var cf = (1.0*nh)/parseInt(stuff.getStyle(txarea, 'height'));
-            txarea.style.width  = parseInt(nw)+"px";
-            txarea.style.height = parseInt(nh)+"px";
-            var stscale = "scale("+scale+")";
-            txarea.style.transform = stscale;
-            txarea.style.transformOrigin = "0 0";
-            txarea.style.WebkitTransform = stscale;
-            txarea.style.WebkitTransformOrigin = "0 0";
-            mtext.style.width = 'auto';
-            mtext.style.height = 'auto';
-            var pts = document.getElementById('pts');
-            var pt =  document.getElementById('pt');
-            nh = parseInt(stuff.getStyle(pt, 'height'))*cf;
-            pt.style.width  = parseInt(nw)+"px";
-            pt.style.transform = stscale;
-            pt.style.transformOrigin = "0 0";
-            pt.style.WebkitTransform = stscale;
-            pt.style.WebkitTransformOrigin = "0 0";
-            pt.style.height = 'auto';
-            pts.style.width = 'auto';
-            pts.style.height = 'auto'; 
+            ////var txarea = mtext.parentNode;
+            //var nw = parseInt(window.innerWidth)/scale;
+            //var nh = parseInt(window.innerHeight)/scale;
+            //var cf = (1.0*nh)/parseInt(stuff.getStyle(txarea, 'height'));
+            //txarea.style.width  = parseInt(nw)+"px";
+            //txarea.style.height = parseInt(nh)+"px";
+            //var stscale = "scale("+scale+")";
+            //txarea.style.transform = stscale;
+            //txarea.style.transformOrigin = "0 0";
+            //txarea.style.WebkitTransform = stscale;
+            //txarea.style.WebkitTransformOrigin = "0 0";
+            //mtext.style.width = 'auto';
+            //mtext.style.height = 'auto';
+            //var pts = document.getElementById('pts');
+            //var pt =  document.getElementById('pt');
+            //nh = parseInt(stuff.getStyle(pt, 'height'))*cf;
+            //pt.style.width  = parseInt(nw)+"px";
+            //pt.style.transform = stscale;
+            //pt.style.transformOrigin = "0 0";
+            //pt.style.WebkitTransform = stscale;
+            //pt.style.WebkitTransformOrigin = "0 0";
+            //pt.style.height = 'auto';
+            //pts.style.width = 'auto';
+            //pts.style.height = 'auto';
+            mtext.style.fontSize = scale+'em';
+            document.body.style.fontSize = scale+'em';
             options.set_opt('scale', scale, true);
             var cp = options.getpercent();
             options.setpercent(cp);
@@ -293,8 +294,8 @@ define(
           },
           handleClick:function(evt){
               selectword(evt.center.x, evt.center.y);
-              targimg.style.left = (evt.x-targimg.width/2)+"px";
-              targimg.style.top = (evt.y-targimg.height/2)+"px";
+              targimg.style.left = (evt.center.x-targimg.width/2)+"px";
+              targimg.style.top = (evt.center.y-targimg.height/2)+"px";
               targimg.style.display = 'block';
               window.setTimeout(function(){targimg.style.display = 'none';}, 1024);
           },
@@ -329,6 +330,7 @@ define(
               cf = cf > 1.05 ? 1.05 : cf < 1/1.05 ? 1/1.05 : cf;
               chscale(cf, 1);
               apply_scale();
+              return scale;
           },
           init_scale:function(newscale){
               if(newscale && newscale > 0.25 && newscale < 8.0){

@@ -77,7 +77,7 @@ define(
                  function gotFS(fileSystem){
                         console.log("fileSystem.root.fullPath:");//NFP
                         console.log(fileSystem.root.fullPath);//NFP
-                        fileSystem.root.getFile(fnm, null, gotFileEntry, fail);
+                        fileSystem.root.getFile("cdvfile://localhost/persistent"+fnm, null, gotFileEntry, fail);
                      }*/
                  function gotFileEntry(fileEntry){
                         console.log(fnm+" got entry");//NFP

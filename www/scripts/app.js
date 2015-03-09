@@ -31,9 +31,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
         console.log("Sets sizes");
         document.getElementsByTagName('head')[0].removeChild(style);
         style.type = 'text/css';
-        style.innerHTML = 'img { max-height: '+(window.innerHeight-64)+'px; max-width:'+(window.innerWidth-64)+'px; overflow:hidden}';
+        style.innerHTML = 'img { max-height: '+(window.innerHeight)+'px; max-width:'+(window.innerWidth)+'px; overflow:hidden}';
         document.getElementsByTagName('head')[0].appendChild(style);
-        txarea.style.height = (window.innerHeight - ta_rectObject.top + 1)+"px";
+        txarea.style.height = window.innerHeight+"px";
         txarea.style.width = window.innerWidth+"px";
         helper.style.height = window.innerHeight+"px";
         helper.style.width = window.innerWidth+"px";
@@ -105,12 +105,13 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     hmctxarea.on("pinchend", function(evt){
         console.log("pinchend");//NFP
         percentage.style.display='none';});
-    hmctxarea.on("pinchin", function(evt){uitouch.doscale(Math.sqrt(evt.scale));
-                                              console.log("evt.scale is", evt.scale); //NFP
-                                              percentage.textContent = Math.round(100*options.getpercent())+"%";});
-    hmctxarea.on("pinchout", function(evt){uitouch.doscale(Math.sqrt(evt.scale));
+    hmctxarea.on("pinchin pinchout", function(evt){
+                                               hmctxarea.stop();
+                                               var uisc = uitouch.doscale(Math.sqrt(evt.scale));
                                                console.log("evt.scale is", evt.scale); //NFP
-                                               percentage.textContent = Math.round(100*options.getpercent())+"%";});
+                                               percentage.textContent = Math.round(uisc*100)+"%";
+                                               window.setTimeout(function(){percentage.style.display='none';}, 1024);
+                                               });
     var hammerpop = new hammer.Manager(pop, {
             recognizers: [
             // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
@@ -284,9 +285,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
                 else pos = 'top';
                 cl.style.top = "0px";
                 if(pos==='top'){
-                      el.style.top = 0+"px"; el.style.bottom = '99%';
+                      el.style.top = 0+"px"; el.style.bottom = '100%';
                     }
-                if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '99%';}// dt.style.display='none'; db.style.display=disp;}
+                if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '100%';}// dt.style.display='none'; db.style.display=disp;}
                     dict.get_def(texts);
             } else {el.style.display = disp;}
         }
