@@ -53,7 +53,11 @@ define(
                       }
                   }
                   setback(currentmode, Canvas);
-                  delete Canvas, imageObj;
+                  Canvas.height = 1;
+                  Canvas.width = 1;
+                  imageObj.height = 1;
+                  imageObj.width = 1;
+                  delete ctx, Canvas, imageObj;
             };
             imageObj.src = src;
         }
@@ -147,11 +151,13 @@ define(
               if(mode === "night"){ 
                   lsum = 0.0;
                   if(avgl < 0.49){
-                    txarea.className = "revgradient";
+                    txarea.className = "gradient";
+                    console.log("set txarea.className to gradient");//NFP
                     c = 0.5; //Protect from div by zero.
                     add = 0.5;
                   } else {
-                    txarea.className = "gradient";
+                    txarea.className = "revgradient";
+                    console.log("set txarea.className to revgradient");//NFP
                     c = lmax/5.0;
                     add = 0.0;
                   }
