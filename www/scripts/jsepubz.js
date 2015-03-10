@@ -379,6 +379,8 @@ function (mimetypes, sharedf, sharedc) {
                 return "url('" + dataUri + "')"+format+"\n";
             }
         });
+        // 16px as 1em
+        file = file.replace(/(font-size:\ ?)(\d+)(px)/gmi, function(match, p1, p2, p3, offset, string){return p1+Math.ceil(100*p2/16)/100+"em";});
         file = file.replace(/xx\-small/gi, '0.333em')
                    .replace(/x\-small/gi, '0.5em')
                    .replace(/small/gi, '0.75em')
