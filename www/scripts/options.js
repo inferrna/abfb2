@@ -29,7 +29,7 @@ define(
     var storage = null; 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
-    try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available");}
+    try{ crstorage = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available");}
     var type;
     var file = {'name':'empty'};
     var filename = '';
