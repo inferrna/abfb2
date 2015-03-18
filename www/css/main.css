@@ -61,9 +61,6 @@
       width: 100%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
                       See http://bugzil.la/731886 for more info.) */
-      -moz-background-size: cover;
-      -webkit-background-size: cover;
-      background-size: cover;
       z-index: 0;
   }
   .popflex {

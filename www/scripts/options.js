@@ -29,7 +29,13 @@ define(
     var storage = null; 
     try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
-    try{ crstorage = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available");}
+    var crstoragel = null;
+    try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available")};
+    try{ crstoragel = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available")};
+    console.log("Storages is");//NFP
+    console.log(storage ? true : false);//NFP
+    console.log(crstorage);//NFP
+    console.log(crstoragel);//NFP
     var type;
     var file = {'name':'empty'};
     var filename = '';
@@ -245,11 +251,27 @@ define(
         return result;
     }
     function get_cr(keys, callback, evt){
+        console.log("Call to crhomestorage get");//NFP
         crstorage.get(keys, function(result){
+                var cnt = 0;
                 for(var key in result){
                     callback( key, result[key] );
-                }
-                if(evt) sharedc.exec('options', evt)();
+                    cnt += 1;
+                } 
+                if(evt && cnt) sharedc.exec('options', evt)();
+                if(!cnt) get_crl(keys, callback, evt);
+            });
+    }
+    function get_crl(keys, callback, evt){
+        console.log("Call to crhomestoragel get");//NFP
+        crstorage.get(keys, function(result){
+                var cnt = 0;
+                for(var key in result){
+                    callback( key, result[key] );
+                    cnt += 1;
+                } 
+                if(evt && cnt) sharedc.exec('options', evt)();
+                if(!cnt) callback( null, null );
             });
     }
     function get_ls(keys, callback, evt){
@@ -270,7 +292,9 @@ define(
     function set_cr(key, p){
         var pair = {};
         pair[key] = p;
-        crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
+        console.log("Call to crhomestorage set");//NFP
+        if(p.length < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
+        else crstoragel.set(pair, function(){/*console.log(p+" saved as "+key);*/});
     }
     function set_ls(key, p){
         localStorage.setItem(key, p);

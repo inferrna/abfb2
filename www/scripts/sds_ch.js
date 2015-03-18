@@ -63,7 +63,13 @@ define(
              },
              get:function(_fnm, callback){
                  var fnm = _fnm.replace("file://", "");
-                 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, null);
+                 try{
+                    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, null);
+                 } catch (e){
+                     console.warn("Got error while requestFileSystem");
+                     console.warn(e);
+                     return false;
+                 }
                  function gotFS(fileSystem){fileSystem.root.getFile(fnm, null, gotFileEntry, null);}
                  function gotFileEntry(fileEntry){fileEntry.file(gotFile, null);}
                  function gotFile(file){callback(file);}

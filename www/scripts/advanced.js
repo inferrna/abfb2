@@ -4,6 +4,8 @@ define(
         console.log("advanced loaded");//NFP
         var advanced = document.getElementById('advanced');
         advanced.style.display = "none";
+        var reader = new FileReader();
+
         var switchdictclr = document.getElementById('switchdictclr');
         var switchmode = document.getElementById('switchmode');
         var switchmtxt = document.getElementById('switchmtxt');
@@ -39,17 +41,21 @@ define(
             imageObj.onload = function() {
                   var Canvas = document.createElement("canvas");
                   Canvas.id = "mybackgr";
-                  Canvas.height = window.innerHeight;//this.height;
-                  Canvas.width = window.innerWidth;//this.width;
+                  Canvas.height = imageObj.height;
+                  Canvas.width = imageObj.width;
                   console.log("window.innerHeight is "+window.innerHeight);//NFP
                   console.log("window.outerHeight is "+window.outerHeight);//NFP
                   var ctx = Canvas.getContext('2d');
                   ctx.drawImage(this, 0, 0);
+                  //Canvas.height = window.innerHeight;//this.height;
+                  //Canvas.width = window.innerWidth;//this.width;
                   if(currentback === "custom"){
                       if(1.3*Canvas.height*Canvas.width < this.height*this.width){
-                           options.set_opt("background", Canvas.toDataURL('image/jpg'));
+                           options.set_opt("background", Canvas.toDataURL('image/png'));
+                           console.log("length cnv is "+Canvas.toDataURL('image/png'));
                       } else {
                            options.set_opt("background", this.src);
+                           console.log("length img is "+src);
                       }
                   }
                   setback(currentmode, Canvas);
@@ -64,11 +70,13 @@ define(
         var currentmode = "day";
         var currentdmode = "day";
         var currentback = "";
+        reader.onload = function(e){
+                                set_image(reader.result);
+                                currentback = "custom";
+                                switchbtxt.textContent = "Default background";
+                        }
         customimg.onchange = function(evt){
-            var imageurl = window.URL.createObjectURL(evt.target.files[0])
-            set_image(imageurl);
-            currentback = "custom";
-            switchbtxt.textContent = "Default background";
+            reader.readAsDataURL(evt.target.files[0]);
         }
 
         switchback.addEventListener("click", function (e) {
@@ -115,10 +123,12 @@ define(
           }
           options.get_opt("background", function(value){
             if(value){
+                console.log("Value was loaded");//NFP
                 set_image(value);
                 currentback = "custom";
                 switchbtxt.textContent = "Default background";
             } else {
+                console.log("No value loaded");//NFP
                 set_default_back();
             }
           });
@@ -128,7 +138,7 @@ define(
 
         function setback(mode, Canvas){
               if(currentback === "default" && mode === "day"){
-                  fltext.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
+                  txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
                   fltext.style.color = "#000000";
                   txarea.className = "gradient";
                   return 0;
@@ -170,7 +180,7 @@ define(
               }
               console.log(lmax, lmin, avgl);//NFP
               ctx.putImageData(pixels, 0, 0);
-              fltext.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
+              txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/jpg')+ ')';
               fltext.style.color = color;
               delete pixels;
         }
