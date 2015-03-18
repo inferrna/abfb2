@@ -251,7 +251,7 @@ define(
         return result;
     }
     function get_cr(keys, callback, evt){
-        console.log("Call to crhomestorage get");//NFP
+        console.log("Call to crhomestorage get of "+keys);//NFP
         crstorage.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
@@ -263,8 +263,8 @@ define(
             });
     }
     function get_crl(keys, callback, evt){
-        console.log("Call to crhomestoragel get");//NFP
-        crstorage.get(keys, function(result){
+        console.log("Call to crhomestoragel get of "+keys);//NFP
+        crstoragel.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
                     callback( key, result[key] );
@@ -293,8 +293,10 @@ define(
         var pair = {};
         pair[key] = p;
         console.log("Call to crhomestorage set");//NFP
+        console.log("crhomestorage set len is "+p.length);//NFP
+        console.log("crhomestorage set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
         if(p.length < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
-        else crstoragel.set(pair, function(){/*console.log(p+" saved as "+key);*/});
+        else if(p.length < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
     }
     function set_ls(key, p){
         localStorage.setItem(key, p);
@@ -339,8 +341,8 @@ define(
         } else if(crstorage) {
             var keys = [];
             keys.push(key);
-            crstorage.remove(keys, function(){
-                }) 
+            crstorage.remove(keys, function(){ });
+            crstoragel.remove(keys, function(){ });
         }
     }
 

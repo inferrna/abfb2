@@ -51,11 +51,11 @@ define(
                   //Canvas.width = window.innerWidth;//this.width;
                   if(currentback === "custom"){
                       if(1.3*Canvas.height*Canvas.width < this.height*this.width){
+                           options.remove_opt("background");
                            options.set_opt("background", Canvas.toDataURL('image/png'));
-                           console.log("length cnv is "+Canvas.toDataURL('image/png'));
                       } else {
+                           options.remove_opt("background");
                            options.set_opt("background", this.src);
-                           console.log("length img is "+src);
                       }
                   }
                   setback(currentmode, Canvas);
