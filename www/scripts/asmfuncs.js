@@ -160,10 +160,7 @@ define(
         minmaxv: function(arr, len, cnt){
             var res, max=0.0, min=1.0, avg=0.0;
             var start, end, truelen, maxl = arr.byteLength;
-            console.log(" minmaxv got:");//NFP
-            console.log(arr);//NFP
-            console.log(len);//NFP
-            console.log(cnt);//NFP
+            console.log(" minmaxv got");//NFP
             for(var i=0; i<cnt; i++){
                 start = len*i;
                 end = Math.min(maxl, start+len);
@@ -181,10 +178,7 @@ define(
         applyscale: function(arr, len, cnt, c, add){
             var res, max=0.0, min=1.0, avg=0.0;
             var start, end, truelen, maxl = arr.byteLength;
-            console.log(" minmaxv got:");//NFP
-            console.log(arr);//NFP
-            console.log(len);//NFP
-            console.log(cnt);//NFP
+            console.log(" minmaxv got");//NFP
             for(var i=0; i<cnt; i++){
                 start = len*i;
                 end = Math.min(maxl, start+len);
