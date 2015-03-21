@@ -15,7 +15,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
-    console.log("Got hammer"); //NFP
     console.log(hammer);
     var style = document.createElement('style');
     document.getElementsByTagName('head')[0].appendChild(style);
@@ -47,12 +46,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     }
     window.onresize = function(){
             set_sizes();
-            console.log("Call for percent from window.onresize"); //NFP
             fill_page([], options.getpercent(), true);
         };
     var hammerelements = {};
     function chkmv(evt){
-        console.log(evt.distance+" vs "+drvhds);//NFP
         evt.srcEvent.preventDefault();
         if(drvhds<evt.distance){
             //console.log(hammerelements);
@@ -85,7 +82,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
     hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
     hmctxarea.on("doubletap doubleclick", function(evt){
-            console.log("doubletap detected");//NFP
             options.set_opt('scale', 1.0);
             uitouch.init_scale(1.0);
         });
@@ -100,15 +96,12 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     hmctxarea.on("tap click", function(evt){
         advanced.style.display="none";});
     hmctxarea.on("pinchstart", function(evt){
-        console.log("pinchstart");//NFP
         percentage.style.display='block';});
     hmctxarea.on("pinchend", function(evt){
-        console.log("pinchend");//NFP
         percentage.style.display='none';});
     hmctxarea.on("pinchin pinchout", function(evt){
                                                hmctxarea.stop();
                                                var uisc = uitouch.doscale(Math.sqrt(evt.scale));
-                                               console.log("evt.scale is", evt.scale); //NFP
                                                percentage.textContent = Math.round(uisc*100)+"%";
                                                window.setTimeout(function(){percentage.style.display='none';}, 1024);
                                                });
@@ -165,10 +158,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
             if(prc) { 
                 var percent = prc;
             } else {
-                console.log("Call for percent from bookng:got_fstfile"); //NFP
                 var percent = options.getpercent();
             }
-            console.log("Fill page with percent "+percent); //NFP
             var sel = document.getElementById("tocselect");
             var newsel = book.foliant().option(sel.selectedIndex);
             fill_page(data, percent, false);
@@ -182,7 +173,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     });    
     sharedc.register('options', 'got_pp', function () {
                                                 var i = options.getpage();
-                                                console.log("Call for percent from options:got_pp"); //NFP
                                                 var prc = options.getpercent();
                                                 book.foliant().get_fromopt(i, prc);
                                             });
@@ -191,8 +181,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
                                         });
  
     function fill_toc(html){
-        console.log("Create TOC from ");//NFP
-        console.log(html);//NFP
         var opts = document.getElementById("options_block");
         var toc = document.getElementById("toc");
         var dtoc = toc.parentNode;
@@ -206,20 +194,15 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
         sel.addEventListener("change", function (event){
                                                 if(event.target.disabled === true) {
                                                     event.target.disabled = false;
-                                                    console.log("Dummy fired TOC selection change"); //NFP
                                                 } else {
                                                     mtext.style.top="0px";
                                                     options.setpercent(0);
                                                     book.foliant().get_fromopt(event.target.selectedIndex);
-                                                    console.log("Fired TOC selection change"); //NFP
                                                 }  
                                        });
         options.getpp();
     }
     function prc_from_anchor(anchor, prc){
-        console.log("Got"); //NFP
-        console.log("anchor "+anchor); //NFP
-        console.log("prc "+prc); //NFP
         var ancel = document.getElementById(anchor);
         if(!ancel) 
             if(!prc) return 0;
@@ -274,8 +257,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
-        console.log("Got texts:");//NFP
-        console.log(texts);//NFP
         var pos = 0;
         if(el){
             if(disp!='none'){

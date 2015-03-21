@@ -32,10 +32,6 @@ define(
     var crstoragel = null;
     try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available")};
     try{ crstoragel = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available")};
-    console.log("Storages is");//NFP
-    console.log(storage ? true : false);//NFP
-    console.log(crstorage);//NFP
-    console.log(crstoragel);//NFP
     var type;
     var file = {'name':'empty'};
     var filename = '';
@@ -129,7 +125,6 @@ define(
         }else if(key==="dsfile"){
                 sel.addEventListener("change", 
                             function (evt){
-                                console.log("Book selection event fired "); //NFP
                                 var fnm = evt.target.options[evt.target.selectedIndex].value;
                                 var _filename = fnm.replace(sharedf.relf, "$2");
                                 if(_filename != filename){
@@ -145,7 +140,6 @@ define(
             return sel;
         } 
         sel.addEventListener("change", function(evt){
-                                    console.log("Selection event fired "+ !evt.target.disabled); //NFP
                                     if(evt.target.disabled === true) {
                                         evt.target.disabled = false;
                                     } else {
@@ -251,7 +245,6 @@ define(
         return result;
     }
     function get_cr(keys, callback, evt){
-        console.log("Call to crhomestorage get of "+keys);//NFP
         crstorage.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
@@ -263,7 +256,6 @@ define(
             });
     }
     function get_crl(keys, callback, evt){
-        console.log("Call to crhomestoragel get of "+keys);//NFP
         crstoragel.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
@@ -292,9 +284,6 @@ define(
     function set_cr(key, p){
         var pair = {};
         pair[key] = p;
-        console.log("Call to crhomestorage set");//NFP
-        console.log("crhomestorage set len is "+p.length);//NFP
-        console.log("crhomestorage set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
         if(p.length < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
         else if(p.length < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
     }
