@@ -880,7 +880,7 @@
 			INFLATE_JS = paths.inflate;
 			DEFLATE_JS = paths.deflate;
 		},
-		useWebWorkers : true
+		useWebWorkers: !!window.Worker ? true : false
 	};
 
 })(this);
