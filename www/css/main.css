@@ -71,7 +71,7 @@
   }
   .popflex > div
   {
-      background-color: #EEEEEE;
+      background-color: #FFF;
       overflow:hidden;
       width: 100%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.

@@ -11,6 +11,7 @@ require(['uitouch', 'dict'], function(uitouch, dict){
     var ren = /[\f\n\r\v]{3}/g;
     var moveflag = 0;
     var dtext = null;
+    hammer = Hammer;
     //document.getElementById('button_1').onclick=function(){uitouch.liftcol('pts', -1)};
    // document.getElementById('button_2').onclick=function(){uitouch.liftcol('pts', 1)};
     //document.getElementById('ptop').onclick=function(){thumb_block('top', 'block'); return false;};

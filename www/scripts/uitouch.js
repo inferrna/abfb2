@@ -294,10 +294,10 @@ define(
           },
           handleClick:function(evt){
               selectword(evt.center.x, evt.center.y);
-              targimg.style.left = (evt.center.x-targimg.width/2)+"px";
-              targimg.style.top = (evt.center.y-targimg.height/2)+"px";
+              targimg.style.left = (evt.center.x-targimg.style.width/2)+"px";
+              targimg.style.top = (evt.center.y-targimg.style.height/2)+"px";
               targimg.style.display = 'block';
-              window.setTimeout(function(){targimg.style.display = 'none';}, 1024);
+              window.setTimeout(function(){targimg.style.display = 'none';}, 512);
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
