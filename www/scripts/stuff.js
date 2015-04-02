@@ -24,10 +24,14 @@ define(
                        if([null, undefined, 'undefined', '', 'auto'].indexOf(res)===-1) return res;
                   }
                   if(/height|width|top|left|right|bottom/i.test(styleProp) && el.getBoundingClientRect){
-                      return el.getBoundingClientRect()[styleProp];
+                      res = el.getBoundingClientRect()[styleProp];
+                      console.log(styleProp+" got from rect == "+res);//NFP
+                      return res;
                   } else if (document.defaultView && document.defaultView.getComputedStyle){
-                    return document.defaultView.getComputedStyle(el,null)
-                                               .getPropertyValue(styleProp);
+                      res = document.defaultView.getComputedStyle(el,null)
+                                                .getPropertyValue(styleProp);
+                      console.log(styleProp+" got from ComputedStyle == "+res);//NFP
+                      return res;
                   }
                 },
                  pprefix:"xmaintext",
