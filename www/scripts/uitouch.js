@@ -15,10 +15,14 @@ define(
       var mtext = document.getElementById('maintext');
       var pop = document.getElementById('pop');
       var targimg = document.createElement("image");
+      targimg.src = stuff.targetimg;
       document.body.appendChild(targimg);
       targimg.style.display = 'none';
-      targimg.src = stuff.targetimg;
       targimg.style.position = "absolute";
+      targimg.style.display = 'block';
+      targimgw = stuff.getStyle(targimg, 'width');
+      targimgh = stuff.getStyle(targimg, 'height');
+      targimg.style.display = 'none';
       var reprefix = new RegExp(stuff.pprefix+"\\d+?");
       var scale = 1.0;
       var ispinch = 0;
@@ -229,30 +233,6 @@ define(
       function apply_scale(){
             "use strict";
             var txarea = document.getElementById('txtarea');
-            ////var txarea = mtext.parentNode;
-            //var nw = parseInt(window.innerWidth)/scale;
-            //var nh = parseInt(window.innerHeight)/scale;
-            //var cf = (1.0*nh)/parseInt(stuff.getStyle(txarea, 'height'));
-            //txarea.style.width  = parseInt(nw)+"px";
-            //txarea.style.height = parseInt(nh)+"px";
-            //var stscale = "scale("+scale+")";
-            //txarea.style.transform = stscale;
-            //txarea.style.transformOrigin = "0 0";
-            //txarea.style.WebkitTransform = stscale;
-            //txarea.style.WebkitTransformOrigin = "0 0";
-            //mtext.style.width = 'auto';
-            //mtext.style.height = 'auto';
-            //var pts = document.getElementById('pts');
-            //var pt =  document.getElementById('pt');
-            //nh = parseInt(stuff.getStyle(pt, 'height'))*cf;
-            //pt.style.width  = parseInt(nw)+"px";
-            //pt.style.transform = stscale;
-            //pt.style.transformOrigin = "0 0";
-            //pt.style.WebkitTransform = stscale;
-            //pt.style.WebkitTransformOrigin = "0 0";
-            //pt.style.height = 'auto';
-            //pts.style.width = 'auto';
-            //pts.style.height = 'auto';
             mtext.style.fontSize = scale+'em';
             document.body.style.fontSize = scale+'em';
             options.set_opt('scale', scale, true);
@@ -293,11 +273,12 @@ define(
               }
           },
           handleClick:function(evt){
-              selectword(evt.center.x, evt.center.y);
-              targimg.style.left = (evt.center.x-targimg.width/2)+"px";
-              targimg.style.top = (evt.center.y-targimg.height/2)+"px";
+              targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";
+              targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
-              window.setTimeout(function(){targimg.style.display = 'none';}, 1024);
+              console.log(targimg);//NFP
+              selectword(evt.center.x, evt.center.y);
+              window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
