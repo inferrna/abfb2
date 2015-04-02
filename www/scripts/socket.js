@@ -41,8 +41,8 @@ define(
     } catch(e) { console.log("No cordova sockets available."); }
     
     function cordova_get(host, port, text){
-        tcpecho([host, port, text], function(bindata) {
-            parse_resp(encod.utf8b2str(bindata));
+        tcpecho([host, port, text], function(resstr) {
+            parse_resp(resstr);
         });
     }
     function chromeconnect(id){  chrome.socket.connect(id, host, port, function(){

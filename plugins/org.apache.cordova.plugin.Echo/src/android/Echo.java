@@ -68,7 +68,8 @@ public class Echo extends CordovaPlugin {
                 sanitycount--;
             }
             System.out.println(resultBuff.length + " bytes read.");
-            callbackContext.success(resultBuff);
+            String resStr = new String(resultBuff);
+            callbackContext.success(resStr);
             _socket.close();
         } catch (UnknownHostException e) {
             callbackContext.error("Don't know about host " + hostName);
