@@ -19,7 +19,7 @@ define(
     opts_brd_b.appendChild(dtoc);
     opts_brd_b.appendChild(lbl);
     rng.type="range"; rng.max=100; rng.min=0; rng.value=0; rng.style.height="5px"; rng.style.width="98%"; rng.style.borderRadius="48px";
-    rng.style.backgroundColor="#010203"; rng.style.margin="1px"; rng.style.border="1px";
+    rng.style.backgroundColor="#AABBCC"; rng.style.margin="1px"; rng.style.border="1px";
     rng.onchange = function(evt){sharedc.exec('options', 'ch_range')(evt.target.value)};
     rng.oninput = function(evt){lbl.textContent = 'Go to '+evt.target.value+'%';};
     lbl.textContent = "No books open";
