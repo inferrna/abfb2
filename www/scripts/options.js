@@ -1,6 +1,6 @@
 define(
-  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc', 'sharedf'],
-  function(dict, uitouch, socket, sdstorage, sharedc, sharedf){
+  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc', 'sharedf', 'fontwork'],
+  function(dict, uitouch, socket, sdstorage, sharedc, sharedf, fontwork){
     "use strict";
     var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
