@@ -4,6 +4,9 @@
   font-weight: bold;
   src:url("data:font/otf;");
   }*/
+div.ext-box { position: absolute; right:1%; width: 15%; margin:1px; border:1px;}
+div.int-box { display: inline-block;}
+
   .bar {background: #679;}
   input { padding: 2px; }
   input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}

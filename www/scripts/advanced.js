@@ -17,17 +17,18 @@ define(
         var pop = document.getElementById('pop');
         var fltext = document.getElementById('fl_text');//txtarea');
         var txarea = document.getElementById('txtarea');
-        var opts_brd_b = document.getElementById('options');
+        var opts_brd_b = document.getElementById('mbuttons');
         var advbtn = document.createElement("button");
         console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
         console.log(sharedf.hsvToRgb(0.3, 0.5, 0.7));//NFP
-        advbtn.className = "";
-        advbtn.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px"; advbtn.style.position="fixed";
-        advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.right="1%";
+        advbtn.className = "int-box";
+        advbtn.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
+        advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.margin="1px"; advbtn.style.border="1px";
+        advbtn.style.right = "0px";
         advbtn.style.backgroundColor = "";
         advbtn.style.backgroundRepeat = "no-repeat";
         advbtn.style.backgroundSize = advbtn.style.height +" "+ advbtn.style.width
-        advbtn.style.backgroundImage = 'url('+images.book_svg+')'; advbtn.style.margin="1px"; advbtn.style.border="1px";
+        advbtn.style.backgroundImage = 'url('+images.book_svg+')';
         advbtn.onclick = function(){
             if(advanced.style.display === "none"){
                 advanced.style.display = "block";
@@ -35,7 +36,9 @@ define(
                 advanced.style.display = "none";
             }
         }
-        opts_brd_b.appendChild(advbtn);
+        var lib = document.createElement("li")
+        lib.appendChild(advbtn);
+        opts_brd_b.appendChild(lib);
         function set_image(src){
             var imageObj = new Image();
             imageObj.onload = function() {
