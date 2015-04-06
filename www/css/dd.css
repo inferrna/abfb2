@@ -1,0 +1,44 @@
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+.dropdown-wrap {
+    position: relative;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+}
+
+.dropdown-placeholder {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    border: 1px solid black;
+    z-index: 50001;
+}
+
+.dropdown-wrap.is-active .dropdown {
+    display: block;
+}
+
+.dropdown-option {
+    padding: 10px;
+}
+
+.dropdown:focus {
+    outline: none;
+}
+
+
