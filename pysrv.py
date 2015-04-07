@@ -42,6 +42,7 @@ class Handler(BaseHTTPRequestHandler):
         self.do_smth(post_data)
 
     def do_GET(self):
+        print("Headers is:\n", self.headers)
         self.send_response(200)
         self.send_header("Content-type", "text/html; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*");
