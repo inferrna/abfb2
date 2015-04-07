@@ -15,6 +15,8 @@ define(
         var fbtn = document.createElement("button");
         var fhammer = require('hammer');
         var droptop = 0;
+        var dropheight = 0;
+        var fontwh = 0;
         dropdown.style.top = "0px";
         fbtn.className = "int-box";
         fbtn.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
@@ -33,7 +35,9 @@ define(
         dpph.onclick = function(){
             if(dropdown.style.display === "none"){
                 dropdown.style.display = "block";
+                dropheight = stuff.getStyle(dropdown, 'height');
                 fontwork.style.height = '66%';
+                fontwh = fontwork.getBoundingClientRect()['height'];
                 droptop = parseInt(stuff.getStyle(dropdown, 'top'));
             } else {
                 droptop = parseInt(stuff.getStyle(dropdown, 'top'));
@@ -54,18 +58,24 @@ define(
         var velY = 0;
         function scrolldrop(evt){
             //TODO need to kno average speed
-            dropdown.style.top = droptop+evt.deltaY+"px";
-            velY = -evt.velocityY;
+            var newdroptop = droptop+evt.deltaY;
+            if(newdroptop < 0 && newdroptop > -(dropheight-fontwh/2)){
+                dropdown.style.top = newdroptop+"px";
+                velY = -evt.velocityY;
+            }
             //console.log("Y velocity is "+dir*vel);
         }
         function fadeScroll(){
             var start = new Date().getTime();
-            var cf = Math.min(0.9, 0.9/Math.abs(velY));
+            var cf = 0.95;
             function step(timestamp) {
               if(timestamp < 1428212546516 && start > 1428212546516) start = timestamp - 10;
               var progress = timestamp - start;
-              console.log("Y velocity is "+velY+"; timestamp is "+timestamp+"; progress is is "+progress+"; droptop is "+droptop);//NFP
+              console.log("Y velocity is "+velY+"; timestamp is "+timestamp+"; progress is is "+progress+"; droptop is "+droptop+"; dropheight is "+dropheight);//NFP
               droptop = droptop + progress * velY;
+              if(droptop > 0 || droptop < -(dropheight-fontwh/2)) velY = 0;
+              if(droptop > 0) droptop = 0;
+              if(droptop < -dropheight) droptop = -dropheight;
               dropdown.style.top =  parseInt(droptop) + "px";
               velY *= cf;
               start = timestamp;
@@ -81,15 +91,18 @@ define(
             animid = requestAnimationFrame(step);
         }
 
-        for(i in [1,2,3,4,5,6,7,8,9]){
+        for(i in allfonts){
             fname = allfonts[i];
             rs = d.detect(fname);
            // if(rs) console.log(fname+" successfully detected");
            // else   console.log(fname+" not found");
             if(rs) {
                 var el = document.createElement("option");
-                //el.textContent = elements[eln];
-                //el.value = fname;
+                el.textContent = fname;
+                el.value = fname;
+                el.class = "dropdown-option";
+                el.style.fontFamily = fname;
+                dropdown.appendChild(el);
             } else   console.log(fname+" not found");
         }
 

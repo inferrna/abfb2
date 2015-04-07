@@ -6,7 +6,19 @@
   }*/
 div.ext-box { position: absolute; right:1%; width: 15%; margin:1px; border:1px;}
 div.int-box { display: inline-block;}
-
+div.muchopts {
+    padding: 5px;
+    border-radius: 6px 6px 6px 6px;
+    background-color: rgba(250,245,240,0.5);
+    position:absolute;
+    overflow:hidden;
+    top:33%; left:20%; margin-bottom: 3em;
+    width: 60%;
+    height: auto;
+    max-height: 60vh;
+    z-index: 1000;
+    display: none;
+}
   .bar {background: #679;}
   input { padding: 2px; }
   input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}
