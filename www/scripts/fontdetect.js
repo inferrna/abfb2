@@ -69,7 +69,7 @@
         function detect(font) {
             var detected = false;
             for (var index in baseFonts) {
-                s.style.fontFamily = font + ',' + baseFonts[index]; // name of the font along with the base font for fallback.
+                s.style.fontFamily = font + ',' + baseFonts[index].replace(/([\W\d])/g, '\\$1'); // name of the font along with the base font for fallback.
                 h.appendChild(s);
                 var matched = (s.offsetWidth != defaultWidth[baseFonts[index]] || s.offsetHeight != defaultHeight[baseFonts[index]]);
                 h.removeChild(s);

@@ -71,6 +71,8 @@ define(
             function step(timestamp) {
               if(timestamp < 1428212546516 && start > 1428212546516) start = timestamp - 10;
               var progress = timestamp - start;
+              cf = 1.0 - (progress/640);
+              cf = cf > 0 ? cf : 0;
               console.log("Y velocity is "+velY+"; timestamp is "+timestamp+"; progress is is "+progress+"; droptop is "+droptop+"; dropheight is "+dropheight);//NFP
               droptop = droptop + progress * velY;
               if(droptop > 0 || droptop < -(dropheight-fontwh/2)) velY = 0;
@@ -101,7 +103,7 @@ define(
                 el.textContent = fname;
                 el.value = fname;
                 el.class = "dropdown-option";
-                el.style.fontFamily = fname;
+                el.style.fontFamily = fname.replace(/([\W\d])/g, '\\$1');
                 dropdown.appendChild(el);
             } else   console.log(fname+" not found");
         }
