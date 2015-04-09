@@ -13,10 +13,14 @@ define(
         var dropdown = document.getElementById('dropdown');
         var dpph = document.getElementById('dpph');
         var fbtn = document.createElement("button");
+        var fdetect = document.getElementById('fdetect');
         var fhammer = require('hammer');
         var droptop = 0;
         var dropheight = 0;
         var fontwh = 0;
+        dropdown.style.display = "none";
+        fontwork.style.display = "none"
+        fdetect.onclick = detectAll;
         dropdown.style.top = "0px";
         fbtn.className = "int-box";
         fbtn.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
@@ -92,20 +96,25 @@ define(
             
             animid = requestAnimationFrame(step);
         }
-
-        for(i in allfonts){
-            fname = allfonts[i];
-            rs = d.detect(fname);
-           // if(rs) console.log(fname+" successfully detected");
-           // else   console.log(fname+" not found");
-            if(rs) {
-                var el = document.createElement("option");
-                el.textContent = fname;
-                el.value = fname;
-                el.class = "dropdown-option";
-                el.style.fontFamily = fname.replace(/([\W\d])/g, '\\$1');
-                dropdown.appendChild(el);
-            } else   console.log(fname+" not found");
+        function detectAll() {
+            var detected = [];
+            for(i in [1,2,3,4,5,,6,7,8,9,0]){
+                fname = allfonts[i];
+                rs = d.detect(fname);
+               // if(rs) console.log(fname+" successfully detected");
+               // else   console.log(fname+" not found");
+                if(rs) {
+                    detected.push(i);
+                    var el = document.createElement("option");
+                    el.textContent = fname;
+                    el.value = fname;
+                    el.class = "dropdown-option";
+                    el.style.fontFamily = fname.replace(/([\W\d])/g, '\\$1');
+                    dropdown.appendChild(el);
+                } else   console.log(fname+" not found");
+            }
+            var evt = document.createEvent('Event'); evt.initEvent('click', true, true);
+            dpph.dispatchEvent(evt);
         }
 
         return {

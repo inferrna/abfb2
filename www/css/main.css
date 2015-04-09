@@ -19,6 +19,13 @@ div.muchopts {
     z-index: 1000;
     display: none;
 }
+.muchbutton {
+    padding: 5px;
+    z-index: 1003;
+    border-radius: 6px 6px 6px 6px;
+    background-color: rgba(250,245,240);
+    overflow:hidden;
+}
   .bar {background: #679;}
   input { padding: 2px; }
   input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}
