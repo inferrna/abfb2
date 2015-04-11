@@ -64,18 +64,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, advanced,
     //screen.onmozorientationchange = set_sizes;
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
-    var hmctxarea = new hammer.Manager(txarea, {});/*
-            recognizers: [
-            // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
-            [hammer.Pan, { direction: hammer.DIRECTION_ALL}  ],
-            [hammer.Pinch],
-            [hammer.Tap],
-            [hammer.Swipe,{ direction: hammer.DIRECTION_ALL }]
-        ]} );*/
+    var hmctxarea = new hammer.Manager(txarea, {});
     console.log("hmctxarea");
     console.log(hmctxarea);
-    //hmctxarea.get('pan').set({ direction: hammer.DIRECTION_ALL });
-    //hmctxarea.get('swipe').set({ direction: hammer.DIRECTION_ALL });
     hammerelements[txarea.id] = hmctxarea;
     hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
     hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );

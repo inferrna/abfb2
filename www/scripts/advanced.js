@@ -19,7 +19,7 @@ define(
         var opts_brd_b = document.getElementById('options');
         var advbtn = document.createElement("button");
         advbtn.className = "";
-        advbtn.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px"; advbtn.style.position="fixed";
+        advbtn.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px"; advbtn.style.position="fixed";
         advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.right="1%";
         advbtn.style.backgroundColor = "";
         advbtn.style.backgroundRepeat = "no-repeat";
