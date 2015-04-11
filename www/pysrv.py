@@ -40,9 +40,12 @@ def get_def(text, host, port):
     return data
 
 def get_google(req, opener):
-    baseurl = "http://translate.google.com/translate_a/t?"
+#https://translate.google.ru/translate_a/single?client=t&sl=en&tl=ru&hl=ru&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&tk=519171|215131&q=cheap
+#http://translate.google.com/translate_a/single?client=Firefox&text=nine&sl=en&tl=ru&hl=ru&ie=UTF-8&oe=UTF-8&multires=1&otf=2&trs=1&ssel=0&tsel=0&sc=1
+    baseurl = "http://translate.google.com/translate_a/single?"
     url = baseurl + req
     u = opener.open(url)
+    print(url)
     return u.read()
 
 def get_sound(cursor, word, lang='eng'):

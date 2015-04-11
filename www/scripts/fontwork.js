@@ -98,7 +98,7 @@ define(
         }
         function detectAll() {
             var detected = [];
-            for(i in [1,2,3,4,5,,6,7,8,9,0]){
+            for(i in allfonts){
                 fname = allfonts[i];
                 rs = d.detect(fname);
                // if(rs) console.log(fname+" successfully detected");
@@ -110,6 +110,9 @@ define(
                     el.value = fname;
                     el.class = "dropdown-option";
                     el.style.fontFamily = fname.replace(/([\W\d])/g, '\\$1');
+                    el.onclick = function(evt){
+                        mtext.style.fontFamily = evt.target.style.fontFamily;
+                    }
                     dropdown.appendChild(el);
                 } else   console.log(fname+" not found");
             }

@@ -3,9 +3,12 @@
 }
 
 .dropdown-wrap {
-    position: relative;
+    position: inline;
     width: 100%;
+    height: auto;
+    overflow: hidden;
     outline: none;
+    top: 0px;
     cursor: pointer;
 }
 
@@ -19,7 +22,7 @@
 }
 
 .dropdown {
-    position: absolute;
+    position: relative;
     top: 100%;
     left: 0;
     right: 0;
@@ -33,6 +36,11 @@
 
 .dropdown-wrap.is-active .dropdown {
     display: block;
+}
+.dd-container {
+    overflow-y: scroll;
+    height: 90%;
+    position: relative;
 }
 
 .dropdown-option {

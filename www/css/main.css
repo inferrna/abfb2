@@ -4,8 +4,8 @@
   font-weight: bold;
   src:url("data:font/otf;");
   }*/
-div.ext-box { position: absolute; right:1%; width: 15%; margin:1px; border:1px;}
-div.int-box { display: inline-block;}
+ul.ext-box { position: absolute; right:1%; width: 10%; margin:1px; border:1px; list-style: none;}
+button.int-box { display: inline-block;}
 div.muchopts {
     padding: 5px;
     border-radius: 6px 6px 6px 6px;
@@ -24,6 +24,7 @@ div.muchopts {
     z-index: 1003;
     border-radius: 6px 6px 6px 6px;
     background-color: rgba(250,245,240);
+    position:inline;
     overflow:hidden;
 }
   .bar {background: #679;}
