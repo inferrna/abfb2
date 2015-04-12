@@ -54,7 +54,7 @@ define(
 
         audios.push(snd);
         sndbt.onclick = play;
-        sndbt.style.height = Math.round(32*(window.devicePixelRatio || 1.0))+"px";
+        sndbt.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
         sndbt.style.width = sndbt.style.height;
         sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
         sharedc.register('dict', 'change_lng', function(lang){
