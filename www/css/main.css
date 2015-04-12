@@ -4,6 +4,29 @@
   font-weight: bold;
   src:url("data:font/otf;");
   }*/
+ul.ext-box { position: absolute; right:1%; width: 10%; margin:1px; border:1px; list-style: none;}
+button.int-box { display: inline-block;}
+div.muchopts {
+    padding: 5px;
+    border-radius: 6px 6px 6px 6px;
+    background-color: rgba(250,245,240,0.5);
+    position:absolute;
+    overflow:hidden;
+    top:33%; left:20%; margin-bottom: 3em;
+    width: 60%;
+    height: auto;
+    max-height: 60vh;
+    z-index: 1000;
+    display: none;
+}
+.muchbutton {
+    padding: 5px;
+    z-index: 1003;
+    border-radius: 6px 6px 6px 6px;
+    background-color: rgba(250,245,240);
+    position:inline;
+    overflow:hidden;
+}
   .bar {background: #679;}
   input { padding: 2px; }
   input[type=file] { padding: 2px; width: 50%; border: 2px solid orange; border-radius: 2px;}
@@ -71,7 +94,7 @@
   }
   .popflex > div
   {
-      background-color: #FFF;
+      background-color: #EEEEEE;
       overflow:hidden;
       width: 100%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
