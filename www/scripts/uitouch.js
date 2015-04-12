@@ -194,6 +194,7 @@ define(
           }
           if(el && off>-1){
               var txt = el.textContent;//new String(el.textContent);
+              var selected_word = null;
               try {
                   console.log("off=="+off);//NFP
                   var sel = window.getSelection();
@@ -215,9 +216,14 @@ define(
                       sel.modify("extend", "backward", "word");
                       selected_word = sel.toString();
                   }
-              } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
-                                +" using expand2w, got "+selected_word+" off=="+off);}
+              } catch(e) { selected_word = expand2w(off, txt); 
+                           console.log("Got error "+e.stack+" using expand2w, got "+selected_word+" off=="+off);
+              }
+              if(!selected_word || !selected_word.length){
+                  selected_word = expand2w(off, txt);
+              }
               if(selected_word && selected_word.length){                  
+                  console.log("got "+selected_word+" off=="+off);
                   sharedc.exec('uitouch', 'got_selection')([selected_word.toLowerCase(), expand23w(selected_word, txt, off)]);
               }
           }
@@ -276,7 +282,6 @@ define(
               targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
-              console.log(targimg);//NFP
               selectword(evt.center.x, evt.center.y);
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
