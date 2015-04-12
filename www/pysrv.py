@@ -5,7 +5,6 @@ from socketserver import ThreadingMixIn
 import threading, urllib, json, socket, time
 from base64 import standard_b64encode as b64encode
 from http.cookiejar import CookieJar, DefaultCookiePolicy
-from os import walk
 try: from lxml import etree
 except: import xml.etree.ElementTree as etree
 from xml.sax.saxutils import escape
@@ -41,9 +40,12 @@ def get_def(text, host, port):
     return data
 
 def get_google(req, opener):
-    baseurl = "http://translate.google.com/translate_a/t?"
+#https://translate.google.ru/translate_a/single?client=t&sl=en&tl=ru&hl=ru&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&tk=519171|215131&q=cheap
+#http://translate.google.com/translate_a/single?client=Firefox&text=nine&sl=en&tl=ru&hl=ru&ie=UTF-8&oe=UTF-8&multires=1&otf=2&trs=1&ssel=0&tsel=0&sc=1
+    baseurl = "http://translate.google.com/translate_a/single?"
     url = baseurl + req
     u = opener.open(url)
+    print(url)
     return u.read()
 
 def get_sound(cursor, word, lang='eng'):
@@ -63,9 +65,6 @@ class Handler(BaseHTTPRequestHandler):
         self.opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0) Gecko/20100101 Firefox/17.0'), ('Referer', 'http://www.google.ru/')]
         self.conn = sqlite3.connect('swac.db')
         self.cursor = self.conn.cursor()
-        self.files = []
-        for dirpath, dirnames, filenames in walk("."):
-            self.files = self.files + [dirpath[1:]+'/'+f for f in filenames if "." in f]
         BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
         
     def do_POST(self):
@@ -83,25 +82,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self.send_response(200)
-        ct = "text/html"
-        if self.path[-5:] == ".html":
-            ct = "text/html"
-        elif self.path[-4:] == ".css":
-            ct = "text/css"
-        elif self.path[-3:] == ".js":
-            ct = "application/javascript"
-
-        self.send_header("Content-type", ct+"; charset=utf-8")
+        self.send_header("Content-type", "text/html; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
-        if self.path in self.files:
-            a = open(self.path[1:], "r").read().encode()
-            self.wfile.write(a)
-            if not self.wfile.closed:
-                self.wfile.flush()
-                self.wfile.close()
-            if not self.wfile.closed: self.rfile.close()
-            return
         if self.path.split('?')[0]=="/t":
             self.wfile.write(get_google(self.path.split('?')[1], self.opener))
             if not self.wfile.closed:
@@ -114,7 +97,7 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(url)
         else:
             get_data = urllib.parse.parse_qs(self.path.split('?')[1])
-            eelf.do_smth(get_data)
+            self.do_smth(get_data)
 
     def do_smth(self, data):
         print(data)
