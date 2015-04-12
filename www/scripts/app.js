@@ -1,5 +1,5 @@
-require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sharedf', 'sharedc', 'require'],
-function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
+require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'advanced', 'hammer'],
+function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, advanced){
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -14,12 +14,19 @@ function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
     var mtext = document.getElementById('maintext');
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
+    var hammer = require('hammer');
+    console.log("Got hammer"); //NFP
+    console.log(hammer);
     var style = document.createElement('style');
-    hammer = Hammer;
     document.getElementsByTagName('head')[0].appendChild(style);
+    var sndcnt = document.getElementById('sndcnt');
+    var sndbt = document.getElementById('sndbt');
+    var nosnd = document.getElementById('nosnd');
     var pts = document.getElementById("pts");
     var pop = document.getElementById("pop");
+    var helper = document.getElementById("helper");
     var percentage = document.getElementById("percentage");
+    var popups = Array.prototype.slice.call(document.querySelectorAll(".muchopts"));
     function set_sizes(){
         console.log("Sets sizes");
         document.getElementsByTagName('head')[0].removeChild(style);
@@ -28,6 +35,8 @@ function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
         document.getElementsByTagName('head')[0].appendChild(style);
         txarea.style.height = window.innerHeight+"px";
         txarea.style.width = window.innerWidth+"px";
+        helper.style.height = window.innerHeight+"px";
+        helper.style.width = window.innerWidth+"px";
         pop.style.width = window.innerWidth+"px";
         pop.style.minWidth = window.innerWidth+"px";
         pts.style.width = window.innerWidth-4+"px";
@@ -58,18 +67,9 @@ function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
     //screen.onmozorientationchange = set_sizes;
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
-    var hmctxarea = new hammer.Manager(txarea, {});/*
-            recognizers: [
-            // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
-            [hammer.Pan, { direction: hammer.DIRECTION_ALL}  ],
-            [hammer.Pinch],
-            [hammer.Tap],
-            [hammer.Swipe,{ direction: hammer.DIRECTION_ALL }]
-        ]} );*/
+    var hmctxarea = new hammer.Manager(txarea, {});
     console.log("hmctxarea");
     console.log(hmctxarea);
-    //hmctxarea.get('pan').set({ direction: hammer.DIRECTION_ALL });
-    //hmctxarea.get('swipe').set({ direction: hammer.DIRECTION_ALL });
     hammerelements[txarea.id] = hmctxarea;
     hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
     hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
@@ -85,8 +85,11 @@ function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
     hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){
             options.display('hide');
             pop.style.display='none';
+            popups.map(function(el){el.style.display="none";});
         }});
     hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
+    hmctxarea.on("tap click", function(evt){
+        popups.map(function(el){el.style.display="none";}); });
     hmctxarea.on("pinchstart", function(evt){
         console.log("pinchstart");//NFP
         percentage.style.display='block';});
@@ -116,8 +119,13 @@ function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
     hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
     hammermtext.on("click tap", function(e){
+            popups.map(function(el){el.style.display="none";});
             uitouch.handleClick(e);});
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
+    var hammerhelper = new hammer(helper);
+    hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
+            helper.style.display="none";
+        });
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
@@ -237,6 +245,9 @@ function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
             var width = parseInt(el.style.width, 10);
             dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
             cl.innerHTML = dtext;
+            sndbt.appendChild(sndcnt);
+            cl.appendChild(sndbt);
+            cl.appendChild(nosnd);
             el.style.display = 'block';
             if(els && els.length){
                 for(var i = 0; i<els.length; i++){
@@ -244,7 +255,10 @@ function(uitouch, dict, options, book, stuff, sharedf, sharedc, require){
                     cl.appendChild(els[i]);
                 }
             }
+            sndbt.style.display = 'block';
             uitouch.dragpop(-1);
+            sndbt.style.display = 'none';
+            sound.get_sound(word, dict.lang());
         } else {el.style.display = 'none';}
     }
     function thumb_block(mY, texts, disp) {

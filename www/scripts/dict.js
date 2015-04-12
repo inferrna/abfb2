@@ -5,9 +5,10 @@ define(
     //var got_def_ev = new Event('got_def');
     var gsocketid = 0;
     var cache = {};
+    //https://translate.google.ru/translate_a/single?client=t&sl=en&tl=ru&hl=ru&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&tk=519171|215131&q=cheap
     var datas = {
-        google_base_url:  'http://translate.google.com/translate_a/t?client=Firefox&',
-        google_proxy_url: '/t?client=Firefox&',
+        google_base_url:  'http://translate.google.com/translate_a/single?client=t&',
+        google_proxy_url: '/t?client=t&',
         local_base_url: "http://192.168.0.2:8082/?",//?text=+"value"+"&dict="+"!"+"&host="+"localhost"+"&port="+"2628";
         dictionary: '',
         sl: '',
@@ -29,7 +30,7 @@ define(
         pport: '',
         db: '!' //Dictionary db
     };
-    var googles = {text:'',sl:'',tl:'',hl:'',ie:'',oe:'',multires:0,otf:0,trs:0,ssel:0,tsel:0,sc:0};
+    var googles = {text:'', q:'', sl:'',tl:'',hl:'',ie:'',oe:'', dt:'t', dt:'at', multires:0,otf:1,trs:0,ssel:0,tsel:0,sc:0};
     var locals  = {text:'',host:'',port:0};
     function get_http(_text, params, baseurl, callback, basetxt){
         var dreq = new XMLHttpRequest({mozSystem: true});
@@ -37,11 +38,12 @@ define(
                 resp = basetxt;
                 var resptext = event.target.responseText;
                 if(datas["dictionary"].match("google.*?$")){
-                    resp +="<b>"+_text+"</b> -> "; 
-                    var respj = JSON.parse(resptext);
-                    if( Object.keys(respj).indexOf("sentences")>-1 ) resp += respj["sentences"][0]["trans"];
-                    if( Object.keys(respj).indexOf("dict">-1) )      try{ resp += "<br>"+respj["dict"][0]["terms"].join(", ");}
-                    catch(e) {console.warn("Got error:\n"+e.stack);}
+                    resp +="<b>"+_text+"</b> -><br>";
+                    console.log(resptext);//NFP
+                    resp += resptext.match(/\".+?\"/g)
+                                    .map(function(x){if(x!=='\"'+_text+'\"' && x!=='\"'+params['sl']+'\"')return x})
+                                    .join(",")
+                                    .replace(/,+/gi, ", ")
                     callback(resp);
                 } else {
                     resp += resptext;
@@ -51,11 +53,15 @@ define(
         var l_arr = [];
         var params_get_str = '';
         params['text'] = _text;
+        params['q'] = _text;
         for (var key in params){
             l_arr.push(key+"="+params[key]);
         }
+        l_arr.push("dt=t");
+        l_arr.push("dt=at");
         params_get_str = l_arr.join("&");
         var url = baseurl+params_get_str;
+        console.log(url);//NFP
         dreq.open("GET", url, "true");
         dreq.send();
     }
@@ -129,7 +135,7 @@ define(
                 locals[key] = datas[key];
             }
             cache = {};
-            if(datas["sl"]!==oldl && sharedc && sharedc.exec) sharedc.exec('dict', 'change_lng')(datas["sl"]);
+            if(datas["sl"]!==oldl) sharedc.exec('dict', 'change_lng')(datas["sl"]);
         }
     };
   }
