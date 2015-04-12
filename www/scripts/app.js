@@ -89,7 +89,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         }});
     hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hmctxarea.on("tap click", function(evt){
-        popups.map(function(el){el.style.display="none";}); });
+            uitouch.handleClick(e);
+            popups.map(function(el){el.style.display="none";});
+            });
     hmctxarea.on("pinchstart", function(evt){
         console.log("pinchstart");//NFP
         percentage.style.display='block';});
@@ -120,7 +122,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
     hammermtext.on("click tap", function(e){
             popups.map(function(el){el.style.display="none";});
-            uitouch.handleClick(e);});
+            uitouch.handleClick(e);
+            });
     mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     var hammerhelper = new hammer(helper);
     hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
