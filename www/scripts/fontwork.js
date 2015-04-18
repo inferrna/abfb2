@@ -22,13 +22,14 @@ define(
         fontwork.style.display = "none"
         fdetect.onclick = detectAll;
         dropdown.style.top = "0px";
-        fbtn.className = "int-box";
+        fbtn.className = "fbutton int-box";
         fbtn.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
         fbtn.style.width = fbtn.style.height; fbtn.style.borderRadius="3pt";
-        fbtn.textContent = "F";
+        //fbtn.textContent = "F";
         fbtn.onclick = function(){
             if(fontwork.style.display === "none"){
                 fontwork.style.display = "block";
+                fontwork.style.top = ( opts_brd_b.parentNode.parentNode.getBoundingClientRect()['bottom']+12 )+"px";
             } else {
                 fontwork.style.display = "none";
             }

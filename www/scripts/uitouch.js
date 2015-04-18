@@ -175,25 +175,33 @@ define(
           "use strict";
           max_Y = y;
           var off = -1;
+          var el = null;
           if(document.caretPositionFromPoint) {
               var cp = document.caretPositionFromPoint(x, y);
               if(cp){
                 off = cp.offset;
-                var el = cp.offsetNode;
+                el = cp.offsetNode;
               }
           } else if(document.caretRangeFromPoint) {
               var cp = document.caretRangeFromPoint(x, y);
               if(cp){
                   off = cp.startOffset;
-                  var el = cp.commonAncestorContainer;
+                  el = cp.commonAncestorContainer;
               }
           } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
+          if(el === document.body){ cp = null; el = null; }
           if(!cp && document.elementFromPoint){
               var goff = get_off(x, y);
-              if(goff){var off = goff[0]; el = goff[1];}
+              if(goff){off = goff[0]; el = goff[1];}
+          }
+          if(el){
+              console.log("el.id=="+el.id);//NFP
+              console.log("el==");//NFP
+              console.log(el);//NFP
           }
           if(el && off>-1){
               var txt = el.textContent;//new String(el.textContent);
+              var selected_word = null;
               try {
                   console.log("off=="+off);//NFP
                   var sel = window.getSelection();
@@ -215,9 +223,14 @@ define(
                       sel.modify("extend", "backward", "word");
                       selected_word = sel.toString();
                   }
-              } catch(e) { selected_word = expand2w(off, txt); console.log("Got error "+e.stack
-                                +" using expand2w, got "+selected_word+" off=="+off);}
+              } catch(e) { selected_word = expand2w(off, txt); 
+                           console.log("Got error "+e.stack+" using expand2w, got "+selected_word+" off=="+off);
+              }
+              if(!selected_word || !selected_word.length){
+                  selected_word = expand2w(off, txt);
+              }
               if(selected_word && selected_word.length){                  
+                  console.log("got "+selected_word+" off=="+off);
                   sharedc.exec('uitouch', 'got_selection')([selected_word.toLowerCase(), expand23w(selected_word, txt, off)]);
               }
           }
@@ -276,8 +289,10 @@ define(
               targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
-              console.log(targimg);//NFP
               selectword(evt.center.x, evt.center.y);
+              console.log("target is");//NFP
+              console.log(evt.target);//NFP
+              console.log(evt.srcEvent.target);//NFP
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){
