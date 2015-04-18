@@ -67,7 +67,11 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     //screen.onmozorientationchange = set_sizes;
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
-    var hmctxarea = new hammer.Manager(txarea, {});
+    var hmctxarea = new hammer.Manager(txarea, { recognizers: [
+            [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
+            [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
+            [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
+    ]});
     console.log("hmctxarea");
     console.log(hmctxarea);
     hammerelements[txarea.id] = hmctxarea;
@@ -88,7 +92,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             popups.map(function(el){el.style.display="none";});
         }});
     hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hmctxarea.on("tap click", function(evt){
+    hmctxarea.on("tap click press", function(evt){
             uitouch.handleClick(e);
             popups.map(function(el){el.style.display="none";});
             });
@@ -113,14 +117,14 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     ]});
     var hammermtext = new hammer.Manager(mtext, {
             recognizers: [
-            [hammer.Tap]
+            [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }]
     ]});
     hammerelements[pop.id] = hammerpop;
     hammerelements[mtext.id] = hammermtext;
     hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
     hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
-    hammermtext.on("click tap", function(e){
+    hammermtext.on("click tap press", function(e){
             popups.map(function(el){el.style.display="none";});
             uitouch.handleClick(e);
             });

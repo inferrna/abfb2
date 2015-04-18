@@ -27,6 +27,7 @@ define(
         fbtn.style.width = fbtn.style.height; fbtn.style.borderRadius="3pt";
         fbtn.textContent = "F";
         fbtn.onclick = function(){
+            document.getElementById('options').style.display = 'none';
             if(fontwork.style.display === "none"){
                 fontwork.style.display = "block";
             } else {

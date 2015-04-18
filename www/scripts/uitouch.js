@@ -175,22 +175,29 @@ define(
           "use strict";
           max_Y = y;
           var off = -1;
+          var el = null;
           if(document.caretPositionFromPoint) {
               var cp = document.caretPositionFromPoint(x, y);
               if(cp){
                 off = cp.offset;
-                var el = cp.offsetNode;
+                el = cp.offsetNode;
               }
           } else if(document.caretRangeFromPoint) {
               var cp = document.caretRangeFromPoint(x, y);
               if(cp){
                   off = cp.startOffset;
-                  var el = cp.commonAncestorContainer;
+                  el = cp.commonAncestorContainer;
               }
           } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
+          if(el === document.body){ cp = null; el = null; }
           if(!cp && document.elementFromPoint){
               var goff = get_off(x, y);
-              if(goff){var off = goff[0]; el = goff[1];}
+              if(goff){off = goff[0]; el = goff[1];}
+          }
+          if(el){
+              console.log("el.id=="+el.id);//NFP
+              console.log("el==");//NFP
+              console.log(el);//NFP
           }
           if(el && off>-1){
               var txt = el.textContent;//new String(el.textContent);
@@ -283,6 +290,9 @@ define(
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
               selectword(evt.center.x, evt.center.y);
+              console.log("target is");//NFP
+              console.log(evt.target);//NFP
+              console.log(evt.srcEvent.target);//NFP
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){
