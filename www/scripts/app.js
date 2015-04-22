@@ -228,7 +228,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     }
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
-        if(data[0]) mtext.innerHTML = data[0];
+        if(data[0]) mtext.contentDocument.write(data[0]);//mtext.innerHTML = data[0];
         mtext.style.width = 'auto';
         mtext.style.height = 'auto';
         mtext.style.display = 'block';
