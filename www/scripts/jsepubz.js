@@ -370,7 +370,7 @@ function (mimetypes, sharedf, sharedc) {
     function postProcessCSS(href) {
         var file = files[href];
         var self = this;
-        file = file.replace(/url\((.*?)\)/gi, function (str, url) {
+        file = file.replace(/url\([\'\"]?(.*?)[\'\"]?\)/gi, function (str, url) {
             var format = '';
             if (/^data/i.test(url)) {
                 // Don't replace data strings
@@ -470,6 +470,7 @@ function (mimetypes, sharedf, sharedc) {
         } else { 
             result = "data:" + mediaType + "," + escape(files[dataHref]);
         }
+        console.log("got mediatype\""+mediaType+"\" from "+url+" and "+href);//NFP
         return result;
     }
 
