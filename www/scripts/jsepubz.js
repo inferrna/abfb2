@@ -79,18 +79,23 @@ function (mimetypes, sharedf, sharedc) {
         unzipFiles(staff2ext, proceedcss);
     }
     function parse_toc(toc, base){
-       var points = toc.getElementsByTagName("navPoint");
        var tocels = [];
        var namerefs = {};
-       for(i=0; i<points.length; i++){
-           var tocel = {}
-           var lbl = points[i].getElementsByTagName("navLabel")[0];
-           var cont = points[i].getElementsByTagName("content")[0];
-           tocel['href'] = resolvePath(cont.attributes['src'].value, base);
-           tocel['name'] = lbl.textContent.replace(/\s+/mg, ' ');
-           namerefs[tocel['href']] = tocel['name'];
-           tocels.push(tocel)
+       function iterate_points(points){
+           for(i=0; i<points.length; i++){
+               var tocel = {}
+               var lbl = points[i].getElementsByTagName("navLabel")[0];
+               var cont = points[i].getElementsByTagName("content")[0];
+               tocel['href'] = resolvePath(cont.attributes['src'].value, base);
+               tocel['name'] = lbl.textContent.replace(/\s+/mg, ' ');
+               namerefs[tocel['href']] = tocel['name'];
+               tocels.push(tocel)
+           }
        }
+       var points = toc.getElementsByTagName("navPoint");
+       var points2 = toc.getElementsByTagName("pageTarget");
+       iterate_points(points);
+       iterate_points(points2);
        var recl = /toc-.+/i;
        var points = toc.getElementsByTagName("li");
        for(i=0; i<points.length; i++){
