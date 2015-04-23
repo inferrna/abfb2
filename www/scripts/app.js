@@ -93,7 +93,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         }});
     hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hmctxarea.on("tap click press", function(evt){
-            uitouch.handleClick(e);
+            uitouch.handleClick(evt);
             popups.map(function(el){el.style.display="none";});
             });
     hmctxarea.on("pinchstart", function(evt){
@@ -228,9 +228,16 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     }
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
-        if(data[0]) mtext.contentDocument.write(data[0]);//mtext.innerHTML = data[0];
+        if(data[0]){
+            mtext.contentDocument.open();
+            mtext.contentDocument.close();
+            mtext.contentDocument.write(data[0]);
+            sharedf.move_tags(mtext.contentDocument.getElementsByTagName("body")[0],
+                              ['style'],
+                              mtext.contentDocument.getElementsByTagName("head")[0]);
+        }
         mtext.style.width = 'auto';
-        mtext.style.height = 'auto';
+        mtext.style.height = window.innerHeight+'px';
         mtext.style.display = 'block';
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         var cheight = mtext.scrollHeight;//stuff.getStyle(mtext, 'height');

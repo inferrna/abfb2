@@ -393,7 +393,8 @@ function (mimetypes, sharedf, sharedc) {
                    .replace(/large/gi, '1.5em')
                    .replace(/x\-large/gi, '2em')
                    .replace(/xx\-large/gi, '3em');
-        return file.replace(/body/gi, '#epubcont');
+        console.log("Got css:\n"+file);//NFP
+        return file;
     }
     function extract_title(href){
         var xml = null;
@@ -440,22 +441,30 @@ function (mimetypes, sharedf, sharedc) {
               //  inlineStyle.setAttribute("data-orig-href", link.getAttribute("href"));
                 var csshref = resolvePath(link.getAttribute("href"), href);
                 var css = files[csshref];
-                inlineStyle.appendChild(document.createTextNode(css));
+                if (inlineStyle.styleSheet){
+                  console.log("inlineStyle.styleSheet is present");//NFP
+                  inlineStyle.styleSheet.cssText = css;
+                } else {
+                  console.log("inlineStyle.styleSheet isn't present");//NFP
+                  //var textNode = document.createTextNode(css);
+                  //textNode.textContent = textNode.textContent.replace('&gt;', '>');
+                  //data:"+mimetypes.getMimeType(name)+";base64,
+                  inlineStyle.textContent = '@import'+' url(\''+'data:text/css;base64,'+window.btoa(css)+'\');';//.appendChild(textNode);
+                }
 
                 link.parentNode.replaceChild(inlineStyle, link);
             }
         }
         try{
-            sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
+            sharedf.clean_tags(doc, ["script", "a"]);
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
-            var div = document.createElement('div');
-            div.id = "epubcont";
-            while(doc.firstChild) div.appendChild(doc.firstChild);
-            sharedf.clean_tags(div, ["html"]);
-            var res = div;
+            //var div = document.createElement('div');
+            //while(doc.firstChild) div.appendChild(doc.firstChild);
+            var res = doc;//div;
+            res.id = "epubcont";
+            //delete doc;
         } catch(e) { var res = doc; }
-        delete doc;
         delete files[href];
         return srlzr.serializeToString(res);
     }
