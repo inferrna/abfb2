@@ -171,26 +171,26 @@ define(
           }
           return true;
       }
-      function selectword(x, y, rec){
+      function selectword(doc, x, y, rec){
           "use strict";
           max_Y = y;
           var off = -1;
           var el = null;
-          if(document.caretPositionFromPoint) {
-              var cp = document.caretPositionFromPoint(x, y);
+          if(doc.caretPositionFromPoint) {
+              var cp = doc.caretPositionFromPoint(x, y);
               if(cp){
                 off = cp.offset;
                 el = cp.offsetNode;
               }
-          } else if(document.caretRangeFromPoint) {
-              var cp = document.caretRangeFromPoint(x, y);
+          } else if(doc.caretRangeFromPoint) {
+              var cp = doc.caretRangeFromPoint(x, y);
               if(cp){
                   off = cp.startOffset;
                   el = cp.commonAncestorContainer;
               }
           } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
-          if(el === document.body){ cp = null; el = null; }
-          if(!cp && document.elementFromPoint){
+          if(el === doc.body){ cp = null; el = null; }
+          if(!cp && doc.elementFromPoint){
               var goff = get_off(x, y);
               if(goff){off = goff[0]; el = goff[1];}
           }
@@ -206,7 +206,7 @@ define(
                   console.log("off=="+off);//NFP
                   var sel = window.getSelection();
                   sel.removeAllRanges();
-                  var rng = document.createRange();
+                  var rng = doc.createRange();
                   rng.selectNode(el);
                   rng.setStart(el, off);
                   rng.setEnd(el, off+1);
@@ -289,10 +289,11 @@ define(
               targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
-              selectword(evt.center.x, evt.center.y);
+              console.log(evt.srcEvent.target);//NFP
+              var doc = evt.target.ownerDocument;
+              selectword(doc, evt.center.x, evt.center.y);
               console.log("target is");//NFP
               console.log(evt.target);//NFP
-              console.log(evt.srcEvent.target);//NFP
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){

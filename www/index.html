@@ -34,10 +34,11 @@
         </div>
     </div>
 </div>
-<div id="txtarea" style="background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; position:absolute; overflow:hidden; top:0px; z-index: -1;">
+<div id="txtarea" style="background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; position:absolute; overflow:hidden; top:0px; z-index: -1; background-repeat: repeat-y, repeat-y; background-attachment: scroll, scroll;">
     <div class="flex" id="fl_text">
-        <iframe id="maintext" class="bcol">
-        </iframe>
+        <div id="maintext" class="bcol">
+            <iframe id="mainframe" scrolling="no" style="width: 100%;"></iframe>
+        </div>
     </div>
 </div>
 <div id="percentage" style="position:absolute; overflow:hidden; display:none; opacity: 50%; background-color: rgba(255,255,255,0.5);; top:50%; left:50%; z-index: 1040; font-size: 400%;">

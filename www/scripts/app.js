@@ -12,6 +12,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     var dtext = null;
     var txarea = document.getElementById('txtarea');
     var mtext = document.getElementById('maintext');
+    var mtextfrm = document.getElementById('mainframe');
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
@@ -67,48 +68,51 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     //screen.onmozorientationchange = set_sizes;
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
-    var hmctxarea = new hammer.Manager(txarea, { recognizers: [
-            [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
-            [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
-            [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
-    ]});
-    console.log("hmctxarea");
-    console.log(hmctxarea);
-    hammerelements[txarea.id] = hmctxarea;
-    hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
-    hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
-    hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
-    hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
-    hmctxarea.on("doubletap doubleclick", function(evt){
-            console.log("doubletap detected");//NFP
-            options.set_opt('scale', 1.0);
-            uitouch.init_scale(1.0);
-        });
-    hmctxarea.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hmctxarea.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){
-            options.display('hide');
-            pop.style.display='none';
-            popups.map(function(el){el.style.display="none";});
-        }});
-    hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hmctxarea.on("tap click press", function(evt){
-            uitouch.handleClick(evt);
-            popups.map(function(el){el.style.display="none";});
+    function eventifymtext(ifrm){
+        if(hammerelements[ifrm.id]) delete hammerelements[ifrm.id];
+        var hmctxarea = new hammer.Manager(ifrm, { recognizers: [
+                [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
+                [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
+                [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
+        ]});
+        console.log("hmctxarea");//NFP
+        console.log(hmctxarea);//NFP
+        hammerelements[ifrm.id] = hmctxarea;
+        hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
+        hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
+        hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
+        hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
+        hmctxarea.on("doubletap doubleclick", function(evt){
+                console.log("doubletap detected");//NFP
+                options.set_opt('scale', 1.0);
+                uitouch.init_scale(1.0);
             });
-    hmctxarea.on("pinchstart", function(evt){
-        console.log("pinchstart");//NFP
-        percentage.style.display='block';});
-    hmctxarea.on("pinchend", function(evt){
-        console.log("pinchend");//NFP
-        percentage.style.display='none';});
-    hmctxarea.on("pinchin pinchout", function(evt){
-                                               hmctxarea.stop();
-                                               var uisc = uitouch.doscale(Math.sqrt(evt.scale));
-                                               console.log("evt.scale is", evt.scale); //NFP
-                                               percentage.textContent = Math.round(uisc*100)+"%";
-                                               window.setTimeout(function(){percentage.style.display='none';}, 1024);
-                                               });
+        hmctxarea.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+        hmctxarea.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+        hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){
+                options.display('hide');
+                pop.style.display='none';
+                popups.map(function(el){el.style.display="none";});
+            }});
+        hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
+        hmctxarea.on("tap click press", function(evt){
+                uitouch.handleClick(evt);
+                popups.map(function(el){el.style.display="none";});
+                });
+        hmctxarea.on("pinchstart", function(evt){
+            console.log("pinchstart");//NFP
+            percentage.style.display='block';});
+        hmctxarea.on("pinchend", function(evt){
+            console.log("pinchend");//NFP
+            percentage.style.display='none';});
+        hmctxarea.on("pinchin pinchout", function(evt){
+                                                   hmctxarea.stop();
+                                                   var uisc = uitouch.doscale(Math.sqrt(evt.scale));
+                                                   console.log("evt.scale is", evt.scale); //NFP
+                                                   percentage.textContent = Math.round(uisc*100)+"%";
+                                                   window.setTimeout(function(){percentage.style.display='none';}, 1024);
+                                                   });
+    }
     var hammerpop = new hammer.Manager(pop, {
             recognizers: [
             // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
@@ -128,7 +132,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             popups.map(function(el){el.style.display="none";});
             uitouch.handleClick(e);
             });
-    mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
+    mtextfrm.contentDocument.body.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     var hammerhelper = new hammer(helper);
     hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
             helper.style.display="none";
@@ -229,18 +233,20 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
         if(data[0]){
-            mtext.contentDocument.open();
-            mtext.contentDocument.close();
-            mtext.contentDocument.write(data[0]);
-            sharedf.move_tags(mtext.contentDocument.getElementsByTagName("body")[0],
+            mtextfrm.contentDocument.open();
+            mtextfrm.contentDocument.close();
+            mtextfrm.contentDocument.write(data[0]);
+            sharedf.move_tags(mtextfrm.contentDocument.getElementsByTagName("body")[0],
                               ['style'],
-                              mtext.contentDocument.getElementsByTagName("head")[0]);
+                              mtextfrm.contentDocument.getElementsByTagName("head")[0]);
         }
-        mtext.style.width = 'auto';
-        mtext.style.height = window.innerHeight+'px';
-        mtext.style.display = 'block';
+        var cheight = parseInt(window.innerHeight/2+stuff.getStyle(mtextfrm.contentWindow.document.body, 'height'));
+        mtextfrm.style.width = window.innerWidth+'px';
+        mtextfrm.style.height = cheight+'px';
+        mtext.style.height = cheight+'px';
+        mtextfrm.style.display = 'block';
+        eventifymtext(mtextfrm.contentWindow.document.body);
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
-        var cheight = mtext.scrollHeight;//stuff.getStyle(mtext, 'height');
         if(!nosave) options.setpage(book.foliant().currentpage());
         if(data[1] && !percent) percent = prc_from_anchor(data[1], percent);
         else if(percent==='end') percent = 100.0*parseFloat(cheight-window.innerHeight/2)/cheight;
