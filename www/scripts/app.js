@@ -222,7 +222,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         console.log("Got"); //NFP
         console.log("anchor "+anchor); //NFP
         console.log("prc "+prc); //NFP
-        var ancel = document.getElementById(anchor);
+        var ancel = mtextfrm.contentDocument.getElementById(anchor);
+        console.log("ancel:"); //NFP
+        console.log(ancel); //NFP
         if(!ancel) 
             if(!prc) return 0;
             else return prc;
