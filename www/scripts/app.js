@@ -18,7 +18,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     var hammer = require('hammer');
     console.log("Got hammer"); //NFP
     console.log(hammer);
-    var style = document.createElement('style');
+    var style = mtextfrm.ownerDocument.createElement('style');
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
@@ -30,10 +30,14 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     var popups = Array.prototype.slice.call(document.querySelectorAll(".muchopts"));
     function set_sizes(){
         console.log("Sets sizes");
-        document.getElementsByTagName('head')[0].removeChild(style);
+        mtextfrm.ownerDocument
+                .getElementsByTagName('head')[0]
+                .removeChild(style);
         style.type = 'text/css';
         style.innerHTML = 'img { max-height: '+(window.innerHeight)+'px; max-width:'+(window.innerWidth)+'px; overflow:hidden}';
-        document.getElementsByTagName('head')[0].appendChild(style);
+        mtextfrm.ownerDocument
+                .getElementsByTagName('head')[0]
+                .appendChild(style);
         txarea.style.height = window.innerHeight+"px";
         txarea.style.width = window.innerWidth+"px";
         helper.style.height = window.innerHeight+"px";

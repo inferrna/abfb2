@@ -15,6 +15,7 @@ define(
       var mtext = document.getElementById('maintext');
       var pop = document.getElementById('pop');
       var targimg = document.createElement("image");
+      var mtextfrm = document.getElementById('mainframe').contentDocument.body;
       targimg.src = stuff.targetimg;
       document.body.appendChild(targimg);
       targimg.style.display = 'none';
@@ -245,9 +246,8 @@ define(
       }
       function apply_scale(){
             "use strict";
-            var txarea = document.getElementById('txtarea');
-            mtext.style.fontSize = scale+'em';
-            document.body.style.fontSize = scale+'em';
+            mtextfrm.style.fontSize = scale+'em';
+            pop.style.fontSize = scale+'em';
             options.set_opt('scale', scale, true);
             var cp = options.getpercent();
             options.setpercent(cp);

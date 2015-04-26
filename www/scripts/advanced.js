@@ -5,7 +5,7 @@ define(
         var advanced = document.getElementById('advanced');
         advanced.style.display = "none";
         var reader = new FileReader();
-
+        var mtextfrm = document.getElementById('mainframe').contentDocument;
         var switchdictclr = document.getElementById('switchdictclr');
         var switchmode = document.getElementById('switchmode');
         var switchmtxt = document.getElementById('switchmtxt');
@@ -138,11 +138,25 @@ define(
           e.preventDefault(); // prevent navigation to "#"
         }, false);
 
+        function set_fontcolor(color){
+              var style = mtextfrm.getElementById('txtsize');
+              if(!style){
+                  style = mtextfrm.createElement('style');
+              } else {
+                  mtextfrm.getElementsByTagName('head')[0]
+                          .removeChild(style);
+              }
+              style.id = 'txtsize';
+              style.type="text/css";
+              style.innerHTML = "body {\n    color: "+color+";\n}";
+              mtextfrm.getElementsByTagName('head')[0]
+                      .appendChild(style);
+        }
 
         function setback(mode, Canvas){
               if(currentback === "default" && mode === "day"){
                   txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/png')+ ')';
-                  fltext.style.color = "#000000";
+                  set_fontcolor("#000000");
                   txarea.className = "gradient";
                   return 0;
               }
@@ -184,7 +198,7 @@ define(
               console.log(lmax, lmin, avgl);//NFP
               ctx.putImageData(pixels, 0, 0);
               txarea.style.backgroundImage = 'url(' + Canvas.toDataURL('image/jpg')+ ')';
-              fltext.style.color = color;
+              set_fontcolor(color);
               delete pixels;
         }
 
