@@ -1,6 +1,7 @@
 define(
-    ['sharedf'],
-  function(sharedf){
+    ['sharedf', 'stuff'],
+  function(sharedf, stuff){
+        var mtext = document.getElementById('maintext');
         var mtextfrm = document.getElementById('mainframe').contentDocument;
         var savedcolor = null;
         var savedsize = null;
@@ -43,7 +44,7 @@ define(
                 console.log("Got"); //NFP
                 console.log("anchor "+anchor); //NFP
                 console.log("prc "+prc); //NFP
-                var ancel = mtextfrm.contentDocument.getElementById(anchor);
+                var ancel = mtextfrm.getElementById(anchor);
                 console.log("ancel:"); //NFP
                 console.log(ancel); //NFP
                 if(!ancel) 
