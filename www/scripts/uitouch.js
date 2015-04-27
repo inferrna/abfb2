@@ -1,6 +1,6 @@
 define(
-    ['options', 'stuff', 'sharedc', 'book'],
-  function(options, stuff, sharedc, book){
+    ['options', 'stuff', 'sharedc', 'book', 'frame'],
+  function(options, stuff, sharedc, book, frame){
    //   "use strict";
       var dictflag = 0;
       var liftflag = 0;
@@ -246,7 +246,7 @@ define(
       }
       function apply_scale(){
             "use strict";
-            mtextfrm.style.fontSize = scale+'em';
+            frame.set_fontsize(scale);
             pop.style.fontSize = scale+'em';
             options.set_opt('scale', scale, true);
             var cp = options.getpercent();

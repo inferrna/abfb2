@@ -1,5 +1,5 @@
-require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'advanced', 'hammer'],
-function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, advanced){
+require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'advanced', 'frame', 'hammer'],
+function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, advanced, frame){
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -29,15 +29,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     var percentage = document.getElementById("percentage");
     var popups = Array.prototype.slice.call(document.querySelectorAll(".muchopts"));
     function set_sizes(){
-        console.log("Sets sizes");
-        mtextfrm.ownerDocument
-                .getElementsByTagName('head')[0]
-                .removeChild(style);
-        style.type = 'text/css';
-        style.innerHTML = 'img { max-height: '+(window.innerHeight)+'px; max-width:'+(window.innerWidth)+'px; overflow:hidden}';
-        mtextfrm.ownerDocument
-                .getElementsByTagName('head')[0]
-                .appendChild(style);
+        frame.set_sizes();
         txarea.style.height = window.innerHeight+"px";
         txarea.style.width = window.innerWidth+"px";
         helper.style.height = window.innerHeight+"px";
@@ -222,20 +214,6 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                                        });
         options.getpp();
     }
-    function prc_from_anchor(anchor, prc){
-        console.log("Got"); //NFP
-        console.log("anchor "+anchor); //NFP
-        console.log("prc "+prc); //NFP
-        var ancel = mtextfrm.contentDocument.getElementById(anchor);
-        console.log("ancel:"); //NFP
-        console.log(ancel); //NFP
-        if(!ancel) 
-            if(!prc) return 0;
-            else return prc;
-        var antop = parseFloat(stuff.getStyle(ancel, 'top'));
-        var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
-        return 100.0*antop/cheight;
-    }
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
         if(data[0]){
@@ -245,6 +223,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             sharedf.move_tags(mtextfrm.contentDocument.getElementsByTagName("body")[0],
                               ['style'],
                               mtextfrm.contentDocument.getElementsByTagName("head")[0]);
+            frame.set_fontcolor();
+            frame.set_sizes();
+            frame.set_fontsize();
         }
         var cheight = parseInt(window.innerHeight/2+stuff.getStyle(mtextfrm.contentWindow.document.body, 'height'));
         mtextfrm.style.width = window.innerWidth+'px';
@@ -254,7 +235,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         eventifymtext(mtextfrm.contentWindow.document.body);
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         if(!nosave) options.setpage(book.foliant().currentpage());
-        if(data[1] && !percent) percent = prc_from_anchor(data[1], percent);
+        if(data[1] && !percent) percent = frame.prc_from_anchor(data[1], percent);
         else if(percent==='end') percent = 100.0*parseFloat(cheight-window.innerHeight/2)/cheight;
         mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave){
