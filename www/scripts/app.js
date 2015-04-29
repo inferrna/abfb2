@@ -109,6 +109,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                                                    window.setTimeout(function(){percentage.style.display='none';}, 1024);
                                                    });
     }
+    eventifymtext(mtextfrm);
     var hammerpop = new hammer.Manager(pop, {
             recognizers: [
             // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
@@ -232,7 +233,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         mtextfrm.style.height = cheight+'px';
         mtext.style.height = cheight+'px';
         mtextfrm.style.display = 'block';
-        eventifymtext(mtextfrm.contentWindow.document.body);
+        eventifymtext(mtextfrm.contentWindow.document.body.parentNode);
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         if(!nosave) options.setpage(book.foliant().currentpage());
         if(data[1] && !percent) percent = frame.prc_from_anchor(data[1], percent);

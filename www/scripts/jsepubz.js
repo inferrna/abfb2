@@ -60,7 +60,9 @@ function (mimetypes, sharedf, sharedc) {
     }
     function proceedcontainer(){
         container = files["META-INF/container.xml"];
-        opfPath = getOpfPathFromContainer();
+        console.log("container:");//NFP
+        console.log(container);//NFP
+        opfPath = getOpfPathFromContainer(container);
         unzipFiles([opfPath], proceedopf);
     }
     function proceedopf(){
@@ -247,7 +249,7 @@ function (mimetypes, sharedf, sharedc) {
     }
    function didUncompressAllFiles(notifier) {
             notifier(3);
-            opfPath = getOpfPathFromContainer();
+            opfPath = getOpfPathFromContainer(container);
             readOpf(files[opfPath]);
 
             notifier(4);
@@ -263,7 +265,7 @@ function (mimetypes, sharedf, sharedc) {
         }, 30);
     }
 
-    function getOpfPathFromContainer() {
+    function getOpfPathFromContainer(container) {
         var doc = xmlDocument(container);
         return doc
             .getElementsByTagName("rootfile")[0]
