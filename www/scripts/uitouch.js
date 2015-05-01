@@ -175,6 +175,7 @@ define(
       function selectword(doc, x, y, rec){
           "use strict";
           max_Y = y;
+          console.log("max_Y = "+max_Y);//NFP
           var off = -1;
           var el = null;
           if(doc.caretPositionFromPoint) {

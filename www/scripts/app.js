@@ -280,7 +280,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                var ptop = parseInt(txarea.style.height);
+                var ptop = window.innerHeight;
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";

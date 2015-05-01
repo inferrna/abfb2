@@ -10,6 +10,7 @@ function (mimetypes, sharedf, sharedc) {
     var fsthref = null;
     var logger = function(text){console.log(text);};
     var srlzr = new XMLSerializer();
+    var useCordova = !(window.Worker && window.Int8Array) && window.cordova;
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
         if(files[index]) console.warn("dublicated index "+index);
@@ -45,7 +46,7 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipBlob(notifier) {
-        if(window.cordova){
+        if(useCordova){
             unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
         } else {
             zip.createReader(new zip.BlobReader(file), function (_zipReader) {
@@ -201,7 +202,7 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipFiles(filelist, extcallback) {
-        if(window.cordova){
+        if(useCordova){
             console.log("Extract by cordova plugin");//NFP
             function fill_crdo(data, name){
                 if (sharedf.reb.test(name)){
