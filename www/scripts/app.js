@@ -271,6 +271,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         } else {el.style.display = 'none';}
     }
     function thumb_block(mY, texts, disp) {
+        mY = mY + parseInt(mtext.style.top || 0); //Compensate vertical shift
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
@@ -281,6 +282,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             if(disp!='none'){
                 var config = options.config();
                 var ptop = window.innerHeight;
+                console.log("my, mtop=="+mY+", "+mtext.style.top);//NFP
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
