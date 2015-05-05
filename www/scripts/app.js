@@ -150,6 +150,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             helper.style.display="none";
         });
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
+    mtextfrm.contentDocument.body.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");
