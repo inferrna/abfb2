@@ -120,6 +120,21 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             recognizers: [
             [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }]
     ]});
+    var hmcfltext = new hammer.Manager(fl_text, { recognizers: [
+            [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
+            [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
+    ]});
+    hammerelements[fl_text.id] = hmcfltext;
+    hmcfltext.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
+    hmcfltext.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
+    hmcfltext.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hmcfltext.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hmcfltext.on("panup swipeup", function(evt){if(chkmv(evt)){
+            options.display('hide');
+            pop.style.display='none';
+            popups.map(function(el){el.style.display="none";});
+        }});
+    hmcfltext.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hammerelements[pop.id] = hammerpop;
     hammerelements[mtext.id] = hammermtext;
     hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
