@@ -298,7 +298,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             if(disp!='none'){
                 var config = options.config();
                 var ptop = window.innerHeight;
-                console.log("my, mtop=="+mY+", "+mtext.style.top);//NFP
+                console.log("my, mtop, ptop=="+mY+", "+mtext.style.top+", "+ptop);//NFP
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
