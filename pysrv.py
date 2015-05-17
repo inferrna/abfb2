@@ -51,10 +51,10 @@ class Handler(BaseHTTPRequestHandler):
         self.do_smth(get_data)
 
     def do_smth(self, data):
-        if data['swac']:
-            f = open('swac.json', 'w')
-            f.write(str(data['swac']))
-            f.close()
+        #if data['swac']:
+        #    f = open('swac.json', 'w')
+        #    f.write(str(data['swac']))
+        #    f.close()
         try: word = data['text'][0]
         except:
             self.wfile.write('{error: no word given}'.encode('utf-8'))

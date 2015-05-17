@@ -263,9 +263,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         return mtext;
     }
     function fill_thumb(text, word, els){
+        var el = document.getElementById('pop');
         if(text.length > 1){
             var cl = document.getElementById('pts');
-            var el = document.getElementById('pop');
             var cf = 0.1;
             var width = parseInt(el.style.width, 10);
             dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
@@ -273,7 +273,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             sndbt.appendChild(sndcnt);
             cl.appendChild(sndbt);
             cl.appendChild(nosnd);
-            el.style.display = 'block';
+            //el.style.display = 'block';
             if(els && els.length){
                 for(var i = 0; i<els.length; i++){
                     cl.appendChild(document.createElement("br"));
@@ -281,7 +281,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                 }
             }
             sndbt.style.display = 'block';
-            uitouch.dragpop(-1);
+            //uitouch.dragpop(-1);
             sndbt.style.display = 'none';
             sound.get_sound(word, dict.lang());
         } else {el.style.display = 'none';}
@@ -291,23 +291,26 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
-        console.log("Got texts:");//NFP
+        console.log("Got texts: "+disp);//NFP
         console.log(texts);//NFP
-        var pos = 0;
+        var pos = '';
         if(el){
             if(disp!='none'){
                 var config = options.config();
                 var ptop = window.innerHeight;
                 console.log("my, mtop, ptop=="+mY+", "+mtext.style.top+", "+ptop);//NFP
+                el.style.display = disp;
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
-                if(pos==='top'){
-                      el.style.top = 0+"px"; el.style.bottom = '100%';
+                if(pos=='top'){
+                      el.style.top = 0+"px"; el.style.bottom = Math.floor(window.innerHeight*0.85)+'px';
                     }
-                if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '100%';}// dt.style.display='none'; db.style.display=disp;}
+                if(pos=='bot'){el.style.bottom = 0+"px"; el.style.top = Math.floor(window.innerHeight*0.85)+'px';}// dt.style.display='none'; db.style.display=disp;}
                     dict.get_def(texts);
-            } else {el.style.display = disp;}
+                el.style.width = Math.floor(window.innerWidth*0.99)+'px';
+                console.log("pos is "+pos);//NFP
+            } else {el.style.display = 'none';}
         }
     }
 });
