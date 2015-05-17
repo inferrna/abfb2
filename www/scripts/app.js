@@ -34,10 +34,10 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         txarea.style.width = window.innerWidth+"px";
         helper.style.height = window.innerHeight+"px";
         helper.style.width = window.innerWidth+"px";
-        pop.style.width = window.innerWidth+"px";
-        pop.style.minWidth = window.innerWidth+"px";
-        pts.style.width = window.innerWidth-4+"px";
-        pts.style.minWidth = window.innerWidth-4+"px";
+        pop.style.width = '100%';//window.innerWidth+"px";
+        pop.style.minWidth = '100%';//window.innerWidth+"px";
+        pts.style.width = '100%';//window.innerWidth-4+"px";
+        pts.style.minWidth = '100%';//window.innerWidth-4+"px";
         fl_text.style.width =  "auto";
         mtext.style.top = "0px";
         txarea.style.backgroundSize = '100%';
@@ -308,7 +308,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                     }
                 if(pos=='bot'){el.style.bottom = 0+"px"; el.style.top = Math.floor(window.innerHeight*0.85)+'px';}// dt.style.display='none'; db.style.display=disp;}
                     dict.get_def(texts);
-                el.style.width = Math.floor(window.innerWidth*0.99)+'px';
+                //el.style.width = Math.floor(window.innerWidth*0.99)+'px';
                 console.log("pos is "+pos);//NFP
             } else {el.style.display = 'none';}
         }
