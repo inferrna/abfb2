@@ -174,7 +174,7 @@ define(
       }
       function selectword(doc, x, y, rec){
           "use strict";
-          max_Y = y;
+          max_Y = y + parseInt(mtext.style.top || 0); //Compensate vertical shift
           console.log("max_Y = "+max_Y);//NFP
           var off = -1;
           var el = null;
@@ -269,22 +269,23 @@ define(
           dragpop:function(y){
               if(y===-1) var ch = parseInt(stuff.getStyle(pts, 'height'))+(parseInt(stuff.getStyle(pts, 'font-size')) | 16);
               if(max_Y>window.innerHeight/2){
+                  pop.style.top = "0px";
                   if(y===-1){
-                      if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch)+"px";
-                      else pop.style.bottom = "75%"
-                      pop.style.top = 0+"px";
-                      return;
+                      if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch) + 'px';
+                      else pop.style.bottom = Math.floor(window.innerHeight*0.75)+'px';
+                  } else {
+                      pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
                   }
-                  pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
               } else {
+                  pop.style.bottom = "0px";
                   if(y===-1){
-                      if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+"px";
-                      else pop.style.top = "75%"
-                      pop.style.bottom = 0+"px";
-                      return;
+                      if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+'px';
+                      else pop.style.top = Math.floor(window.innerHeight*0.75)+"px";
+                  } else { 
+                      pop.style.top = Math.floor(y>max_Y ? y : max_Y*0.75)+"px";
                   }
-                  pop.style.top = parseInt(y>max_Y ? y : max_Y)+"px";
               }
+              pop.style.height = "auto";
           },
           handleClick:function(evt){
               targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";

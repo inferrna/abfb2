@@ -35,7 +35,8 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         helper.style.height = window.innerHeight+"px";
         helper.style.width = window.innerWidth+"px";
         pop.style.width = '100%';//window.innerWidth+"px";
-        pop.style.minWidth = '100%';//window.innerWidth+"px";
+        pop.style.height = 'auto';
+        //pop.style.minWidth = '100%';//window.innerWidth+"px";
         pts.style.width = '100%';//window.innerWidth-4+"px";
         pts.style.minWidth = '100%';//window.innerWidth-4+"px";
         fl_text.style.width =  "auto";
@@ -281,13 +282,12 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                 }
             }
             sndbt.style.display = 'block';
-            //uitouch.dragpop(-1);
+            uitouch.dragpop(-1);
             sndbt.style.display = 'none';
             sound.get_sound(word, dict.lang());
         } else {el.style.display = 'none';}
     }
     function thumb_block(mY, texts, disp) {
-        mY = mY + parseInt(mtext.style.top || 0); //Compensate vertical shift
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
@@ -303,13 +303,12 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
-                if(pos=='top'){
-                      el.style.top = 0+"px"; el.style.bottom = Math.floor(window.innerHeight*0.85)+'px';
-                    }
-                if(pos=='bot'){el.style.bottom = 0+"px"; el.style.top = Math.floor(window.innerHeight*0.85)+'px';}// dt.style.display='none'; db.style.display=disp;}
+                if(pos=='top'){el.style.top = "0px"; el.style.bottom = 'auto'}
+                if(pos=='bot'){el.style.bottom = "0px"; el.style.top = 'auto'}
+                el.style.height = "auto";
                     dict.get_def(texts);
                 //el.style.width = Math.floor(window.innerWidth*0.99)+'px';
-                console.log("pos is "+pos);//NFP
+                console.log("pos is "+pos);//NFP*/
             } else {el.style.display = 'none';}
         }
     }

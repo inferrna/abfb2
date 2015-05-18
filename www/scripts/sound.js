@@ -29,7 +29,8 @@ define(
                 audios.push(nsnd);
             }
         }
-        function play(){
+        function play(evt){
+            evt.stopPropagation();
             console.log("Clicked sndbt");//NFP
             console.log("count == "+count);//NFP
             if(count){
@@ -53,7 +54,7 @@ define(
         }
 
         audios.push(snd);
-        sndbt.onclick = play;
+        sndbt.addEventListener('click', play, false);
         sndbt.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
         sndbt.style.width = sndbt.style.height;
         sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
