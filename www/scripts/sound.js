@@ -55,8 +55,10 @@ define(
 
         audios.push(snd);
         sndbt.addEventListener('click', play, false);
-        sndbt.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
+        sndbt.style.height = '2em';
         sndbt.style.width = sndbt.style.height;
+        sndbt.style.backgroundRepeat = "no-repeat";
+        sndbt.style.backgroundSize = sndbt.style.height +" "+ sndbt.style.width;
         sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
         sharedc.register('dict', 'change_lng', function(lang){
                        if(lang.length===2) var lidx = swac.lparts[lang];

@@ -65,7 +65,7 @@ button:active:before {
 }
 
 .fdetect:before {
-  content:"Detect Fonts";
+    height: '2em';
 }
 .fbutton:before {
   content:"F";

@@ -25,7 +25,7 @@
             <div id="pop" style="width:99%">
               <div class="popflex" id="pt">
                 <div id="pts" class="bcol gradient" style="width:97%">
-                    <button id="sndbt" style="background:rgb(144, 112, 128); float: right;">
+                    <button id="sndbt" style="background:rgb(144, 112, 128); float: right; width: 2em; height: 2em">
                         <span id="sndcnt" style="color:rgb(232, 255, 240); z-index:5; left:0; top:0;">5/9</span>
                     </button>
                     <div id="nosnd" style="background:rgb(180, 160, 200); margin:2px; border-radius: 12%; border:solid blue 2px; float:right; text-align:center; display:none; bottom:2px; right:2px; z-index:4;">
@@ -62,7 +62,10 @@
         <input type="file" id="customimg" accept=".jpg,.png,.jpeg,.gif" style="display:none">
 </div>
 <div id="fontwork" class="muchopts">
-    <div class="muchbutton"><button id="fdetect" class="fdetect"></button></div>
+    <button id="fdetect" class="fdetect">Detect fonts</button>
+    <br>
+    <p id="cf">Current font</p>
+    <br>
     <div class="dd-container">
         <div class="dd dropdown-wrap" data-value-enabled="true" data-name-enabled="true">
             <div class="dropdown-placeholder" id="dpph"></div>

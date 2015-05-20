@@ -2,9 +2,11 @@ define(
     ['sharedf', 'stuff'],
   function(sharedf, stuff){
         var mtext = document.getElementById('maintext');
+        var cf = document.getElementById('cf'); //Current font
         var mtextfrm = document.getElementById('mainframe').contentDocument;
         var savedcolor = null;
         var savedsize = null;
+        var savedfamily = null;
         function get_style(id){
             var style = mtextfrm.getElementById(id);
             if(!style){
@@ -18,6 +20,16 @@ define(
             return style;
         }
         return {
+            set_font_family:function(family){
+                if(!family) family = savedfamily;
+                else savedfamily = family;
+                cf.style.fontFamily = family;
+                cf.textContent = "Current font \""+family+"\"";
+                style = get_style('family');
+                style.innerHTML = "body {\n    font-family: "+family+";\n}";
+                mtextfrm.getElementsByTagName('head')[0]
+                        .appendChild(style);
+            },
             set_fontsize:function(size){
                 if(!size) size = savedsize;
                 else savedsize = size;

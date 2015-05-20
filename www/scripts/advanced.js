@@ -21,12 +21,12 @@ define(
         console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
         console.log(sharedf.hsvToRgb(0.3, 0.5, 0.7));//NFP
         advbtn.className = "int-box";
-        advbtn.style.height = Math.round(32*(window.devicePixelRatio ? 1/window.devicePixelRatio : 1.0))+"px";
+        advbtn.style.height = '2em';
         advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.margin="1px"; advbtn.style.border="1px";
         advbtn.style.right = "0px";
         advbtn.style.backgroundColor = "";
         advbtn.style.backgroundRepeat = "no-repeat";
-        advbtn.style.backgroundSize = advbtn.style.height +" "+ advbtn.style.width
+        advbtn.style.backgroundSize = advbtn.style.height +" "+ advbtn.style.width;
         advbtn.style.backgroundImage = 'url('+images.book_svg+')';
         advbtn.onclick = function(){
             if(advanced.style.display === "none"){

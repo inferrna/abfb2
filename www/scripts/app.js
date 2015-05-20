@@ -1,5 +1,5 @@
-require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'advanced', 'frame', 'hammer'],
-function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, advanced, frame){
+require(['uitouch', 'dict', 'frame', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'advanced', 'fontwork', 'hammer'],
+function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, require, advanced, fontwork){
     var ws = null;
     var dreq = null;
     var timer = null;
