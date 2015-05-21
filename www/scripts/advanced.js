@@ -17,12 +17,13 @@ define(
         var fltext = document.getElementById('fl_text');//txtarea');
         var txarea = document.getElementById('txtarea');
         var opts_brd_b = document.getElementById('mbuttons');
+        opts_brd_b.style.width = 'auto';
         var advbtn = document.createElement("button");
         console.log(sharedf.rgbToHsv(27, 224, 156));//NFP
         console.log(sharedf.hsvToRgb(0.3, 0.5, 0.7));//NFP
         advbtn.className = "int-box";
         advbtn.style.height = '2em';
-        advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.margin="1px"; advbtn.style.border="1px";
+        advbtn.style.width = advbtn.style.height; advbtn.style.borderRadius="3pt"; advbtn.style.margin="1px"; advbtn.style.border="1px"; advbtn.style.top = '0px';
         advbtn.style.right = "0px";
         advbtn.style.backgroundColor = "";
         advbtn.style.backgroundRepeat = "no-repeat";
@@ -35,9 +36,9 @@ define(
                 advanced.style.display = "none";
             }
         }
-        var lib = document.createElement("li")
-        lib.appendChild(advbtn);
-        opts_brd_b.appendChild(lib);
+        /*var lib = document.createElement("li")
+        lib.appendChild(advbtn);*/
+        opts_brd_b.appendChild(advbtn);//lib);
         function set_image(src){
             var imageObj = new Image();
             imageObj.onload = function() {

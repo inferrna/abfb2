@@ -15,6 +15,7 @@ button {
   /*width:100px;
   height:100px;*/
   display:inline-block;
+  position:absolute;
   font-family:Arial, "Helvetica", sans-serif;
   font-size:16px;
   font-weight:bold;
@@ -26,6 +27,7 @@ button {
   padding-top:6px;
   margin-left:auto;
   margin-right:auto;
+  float: left;
   /*left:30px;*/
   position:relative;
   cursor:pointer;
@@ -50,7 +52,6 @@ button:before {
   /*width:85px;
   height:90px;*/
   display:block;
-  position:absolute;
   padding-top:10px;
   top:10px;
   text-shadow: 1px 1px 2px #07526e;
@@ -67,9 +68,9 @@ button:active:before {
 .fdetect:before {
     height: '2em';
 }
-.fbutton:before {
+/*.fbutton:before {
   content:"F";
-}
+}*/
 .vimeo:before{
   content:"\F024";
  

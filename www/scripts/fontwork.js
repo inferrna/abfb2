@@ -23,9 +23,10 @@ define(
         fontwork.style.display = "none"
         fdetect.onclick = detectAll;
         dropdown.style.top = "0px";
-        fbtn.className = "fbutton int-box";
+        fbtn.className = "int-box";
         fbtn.style.height = '2em';
-        fbtn.style.width = fbtn.style.height; fbtn.style.borderRadius="3pt";
+        fbtn.textContent = 'F';
+        fbtn.style.width = fbtn.style.height; fbtn.style.borderRadius="3pt"; fbtn.style.margin="1px"; fbtn.style.border="1px"; fbtn.style.top = '0px';
         //fbtn.textContent = "F";
         fbtn.onclick = function(){
             if(fontwork.style.display === "none"){
@@ -35,9 +36,9 @@ define(
                 fontwork.style.display = "none";
             }
         }
-        var lib = document.createElement("li")
-        lib.appendChild(fbtn);
-        opts_brd_b.appendChild(lib);
+        /*var lib = document.createElement("li")
+        lib.appendChild(fbtn);*/
+        opts_brd_b.appendChild(fbtn);//lib);
         dpph.onclick = function(){
             if(dropdown.style.display === "none"){
                 dropdown.style.display = "block";

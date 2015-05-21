@@ -203,8 +203,9 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      return currentpage;
              },
              next_page:function(diff){
-                    var page = currentpage + diff;
-                    page = page>=hrefs.length ? 0 : page<0 ? hrefs.length-1 : page;
+                    var tidx = diff + pages.indexOf(currentpage);
+                    tidx = tidx>=hrefs.length ? 0 : tidx<0 ? hrefs.length-1 : tidx;
+                    var page = pages[tidx];
                     if(diff===-1) var prc='end';
                     else var prc = 0.0000001; //For examine if percent sended
                     try{
