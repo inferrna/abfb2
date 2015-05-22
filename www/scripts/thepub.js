@@ -5,6 +5,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
     var pages = [];
     var anchors = [];
     var tocels = [];
+    var tocurls = []; //Urls exists in TOC
     var hrefs = [];
     var hrefopts = {};
     var currentpage = 0;
@@ -140,7 +141,8 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             pages = [];
             urls = Array.prototype.slice.call(opts)
                         .map(function(opt){ return opt.getAttribute('url').split("#")[0];}); 
-            hrefs = hrefs.filter(function (el){ if(urls.indexOf(el)>-1 && el.match(/.+\..+/) && !el.match(/.+\/$/) ) return el})
+            hrefs = hrefs.filter(function (el){ if(urls.indexOf(el)>-1 && el.match(/.+\..+/) && !el.match(/.+\/$/) ) return el});
+            tocurls = urls;
             for(var i = 0; i < opts.length; i++) {
                 var url = opts[i].getAttribute('url');
                                  //.replace(sharedf.relf, "$2")
@@ -204,12 +206,12 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
              },
              next_page:function(diff){
                     var tidx = diff + pages.indexOf(currentpage);
-                    tidx = tidx>=hrefs.length ? 0 : tidx<0 ? hrefs.length-1 : tidx;
+                    tidx = tidx>=pages.length ? 0 : tidx<0 ? pages.length-1 : tidx;
                     var page = pages[tidx];
                     if(diff===-1) var prc='end';
                     else var prc = 0.0000001; //For examine if percent sended
                     try{
-                        currentopt = hrefopts[hrefs[page]][0];
+                        currentopt = page;
                     } catch(e){
                         console.warn(e);
                         console.warn("Can not find index from page "+page+" by href "+hrefs[page]);

@@ -162,7 +162,16 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             var diff = parseInt(i);
             //mtext.innerHTML='wait..';
             options.display("show");
-            book.foliant().next_page(diff);
+            //book.foliant().next_page(diff);
+            var sel = document.getElementById("tocselect");
+            var _nidx = sel.selectedIndex + i;
+            var nidx = _nidx >= sel.options.length ? 0 : _nidx < 0 ? sel.options.length-1 : _nidx;
+            //sel.options[nidx].selected = true;
+            sel.selectedIndex = nidx;
+            try { var evt = new Event('change');}
+            catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
+            sel.dispatchEvent(evt);
+            options.display("hide");
         });
     sharedc.register('dict', 'got_def', function (txt, word, els) {
         if(txt.length>1) fill_thumb(txt, word, els);
