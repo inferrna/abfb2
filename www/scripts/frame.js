@@ -53,12 +53,7 @@ define(
                         .appendChild(style);
             },
             prc_from_anchor:function(anchor, prc){
-                console.log("Got"); //NFP
-                console.log("anchor "+anchor); //NFP
-                console.log("prc "+prc); //NFP
                 var ancel = mtextfrm.getElementById(anchor);
-                console.log("ancel:"); //NFP
-                console.log(ancel); //NFP
                 if(!ancel) 
                     if(!prc) return 0;
                     else return prc;
