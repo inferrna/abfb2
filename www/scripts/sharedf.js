@@ -2,7 +2,7 @@ define(
   [],
   function(){
     console.log("Starts sharedf");//NFP
-    function clean_tag(doc, tags, tag){
+    function clean_tag(doc, tag){
             var tags = doc.getElementsByTagName(tag);
             for (var i = 0, il = tags.length; i < il; i++) {
                 var ltag = tags[i];
@@ -14,7 +14,30 @@ define(
                 }
             }
             tags = doc.getElementsByTagName(tag);
-            if (tags.length>0) clean_tag(doc, tags, tag);
+            if (tags.length>0) clean_tag(doc, tag);
+    }
+    function create_style(css){
+        style = document.createElement('style');
+        style.type = 'text/css';
+        if (style.styleSheet){
+          style.styleSheet.cssText = css;
+        } else {
+          style.appendChild(document.createTextNode(css));
+        }
+    }
+
+    function move_tag(oldparent, tag, newparent){
+            var tags = oldparent.getElementsByTagName(tag);
+            for (var i = 0, il = tags.length; i < il; i++) {
+                var ltag = tags[i];
+                if(ltag){
+                    newparent.appendChild(ltag);
+                    //console.log();//NFP
+                    //ltag.parentNode.removeChild(ltag);
+                }
+            }
+            tags = oldparent.getElementsByTagName(tag);
+            if (tags.length>0) move_tag(oldparent, tag, newparent);
     }
     /**
      * http://axonflux.com/handy-rgb-to-hsl-and-rgb-to-hsv-color-model-c
@@ -153,9 +176,16 @@ define(
     }
 
     return {
+            move_tags:function(oldparent, taglst, newparent){
+                console.log("newparent is ");//NFP
+                console.log(newparent);//NFP
+                for (var i=0; i<taglst.length; i++){
+                     clean_tag(oldparent, taglst[i], newparent);
+                }
+            },
             clean_tags:function(doc, taglst){
                 for (var i=0; i<taglst.length; i++){
-                     clean_tag(doc, doc.getElementsByTagName(taglst[i]), taglst[i]);
+                     clean_tag(doc, taglst[i]);
                 }
             },
             /*binary files*/
@@ -165,9 +195,7 @@ define(
             /* last file */
             relf: /(.*?\/)+(.+?)/gi,
             rgbToHsl:rgbToHsl,
-            hslToRgb:hslToRgb,
-            rgbToHsv:rgbToHsv,
-            hsvToRgb:hsvToRgb
+            hslToRgb:hslToRgb
     }
   }
 );
