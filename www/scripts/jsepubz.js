@@ -10,6 +10,7 @@ function (mimetypes, sharedf, sharedc) {
     var fsthref = null;
     var logger = function(text){console.log(text);};
     var srlzr = new XMLSerializer();
+    var useCordova = !(window.Worker && window.Int8Array) && window.cordova;
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
         if(files[index]) console.warn("dublicated index "+index);
@@ -45,7 +46,7 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipBlob(notifier) {
-        if(window.cordova){
+        if(useCordova){
             unzipFiles(["META-INF/container.xml", "mimetype"], proceedcontainer); 
         } else {
             zip.createReader(new zip.BlobReader(file), function (_zipReader) {
@@ -60,7 +61,9 @@ function (mimetypes, sharedf, sharedc) {
     }
     function proceedcontainer(){
         container = files["META-INF/container.xml"];
-        opfPath = getOpfPathFromContainer();
+        console.log("container:");//NFP
+        console.log(container);//NFP
+        opfPath = getOpfPathFromContainer(container);
         unzipFiles([opfPath], proceedopf);
     }
     function proceedopf(){
@@ -79,18 +82,23 @@ function (mimetypes, sharedf, sharedc) {
         unzipFiles(staff2ext, proceedcss);
     }
     function parse_toc(toc, base){
-       var points = toc.getElementsByTagName("navPoint");
        var tocels = [];
        var namerefs = {};
-       for(i=0; i<points.length; i++){
-           var tocel = {}
-           var lbl = points[i].getElementsByTagName("navLabel")[0];
-           var cont = points[i].getElementsByTagName("content")[0];
-           tocel['href'] = resolvePath(cont.attributes['src'].value, base);
-           tocel['name'] = lbl.textContent.replace(/\s+/mg, ' ');
-           namerefs[tocel['href']] = tocel['name'];
-           tocels.push(tocel)
+       function iterate_points(points){
+           for(i=0; i<points.length; i++){
+               var tocel = {}
+               var lbl = points[i].getElementsByTagName("navLabel")[0];
+               var cont = points[i].getElementsByTagName("content")[0];
+               tocel['href'] = resolvePath(cont.attributes['src'].value, base);
+               tocel['name'] = lbl.textContent.replace(/\s+/mg, ' ');
+               namerefs[tocel['href']] = tocel['name'];
+               tocels.push(tocel)
+           }
        }
+       var points = toc.getElementsByTagName("navPoint");
+       var points2 = toc.getElementsByTagName("pageTarget");
+       iterate_points(points);
+       iterate_points(points2);
        var recl = /toc-.+/i;
        var points = toc.getElementsByTagName("li");
        for(i=0; i<points.length; i++){
@@ -194,7 +202,7 @@ function (mimetypes, sharedf, sharedc) {
     }
 
     function unzipFiles(filelist, extcallback) {
-        if(window.cordova){
+        if(useCordova){
             console.log("Extract by cordova plugin");//NFP
             function fill_crdo(data, name){
                 if (sharedf.reb.test(name)){
@@ -242,7 +250,7 @@ function (mimetypes, sharedf, sharedc) {
     }
    function didUncompressAllFiles(notifier) {
             notifier(3);
-            opfPath = getOpfPathFromContainer();
+            opfPath = getOpfPathFromContainer(container);
             readOpf(files[opfPath]);
 
             notifier(4);
@@ -258,7 +266,7 @@ function (mimetypes, sharedf, sharedc) {
         }, 30);
     }
 
-    function getOpfPathFromContainer() {
+    function getOpfPathFromContainer(container) {
         var doc = xmlDocument(container);
         return doc
             .getElementsByTagName("rootfile")[0]
@@ -365,7 +373,7 @@ function (mimetypes, sharedf, sharedc) {
     function postProcessCSS(href) {
         var file = files[href];
         var self = this;
-        file = file.replace(/url\((.*?)\)/gi, function (str, url) {
+        file = file.replace(/url\([\'\"]?(.*?)[\'\"]?\)/gi, function (str, url) {
             var format = '';
             if (/^data/i.test(url)) {
                 // Don't replace data strings
@@ -388,7 +396,8 @@ function (mimetypes, sharedf, sharedc) {
                    .replace(/large/gi, '1.5em')
                    .replace(/x\-large/gi, '2em')
                    .replace(/xx\-large/gi, '3em');
-        return file.replace(/body/gi, '#epubcont');
+        console.log("Got css:\n"+file);//NFP
+        return file;
     }
     function extract_title(href){
         var xml = null;
@@ -435,22 +444,30 @@ function (mimetypes, sharedf, sharedc) {
               //  inlineStyle.setAttribute("data-orig-href", link.getAttribute("href"));
                 var csshref = resolvePath(link.getAttribute("href"), href);
                 var css = files[csshref];
-                inlineStyle.appendChild(document.createTextNode(css));
+                if (inlineStyle.styleSheet){
+                  console.log("inlineStyle.styleSheet is present");//NFP
+                  inlineStyle.styleSheet.cssText = css;
+                } else {
+                  console.log("inlineStyle.styleSheet isn't present");//NFP
+                  //var textNode = document.createTextNode(css);
+                  //textNode.textContent = textNode.textContent.replace('&gt;', '>');
+                  //data:"+mimetypes.getMimeType(name)+";base64,
+                  inlineStyle.textContent = '@import'+' url(\''+'data:text/css;base64,'+window.btoa(css)+'\');';//.appendChild(textNode);
+                }
 
                 link.parentNode.replaceChild(inlineStyle, link);
             }
         }
         try{
-            sharedf.clean_tags(doc, ["head", "body", "meta", "svg", "script", "a"]);
+            sharedf.clean_tags(doc, ["script", "a"]);
         }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
         try { 
-            var div = document.createElement('div');
-            div.id = "epubcont";
-            while(doc.firstChild) div.appendChild(doc.firstChild);
-            sharedf.clean_tags(div, ["html"]);
-            var res = div;
+            //var div = document.createElement('div');
+            //while(doc.firstChild) div.appendChild(doc.firstChild);
+            var res = doc;//div;
+            res.id = "epubcont";
+            //delete doc;
         } catch(e) { var res = doc; }
-        delete doc;
         delete files[href];
         return srlzr.serializeToString(res);
     }
@@ -465,6 +482,7 @@ function (mimetypes, sharedf, sharedc) {
         } else { 
             result = "data:" + mediaType + "," + escape(files[dataHref]);
         }
+        console.log("got mediatype\""+mediaType+"\" from "+url+" and "+href);//NFP
         return result;
     }
 

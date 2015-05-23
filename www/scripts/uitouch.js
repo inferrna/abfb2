@@ -1,6 +1,6 @@
 define(
-    ['options', 'stuff', 'sharedc', 'book'],
-  function(options, stuff, sharedc, book){
+    ['options', 'stuff', 'sharedc', 'book', 'frame'],
+  function(options, stuff, sharedc, book, frame){
    //   "use strict";
       var dictflag = 0;
       var liftflag = 0;
@@ -15,6 +15,7 @@ define(
       var mtext = document.getElementById('maintext');
       var pop = document.getElementById('pop');
       var targimg = document.createElement("image");
+      var mtextfrm = document.getElementById('mainframe').contentDocument.body;
       targimg.src = stuff.targetimg;
       document.body.appendChild(targimg);
       targimg.style.display = 'none';
@@ -171,26 +172,27 @@ define(
           }
           return true;
       }
-      function selectword(x, y, rec){
+      function selectword(doc, x, y, rec){
           "use strict";
-          max_Y = y;
+          max_Y = y + parseInt(mtext.style.top || 0); //Compensate vertical shift
+          console.log("max_Y = "+max_Y);//NFP
           var off = -1;
           var el = null;
-          if(document.caretPositionFromPoint) {
-              var cp = document.caretPositionFromPoint(x, y);
+          if(doc.caretPositionFromPoint) {
+              var cp = doc.caretPositionFromPoint(x, y);
               if(cp){
                 off = cp.offset;
                 el = cp.offsetNode;
               }
-          } else if(document.caretRangeFromPoint) {
-              var cp = document.caretRangeFromPoint(x, y);
+          } else if(doc.caretRangeFromPoint) {
+              var cp = doc.caretRangeFromPoint(x, y);
               if(cp){
                   off = cp.startOffset;
                   el = cp.commonAncestorContainer;
               }
           } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
-          if(el === document.body){ cp = null; el = null; }
-          if(!cp && document.elementFromPoint){
+          if(el === doc.body){ cp = null; el = null; }
+          if(!cp && doc.elementFromPoint){
               var goff = get_off(x, y);
               if(goff){off = goff[0]; el = goff[1];}
           }
@@ -206,7 +208,7 @@ define(
                   console.log("off=="+off);//NFP
                   var sel = window.getSelection();
                   sel.removeAllRanges();
-                  var rng = document.createRange();
+                  var rng = doc.createRange();
                   rng.selectNode(el);
                   rng.setStart(el, off);
                   rng.setEnd(el, off+1);
@@ -235,19 +237,21 @@ define(
               }
           }
       }
-      function chscale(cf, apply){
+      function chscale(cf, nochange){
             "use strict";
-            if(isNaN(scale) || !scale) scale = 1.0;
-            var newscale = cf*scale;
+            var _scale = scale+0.0;
+            if(isNaN(scale) || !scale) _scale = 1.0;
+            var newscale = cf*_scale;
             if(Math.abs(1.0 - newscale) < 0.04) newscale = 1.0;
-            scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
-            console.log("scale == "+scale)//NFP
+            _scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
+            console.log("scale == "+_scale)//NFP
+            if(!nochange) scale = _scale;
+            return _scale;
       }
       function apply_scale(){
             "use strict";
-            var txarea = document.getElementById('txtarea');
-            mtext.style.fontSize = scale+'em';
-            document.body.style.fontSize = scale+'em';
+            frame.set_fontsize(scale);
+            pop.style.fontSize = scale+'em';
             options.set_opt('scale', scale, true);
             var cp = options.getpercent();
             options.setpercent(cp);
@@ -268,31 +272,33 @@ define(
           dragpop:function(y){
               if(y===-1) var ch = parseInt(stuff.getStyle(pts, 'height'))+(parseInt(stuff.getStyle(pts, 'font-size')) | 16);
               if(max_Y>window.innerHeight/2){
+                  pop.style.top = "0px";
                   if(y===-1){
-                      if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch)+"px";
-                      else pop.style.bottom = "75%"
-                      pop.style.top = 0+"px";
-                      return;
+                      if(max_Y>ch) pop.style.bottom = (window.innerHeight-ch) + 'px';
+                      else pop.style.bottom = Math.floor(window.innerHeight*0.75)+'px';
+                  } else {
+                      pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
                   }
-                  pop.style.bottom = parseInt(y<max_Y ? window.innerHeight-y : window.innerHeight-max_Y)+"px";
               } else {
+                  pop.style.bottom = "0px";
                   if(y===-1){
-                      if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+"px";
-                      else pop.style.top = "75%"
-                      pop.style.bottom = 0+"px";
-                      return;
+                      if(max_Y<(window.innerHeight-ch)) pop.style.top = (window.innerHeight-ch)+'px';
+                      else pop.style.top = Math.floor(window.innerHeight*0.75)+"px";
+                  } else { 
+                      pop.style.top = Math.floor(y>max_Y ? y : max_Y*0.75)+"px";
                   }
-                  pop.style.top = parseInt(y>max_Y ? y : max_Y)+"px";
               }
+              pop.style.height = "auto";
           },
           handleClick:function(evt){
               targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
-              selectword(evt.center.x, evt.center.y);
+              console.log(evt.srcEvent.target);//NFP
+              var doc = evt.target.ownerDocument;
+              selectword(doc, evt.center.x, evt.center.y);
               console.log("target is");//NFP
               console.log(evt.target);//NFP
-              console.log(evt.srcEvent.target);//NFP
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){
@@ -322,11 +328,11 @@ define(
               selected_word = sel.toString();
               sharedc.exec('uitouch', 'got_selection')([selected_word, '']);
           },
-          doscale:function(cf){
-              cf = cf > 1.05 ? 1.05 : cf < 1/1.05 ? 1/1.05 : cf;
-              chscale(cf, 1);
-              apply_scale();
-              return scale;
+          doscale:function(cf, apply){
+              //cf = cf > 1.05 ? 1.05 : cf < 1/1.05 ? 1/1.05 : cf;
+              var res = chscale(cf, !apply);
+              if(apply) apply_scale();
+              return res;
           },
           init_scale:function(newscale){
               if(newscale && newscale > 0.25 && newscale < 8.0){
