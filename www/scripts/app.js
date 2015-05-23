@@ -98,16 +98,23 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                 });
         hmctxarea.on("pinchstart", function(evt){
             console.log("pinchstart");//NFP
+            var uisc = uitouch.doscale(1.0, false);
+            console.log("evt.scale is", evt.scale); //NFP
+            percentage.textContent = Math.round(uisc*100)+"%";
             percentage.style.display='block';});
         hmctxarea.on("pinchend", function(evt){
-            console.log("pinchend");//NFP
-            percentage.style.display='none';});
+                console.log("pinchend");//NFP
+                var uisc = uitouch.doscale(Math.sqrt(evt.scale), true);
+                percentage.style.display='none';
+                console.log("evt.scale is", evt.scale); //NFP
+                //percentage.textContent = Math.round(uisc*100)+"%";
+                //window.setTimeout(function(){percentage.style.display='none';}, 512);
+            });
         hmctxarea.on("pinchin pinchout", function(evt){
-                                                   hmctxarea.stop();
-                                                   var uisc = uitouch.doscale(Math.sqrt(evt.scale));
+                                                   //hmctxarea.stop();
+                                                   var uisc = uitouch.doscale(Math.sqrt(evt.scale), false);
                                                    console.log("evt.scale is", evt.scale); //NFP
-                                                   percentage.textContent = Math.round(uisc*100)+"%";
-                                                   window.setTimeout(function(){percentage.style.display='none';}, 1024);
+                                                   if(!evt.isFinal) percentage.textContent = Math.round(uisc*100)+"%";
                                                    });
     }
     eventifymtext(mtextfrm);

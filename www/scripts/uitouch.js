@@ -237,13 +237,16 @@ define(
               }
           }
       }
-      function chscale(cf, apply){
+      function chscale(cf, nochange){
             "use strict";
-            if(isNaN(scale) || !scale) scale = 1.0;
-            var newscale = cf*scale;
+            var _scale = scale+0.0;
+            if(isNaN(scale) || !scale) _scale = 1.0;
+            var newscale = cf*_scale;
             if(Math.abs(1.0 - newscale) < 0.04) newscale = 1.0;
-            scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
-            console.log("scale == "+scale)//NFP
+            _scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
+            console.log("scale == "+_scale)//NFP
+            if(!nochange) scale = _scale;
+            return _scale;
       }
       function apply_scale(){
             "use strict";
@@ -325,11 +328,11 @@ define(
               selected_word = sel.toString();
               sharedc.exec('uitouch', 'got_selection')([selected_word, '']);
           },
-          doscale:function(cf){
-              cf = cf > 1.05 ? 1.05 : cf < 1/1.05 ? 1/1.05 : cf;
-              chscale(cf, 1);
-              apply_scale();
-              return scale;
+          doscale:function(cf, apply){
+              //cf = cf > 1.05 ? 1.05 : cf < 1/1.05 ? 1/1.05 : cf;
+              var res = chscale(cf, !apply);
+              if(apply) apply_scale();
+              return res;
           },
           init_scale:function(newscale){
               if(newscale && newscale > 0.25 && newscale < 8.0){
