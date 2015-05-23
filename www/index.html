@@ -7,6 +7,7 @@
   <link href="css/main.css" rel="stylesheet" type="text/css">
   <link href="css/colors.css" rel="stylesheet" type="text/css">
   <link href="css/dd.css" rel="stylesheet" type="text/css">
+  <link href="css/buttons.css" rel="stylesheet" type="text/css">
   <script type="text/javascript" src="scripts/zip.js"></script>
   <script type="text/javascript" src="scripts/inflate.js"></script>
   <script type="text/javascript" src="scripts/jsxml.js"></script>
@@ -14,18 +15,36 @@
   <script data-main="scripts/_app" src="scripts/require.js"></script>
 </head>
 <body style="margin:0; padding:0; background-image:'url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==)'; background-repeat:repeat; overflow:hidden; height:99%; width:99%;">
-<div id="pop" style="width:auto; min-width:100%;">
-  <div class="popflex" id="pt">
-    <div id="pts" class="bcol gradient">
-        <button id="sndbt" style="background:rgb(144, 112, 128); float:right; text-align:center; display:inline; margin:2px; bottom:2px; right:2px; z-index:4;">
-            <span id="sndcnt" style="color:rgb(232, 255, 240); z-index:5; left:0; top:0;">5/9</span>
-        </button>
-        <div id="nosnd" style="background:rgb(180, 160, 200); margin:2px; border-radius: 12%; border:solid blue 2px; float:right; text-align:center; display:none; bottom:2px; right:2px; z-index:4;">
-            No<br>snd
+<div id="options_block" class="spflex">
+    <div class="spflex">
+        <div id="mbuttons" class="ext-box"></div>
+        <div id="options">
         </div>
     </div>
-  </div>
 </div>
+            <div id="pop" style="width:99%">
+              <div class="popflex" id="pt">
+                <div id="pts" class="bcol gradient" style="width:97%">
+                    <button id="sndbt" style="background:rgb(144, 112, 128); float: right; width: 2em; height: 2em">
+                        <span id="sndcnt" style="color:rgb(232, 255, 240); z-index:5; left:0; top:0;">5/9</span>
+                    </button>
+                    <div id="nosnd" style="background:rgb(180, 160, 200); margin:2px; border-radius: 12%; border:solid blue 2px; float:right; text-align:center; display:none; bottom:2px; right:2px; z-index:4;">
+                        No<br>snd
+                    </div>
+                </div>
+              </div>
+            </div>
+<div id="txtarea" style="background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; position:absolute; overflow:hidden; top:0px; z-index: -1; background-repeat: repeat-y, repeat-y; background-attachment: scroll, scroll;">
+    <div class="flex" id="fl_text">
+        <div id="maintext" class="bcol">
+            <iframe id="mainframe" scrolling="no" frameborder="0" style="width: 100%;"></iframe>
+        </div>
+    </div>
+</div>
+<div id="percentage" style="position:absolute; overflow:hidden; display:none; opacity: 50%; background-color: rgba(255,255,255,0.5);; top:50%; left:50%; z-index: 1040; font-size: 400%;">
+    100%
+</div>
+
 <div id="advanced" class="muchopts">
         <div style="border-radius: 4px 4px 4px 4px; background-color: rgb(250,245,240);">
             <input type=checkbox id="switchdictclr" style="padding: 5px; border-radius: 5%; border:solid gray 2px; float:left; text-align:center; display:inline; padding:2px; bottom:0px; left:25px; z-index:4;"/>
@@ -37,13 +56,16 @@
             <label for="switchmode">Invert main colors</label>
         </div>
         <br>
-        <button id="switchback" style="padding: 5px; border-radius: 5%; border:solid gray 2px; float:left; text-align:center; display:inline; padding:2px; bottom:0px; left:25px; z-index:4;">
+        <button id="switchback" style="padding: 5px; border-radius: 5%; border:solid brown 1px; float:left; text-align:center; display:inline; padding:2px; bottom:0px; left:25px; z-index:4;">
             <span id="switchbtxt" style="z-index:5; left:0; top:0;">Change background</span>
         </button>
         <input type="file" id="customimg" accept=".jpg,.png,.jpeg,.gif" style="display:none">
 </div>
 <div id="fontwork" class="muchopts">
-    <div class="muchbutton"><button id="fdetect">Detect Fonts</button></div>
+    <button id="fdetect" class="fdetect">Detect fonts</button>
+    <br>
+    <p id="cf">Current font</p>
+    <br>
     <div class="dd-container">
         <div class="dd dropdown-wrap" data-value-enabled="true" data-name-enabled="true">
             <div class="dropdown-placeholder" id="dpph"></div>
@@ -54,22 +76,5 @@
 </div>
 <div id="helper" style="position:absolute; overflow:hidden; top:0px; z-index: 1060;">
 </div>
-<div id="options_block" class="spflex">
-    <div class="spflex">
-        <ul id="mbuttons" class="ext-box"></ul>
-        <div id="options">
-        </div>
-    </div>
-</div>
-<div id="txtarea" style="background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; position:absolute; overflow:hidden; top:0px; z-index: -1;">
-    <div class="flex" id="fl_text">
-        <div id="maintext" class="bcol">
-        </div>
-    </div>
-</div>
-<div id="percentage" style="position:absolute; overflow:hidden; display:none; opacity: 50%; background-color: rgba(255,255,255,0.5);; top:50%; left:50%; z-index: 1040; font-size: 400%;">
-    100%
-</div>
-
 </body>
 </html>

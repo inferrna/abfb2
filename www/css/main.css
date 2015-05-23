@@ -4,7 +4,7 @@
   font-weight: bold;
   src:url("data:font/otf;");
   }*/
-ul.ext-box { position: absolute; right:1%; width: 10%; margin:1px; border:1px; list-style: none;}
+div.ext-box { position: absolute; float: right; right: 1em; width: auto; margin:1px; border:1px; list-style: none;}
 button.int-box { display: inline-block;}
 div.muchopts {
     padding: 5px;

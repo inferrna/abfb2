@@ -1,5 +1,5 @@
-require(['uitouch', 'dict', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'advanced', 'hammer'],
-function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, advanced){
+require(['uitouch', 'dict', 'frame', 'options', 'book', 'stuff', 'sound', 'sharedf', 'sharedc', 'require', 'advanced', 'fontwork', 'hammer'],
+function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, require, advanced, fontwork){
     var ws = null;
     var dreq = null;
     var timer = null;
@@ -12,12 +12,13 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     var dtext = null;
     var txarea = document.getElementById('txtarea');
     var mtext = document.getElementById('maintext');
+    var mtextfrm = document.getElementById('mainframe');
     var fl_text = document.getElementById('fl_text');
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
     console.log("Got hammer"); //NFP
     console.log(hammer);
-    var style = document.createElement('style');
+    var style = mtextfrm.ownerDocument.createElement('style');
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
     var sndbt = document.getElementById('sndbt');
@@ -28,19 +29,16 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     var percentage = document.getElementById("percentage");
     var popups = Array.prototype.slice.call(document.querySelectorAll(".muchopts"));
     function set_sizes(){
-        console.log("Sets sizes");
-        document.getElementsByTagName('head')[0].removeChild(style);
-        style.type = 'text/css';
-        style.innerHTML = 'img { max-height: '+(window.innerHeight)+'px; max-width:'+(window.innerWidth)+'px; overflow:hidden}';
-        document.getElementsByTagName('head')[0].appendChild(style);
+        frame.set_sizes();
         txarea.style.height = window.innerHeight+"px";
         txarea.style.width = window.innerWidth+"px";
         helper.style.height = window.innerHeight+"px";
         helper.style.width = window.innerWidth+"px";
-        pop.style.width = window.innerWidth+"px";
-        pop.style.minWidth = window.innerWidth+"px";
-        pts.style.width = window.innerWidth-4+"px";
-        pts.style.minWidth = window.innerWidth-4+"px";
+        pop.style.width = '100%';//window.innerWidth+"px";
+        pop.style.height = 'auto';
+        //pop.style.minWidth = '100%';//window.innerWidth+"px";
+        pts.style.width = '100%';//window.innerWidth-4+"px";
+        pts.style.minWidth = '100%';//window.innerWidth-4+"px";
         fl_text.style.width =  "auto";
         mtext.style.top = "0px";
         txarea.style.backgroundSize = '100%';
@@ -67,48 +65,59 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     //screen.onmozorientationchange = set_sizes;
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
-    var hmctxarea = new hammer.Manager(txarea, { recognizers: [
-            [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
-            [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
-            [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
-    ]});
-    console.log("hmctxarea");
-    console.log(hmctxarea);
-    hammerelements[txarea.id] = hmctxarea;
-    hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
-    hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
-    hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
-    hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
-    hmctxarea.on("doubletap doubleclick", function(evt){
-            console.log("doubletap detected");//NFP
-            options.set_opt('scale', 1.0);
-            uitouch.init_scale(1.0);
-        });
-    hmctxarea.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hmctxarea.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){
-            options.display('hide');
-            pop.style.display='none';
-            popups.map(function(el){el.style.display="none";});
-        }});
-    hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hmctxarea.on("tap click press", function(evt){
-            uitouch.handleClick(e);
-            popups.map(function(el){el.style.display="none";});
+    function eventifymtext(ifrm){
+        if(hammerelements[ifrm.id]) delete hammerelements[ifrm.id];
+        var hmctxarea = new hammer.Manager(ifrm, { recognizers: [
+                [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
+                [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
+                [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
+        ]});
+        console.log("hmctxarea");//NFP
+        console.log(hmctxarea);//NFP
+        hammerelements[ifrm.id] = hmctxarea;
+        hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
+        hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
+        hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
+        hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
+        hmctxarea.on("doubletap doubleclick", function(evt){
+                console.log("doubletap detected");//NFP
+                options.set_opt('scale', 1.0);
+                uitouch.init_scale(1.0);
             });
-    hmctxarea.on("pinchstart", function(evt){
-        console.log("pinchstart");//NFP
-        percentage.style.display='block';});
-    hmctxarea.on("pinchend", function(evt){
-        console.log("pinchend");//NFP
-        percentage.style.display='none';});
-    hmctxarea.on("pinchin pinchout", function(evt){
-                                               hmctxarea.stop();
-                                               var uisc = uitouch.doscale(Math.sqrt(evt.scale));
-                                               console.log("evt.scale is", evt.scale); //NFP
-                                               percentage.textContent = Math.round(uisc*100)+"%";
-                                               window.setTimeout(function(){percentage.style.display='none';}, 1024);
-                                               });
+        hmctxarea.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+        hmctxarea.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+        hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){
+                options.display('hide');
+                pop.style.display='none';
+                popups.map(function(el){el.style.display="none";});
+            }});
+        hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
+        hmctxarea.on("tap click press", function(evt){
+                uitouch.handleClick(evt);
+                popups.map(function(el){el.style.display="none";});
+                });
+        hmctxarea.on("pinchstart", function(evt){
+            console.log("pinchstart");//NFP
+            var uisc = uitouch.doscale(1.0, false);
+            console.log("evt.scale is", evt.scale); //NFP
+            percentage.textContent = Math.round(uisc*100)+"%";
+            percentage.style.display='block';});
+        hmctxarea.on("pinchend", function(evt){
+                console.log("pinchend");//NFP
+                var uisc = uitouch.doscale(Math.sqrt(evt.scale), true);
+                percentage.style.display='none';
+                console.log("evt.scale is", evt.scale); //NFP
+                //percentage.textContent = Math.round(uisc*100)+"%";
+                //window.setTimeout(function(){percentage.style.display='none';}, 512);
+            });
+        hmctxarea.on("pinchin pinchout", function(evt){
+                                                   //hmctxarea.stop();
+                                                   var uisc = uitouch.doscale(Math.sqrt(evt.scale), false);
+                                                   console.log("evt.scale is", evt.scale); //NFP
+                                                   if(!evt.isFinal) percentage.textContent = Math.round(uisc*100)+"%";
+                                                   });
+    }
+    eventifymtext(mtextfrm);
     var hammerpop = new hammer.Manager(pop, {
             recognizers: [
             // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
@@ -119,6 +128,21 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             recognizers: [
             [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }]
     ]});
+    var hmcfltext = new hammer.Manager(fl_text, { recognizers: [
+            [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
+            [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
+    ]});
+    hammerelements[fl_text.id] = hmcfltext;
+    hmcfltext.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
+    hmcfltext.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
+    hmcfltext.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+    hmcfltext.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+    hmcfltext.on("panup swipeup", function(evt){if(chkmv(evt)){
+            options.display('hide');
+            pop.style.display='none';
+            popups.map(function(el){el.style.display="none";});
+        }});
+    hmcfltext.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hammerelements[pop.id] = hammerpop;
     hammerelements[mtext.id] = hammermtext;
     hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
@@ -128,12 +152,13 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             popups.map(function(el){el.style.display="none";});
             uitouch.handleClick(e);
             });
-    mtext.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
+    mtextfrm.contentDocument.body.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     var hammerhelper = new hammer(helper);
     hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
             helper.style.display="none";
         });
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
+    mtextfrm.contentDocument.body.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");
@@ -144,7 +169,16 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             var diff = parseInt(i);
             //mtext.innerHTML='wait..';
             options.display("show");
-            book.foliant().next_page(diff);
+            //book.foliant().next_page(diff);
+            var sel = document.getElementById("tocselect");
+            var _nidx = sel.selectedIndex + i;
+            var nidx = _nidx >= sel.options.length ? 0 : _nidx < 0 ? sel.options.length-1 : _nidx;
+            //sel.options[nidx].selected = true;
+            sel.selectedIndex = nidx;
+            try { var evt = new Event('change');}
+            catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
+            sel.dispatchEvent(evt);
+            options.display("hide");
         });
     sharedc.register('dict', 'got_def', function (txt, word, els) {
         if(txt.length>1) fill_thumb(txt, word, els);
@@ -214,28 +248,29 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                                        });
         options.getpp();
     }
-    function prc_from_anchor(anchor, prc){
-        console.log("Got"); //NFP
-        console.log("anchor "+anchor); //NFP
-        console.log("prc "+prc); //NFP
-        var ancel = document.getElementById(anchor);
-        if(!ancel) 
-            if(!prc) return 0;
-            else return prc;
-        var antop = parseFloat(stuff.getStyle(ancel, 'top'));
-        var cheight = parseFloat(stuff.getStyle(mtext, 'height'));
-        return 100.0*antop/cheight;
-    }
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
-        if(data[0]) mtext.innerHTML = data[0];
-        mtext.style.width = 'auto';
-        mtext.style.height = 'auto';
-        mtext.style.display = 'block';
+        if(data[0]){
+            mtextfrm.contentDocument.open();
+            mtextfrm.contentDocument.close();
+            mtextfrm.contentDocument.write(data[0]);
+            sharedf.move_tags(mtextfrm.contentDocument.getElementsByTagName("body")[0],
+                              ['style'],
+                              mtextfrm.contentDocument.getElementsByTagName("head")[0]);
+            frame.set_fontcolor();
+            frame.set_sizes();
+            frame.set_fontsize();
+        }
+        var cheight = parseInt(stuff.getStyle(mtextfrm.contentWindow.document.body.parentNode, 'height'));
+        cheight = Math.max(cheight, window.innerHeight);
+        mtextfrm.style.width = window.innerWidth+'px';
+        mtextfrm.style.height = cheight+'px';
+        mtext.style.height = cheight+'px';
+        mtextfrm.style.display = 'block';
+        eventifymtext(mtextfrm.contentWindow.document.body.parentNode);
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
-        var cheight = mtext.scrollHeight;//stuff.getStyle(mtext, 'height');
         if(!nosave) options.setpage(book.foliant().currentpage());
-        if(data[1] && !percent) percent = prc_from_anchor(data[1], percent);
+        if(data[1] && !percent) percent = frame.prc_from_anchor(data[1], percent);
         else if(percent==='end') percent = 100.0*parseFloat(cheight-window.innerHeight/2)/cheight;
         mtext.style.top = parseInt(-percent*parseFloat(cheight)/100.0)+"px";
         if(!nosave){
@@ -245,9 +280,9 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         return mtext;
     }
     function fill_thumb(text, word, els){
+        var el = document.getElementById('pop');
         if(text.length > 1){
             var cl = document.getElementById('pts');
-            var el = document.getElementById('pop');
             var cf = 0.1;
             var width = parseInt(el.style.width, 10);
             dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
@@ -255,7 +290,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             sndbt.appendChild(sndcnt);
             cl.appendChild(sndbt);
             cl.appendChild(nosnd);
-            el.style.display = 'block';
+            //el.style.display = 'block';
             if(els && els.length){
                 for(var i = 0; i<els.length; i++){
                     cl.appendChild(document.createElement("br"));
@@ -272,22 +307,25 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         var el = document.getElementById('pop');
         var cl = document.getElementById('pts');
         cl.innerHTML = "Sending request..";
-        console.log("Got texts:");//NFP
+        console.log("Got texts: "+disp);//NFP
         console.log(texts);//NFP
-        var pos = 0;
+        var pos = '';
         if(el){
             if(disp!='none'){
                 var config = options.config();
-                var ptop = parseInt(txarea.style.height);
+                var ptop = window.innerHeight;
+                console.log("my, mtop, ptop=="+mY+", "+mtext.style.top+", "+ptop);//NFP
+                el.style.display = disp;
                 if(mY < ptop/2) pos = 'bot';
                 else pos = 'top';
                 cl.style.top = "0px";
-                if(pos==='top'){
-                      el.style.top = 0+"px"; el.style.bottom = '100%';
-                    }
-                if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '100%';}// dt.style.display='none'; db.style.display=disp;}
+                if(pos=='top'){el.style.top = "0px"; el.style.bottom = 'auto'}
+                if(pos=='bot'){el.style.bottom = "0px"; el.style.top = 'auto'}
+                el.style.height = "auto";
                     dict.get_def(texts);
-            } else {el.style.display = disp;}
+                //el.style.width = Math.floor(window.innerWidth*0.99)+'px';
+                console.log("pos is "+pos);//NFP*/
+            } else {el.style.display = 'none';}
         }
     }
 });
