@@ -48,25 +48,9 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             console.log("Call for percent from window.onresize"); //NFP
             fill_page([], options.getpercent(), true);
         };
-    var hammerelements = {};
-    function chkmv(evt){
-        console.log(evt.distance+" vs "+drvhds);//NFP
-        evt.srcEvent.preventDefault();
-        if(drvhds<evt.distance){
-            //console.log(hammerelements);
-            //console.log(evt.target.id);
-            for(var key in hammerelements) {
-                hammerelements[key].stop();
-            }
-            return true;
-        }
-        return false;
-    }
-    //screen.onmozorientationchange = set_sizes;
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
     function eventifymtext(ifrm){
-        if(hammerelements[ifrm.id]) delete hammerelements[ifrm.id];
         var hmctxarea = new hammer.Manager(ifrm, { recognizers: [
                 [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
                 [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
@@ -74,7 +58,6 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         ]});
         console.log("hmctxarea");//NFP
         console.log(hmctxarea);//NFP
-        hammerelements[ifrm.id] = hmctxarea;
         hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
         hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
         hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
@@ -84,18 +67,15 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                 options.set_opt('scale', 1.0);
                 uitouch.init_scale(1.0);
             });
-        hmctxarea.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-        hmctxarea.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-        hmctxarea.on("panup swipeup", function(evt){if(chkmv(evt)){
+        hmctxarea.on("panleft swipeleft", function(evt){hmctxarea.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';});
+        hmctxarea.on("panright swiperight", function(evt){hmctxarea.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';});
+        hmctxarea.on("panup swipeup", function(evt){
                 options.display('hide');
                 pop.style.display='none';
+                hmctxarea.stop();
                 popups.map(function(el){el.style.display="none";});
-            }});
-        hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-        hmctxarea.on("tap click press", function(evt){
-                uitouch.handleClick(evt);
-                popups.map(function(el){el.style.display="none";});
-                });
+            });
+        hmctxarea.on("pandown swipedown", function(evt){ hmctxarea.stop(); options.display('show'); pop.style.display='none';});
         hmctxarea.on("pinchstart", function(evt){
             console.log("pinchstart");//NFP
             var uisc = uitouch.doscale(1.0, false);
@@ -116,6 +96,12 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                                                    console.log("evt.scale is", evt.scale); //NFP
                                                    if(!evt.isFinal) percentage.textContent = Math.round(uisc*100)+"%";
                                                    });
+        if(window.navigator.onLine){
+            hmctxarea.on("tap click press", function(evt){
+                    uitouch.handleClick(evt);
+                    popups.map(function(el){el.style.display="none";});
+                    });
+        }
     }
     eventifymtext(mtextfrm);
     var hammerpop = new hammer.Manager(pop, {
@@ -132,31 +118,31 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
             [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
     ]});
-    hammerelements[fl_text.id] = hmcfltext;
     hmcfltext.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
     hmcfltext.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
-    hmcfltext.on("panleft swipeleft", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-    hmcfltext.on("panright swiperight", function(evt){if(chkmv(evt)){uitouch.liftcol(mtext, 1); pop.style.display='none';}});
-    hmcfltext.on("panup swipeup", function(evt){if(chkmv(evt)){
+    hmcfltext.on("panleft swipeleft", function(evt){hmcfltext.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';});
+    hmcfltext.on("panright swiperight", function(evt){hmcfltext.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';});
+    hmcfltext.on("panup swipeup", function(evt){
+            hmcfltext.stop();
             options.display('hide');
             pop.style.display='none';
             popups.map(function(el){el.style.display="none";});
-        }});
-    hmcfltext.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
-    hammerelements[pop.id] = hammerpop;
-    hammerelements[mtext.id] = hammermtext;
-    hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
-    hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
+        });
+    hmcfltext.on("pandown swipedown", function(evt){hmcfltext.stop(); options.display('show'); pop.style.display='none';});
+    hammerpop.on("panleft",  function(evt){hammerpop.stop(); uitouch.liftcol(pts,-1);});
+    hammerpop.on("panright", function(evt){hammerpop.stop(); uitouch.liftcol(pts, 1);});
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
-    hammermtext.on("click tap press", function(e){
-            popups.map(function(el){el.style.display="none";});
-            uitouch.handleClick(e);
-            });
     mtextfrm.contentDocument.body.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     var hammerhelper = new hammer(helper);
     hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
             helper.style.display="none";
         });
+    if(window.navigator.onLine){
+        hammermtext.on("click tap press", function(e){
+                popups.map(function(el){el.style.display="none";});
+                uitouch.handleClick(e);
+                });
+    }
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     mtextfrm.contentDocument.body.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
@@ -177,6 +163,8 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             sel.selectedIndex = nidx;
             try { var evt = new Event('change');}
             catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
+            if(diff<0) evt.percent = 'end';
+            else evt.percent = 0;
             sel.dispatchEvent(evt);
             options.display("hide");
         });
@@ -242,7 +230,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                                                 } else {
                                                     mtext.style.top="0px";
                                                     options.setpercent(0);
-                                                    book.foliant().get_fromopt(event.target.selectedIndex);
+                                                    book.foliant().get_fromopt(event.target.selectedIndex, event.percent);
                                                     console.log("Fired TOC selection change"); //NFP
                                                 }  
                                        });
@@ -321,7 +309,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                 cl.style.top = "0px";
                 if(pos=='top'){el.style.top = "0px"; el.style.bottom = 'auto'}
                 if(pos=='bot'){el.style.bottom = "0px"; el.style.top = 'auto'}
-                el.style.height = "auto";
+                el.style.height = '0px';
                     dict.get_def(texts);
                 //el.style.width = Math.floor(window.innerWidth*0.99)+'px';
                 console.log("pos is "+pos);//NFP*/
