@@ -172,6 +172,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         if(txt.length>1) fill_thumb(txt, word, els);
         else fill_thumb("Something went wrong. Please check your options.");
     });
+    sharedc.register('uitouch', 'fix_toc', correctTocByAnchor);
     sharedc.register('bookng', 'got_toc', function(){console.log("Got toc"); fill_toc(book.get_page(-1)); uitouch.init_scale();});
     sharedc.register('book', 'got_book', function(){console.log("Got book"); uitouch.init_scale();});
     sharedc.register('options', 'got_file', function(){
@@ -265,7 +266,30 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             options.setpercent(percent);
             console.log("saving..");  options.savepp();
         }
+        if(!data[1]) correctTocByAnchor();
         return mtext;
+    }
+    function correctTocByAnchor(){
+        console.log("Call to correct");//NFP
+        var sel = document.getElementById("tocselect");
+        if(!sel) return;
+        var opts = sel.options;
+        var currurl = opts[sel.selectedIndex].getAttribute('url').split("#")[0];
+        for(var i=1; i<opts.length; i+=1){
+            var opt = opts[i];
+            if(opt.getAttribute('url').split("#")[0] === currurl){
+                var ancel = mtextfrm.contentDocument
+                                    .getElementById(opt.getAttribute('url').split("#")[1]);
+                if(parseInt(stuff.getStyle(ancel, 'top'))
+                   - window.innerHeight
+                   + parseInt(mtext.style.top) > 0){
+                    sel.disabled = true;
+                    opts[i-1].selected = true;
+                    sel.disabled = false;
+                    return;
+                }
+            }
+        }
     }
     function fill_thumb(text, word, els){
         var el = document.getElementById('pop');
