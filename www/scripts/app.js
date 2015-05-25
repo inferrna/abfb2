@@ -278,14 +278,17 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         for(var i=1; i<opts.length; i+=1){
             var opt = opts[i];
             if(opt.getAttribute('url').split("#")[0] === currurl){
+                var anchor = opt.getAttribute('url').split("#")[1];
+                if(!anchor) continue;
                 var ancel = mtextfrm.contentDocument
-                                    .getElementById(opt.getAttribute('url').split("#")[1]);
+                                    .getElementById(anchor);
                 if(parseInt(stuff.getStyle(ancel, 'top'))
                    - window.innerHeight
                    + parseInt(mtext.style.top) > 0){
                     sel.disabled = true;
                     opts[i-1].selected = true;
                     sel.disabled = false;
+                    options.display("hide");
                     return;
                 }
             }
