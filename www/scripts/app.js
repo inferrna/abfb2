@@ -96,12 +96,23 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                                                    console.log("evt.scale is", evt.scale); //NFP
                                                    if(!evt.isFinal) percentage.textContent = Math.round(uisc*100)+"%";
                                                    });
-        if(window.navigator.onLine){
-            hmctxarea.on("tap click press", function(evt){
-                    uitouch.handleClick(evt);
-                    popups.map(function(el){el.style.display="none";});
-                    });
+
+        function taptap(evt){
+            uitouch.handleClick(evt);
+            popups.map(function(el){el.style.display="none";});
         }
+        function onOnLine(){ 
+            hmctxarea.on("tap click press", taptap);
+        }
+        function onOffLine(){
+            hmctxarea.off("tap click press", taptap);
+        }
+
+        if(window.navigator.onLine){
+            onOnLine();
+        }
+        document.addEventListener("online", onOnLine, false);
+        document.addEventListener("offline", onOffLine, false);
     }
     eventifymtext(mtextfrm);
     var hammerpop = new hammer.Manager(pop, {
