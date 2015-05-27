@@ -347,7 +347,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                 cl.style.top = "0px";
                 if(pos=='top'){el.style.top = "0px"; el.style.bottom = 'auto'}
                 if(pos=='bot'){el.style.bottom = "0px"; el.style.top = 'auto'}
-                el.style.height = '0px';
+                el.style.height = 'auto';
                     dict.get_def(texts);
                 //el.style.width = Math.floor(window.innerWidth*0.99)+'px';
                 console.log("pos is "+pos);//NFP*/
