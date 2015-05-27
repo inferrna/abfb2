@@ -31,8 +31,6 @@ define(
         }
         function play(evt){
             evt.stopPropagation();
-            console.log("Clicked sndbt");//NFP
-            console.log("count == "+count);//NFP
             if(count){
                 audios[idx].load();
                 clearInterval(intrvl);
@@ -41,12 +39,10 @@ define(
                         if (audios[idx].readyState>0){
                             clearInterval(intrvl);
                             audios[idx].play();
-                            console.log("Sound played");//NFP
                             nidx = idx+1;
                             idx = nidx < count ? nidx : 0;
                             sndcnt.textContent = (idx+1)+"/"+count;
                         } else {
-                            console.log(audios[idx]);//NFP
                         }
                     }, 250);
                 window.setTimeout(function(){clearInterval(intrvl);}, 5000);
@@ -75,8 +71,6 @@ define(
                        var fnm = swpths[i][1];
                        audios[i].src = swac.swac['base']+swac.swac['paths'][pid]+fnm;
                    }
-                   console.log("swpths:");//NFP
-                   console.log(swpths);//NFP
                    sndbt.style.display = 'inline'; nosnd.style.display = 'none'; 
                    sndcnt.textContent = 1+"/"+count;
                    sndbt.style.display = 'block';

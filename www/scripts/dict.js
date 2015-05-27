@@ -39,7 +39,6 @@ define(
                 var resptext = event.target.responseText;
                 if(datas["dictionary"].match("google.*?$")){
                     resp +="<b>"+_text+"</b> -><br>";
-                    console.log(resptext);//NFP
                     resp += resptext.match(/\".+?\"/g)
                                     .map(function(x){if(x!=='\"'+_text+'\"' && x!=='\"'+params['sl']+'\"')return x})
                                     .join(",")
@@ -61,7 +60,6 @@ define(
         l_arr.push("dt=at");
         params_get_str = l_arr.join("&");
         var url = baseurl+params_get_str;
-        console.log(url);//NFP
         dreq.open("GET", url, "true");
         dreq.send();
     }

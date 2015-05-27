@@ -1,7 +1,6 @@
 define(
   ['asmfuncs'],
   function(asmfuncs){
-    console.log("Starts sharedf");//NFP
     function clean_tag(doc, tag){
             var tags = doc.getElementsByTagName(tag);
             for (var i = 0, il = tags.length; i < il; i++) {
@@ -32,7 +31,6 @@ define(
                 var ltag = tags[i];
                 if(ltag){
                     newparent.appendChild(ltag);
-                    //console.log();//NFP
                     //ltag.parentNode.removeChild(ltag);
                 }
             }
@@ -177,8 +175,6 @@ define(
 
     return {
             move_tags:function(oldparent, taglst, newparent){
-                console.log("newparent is ");//NFP
-                console.log(newparent);//NFP
                 for (var i=0; i<taglst.length; i++){
                      clean_tag(oldparent, taglst[i], newparent);
                 }

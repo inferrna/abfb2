@@ -176,7 +176,6 @@ define(
       function selectword(doc, x, y, rec){
           "use strict";
           max_Y = y + parseInt(mtext.style.top || 0); //Compensate vertical shift
-          console.log("max_Y = "+max_Y);//NFP
           var off = -1;
           var el = null;
           if(doc.caretPositionFromPoint) {
@@ -198,15 +197,11 @@ define(
               if(goff){off = goff[0]; el = goff[1];}
           }
           if(el){
-              console.log("el.id=="+el.id);//NFP
-              console.log("el==");//NFP
-              console.log(el);//NFP
           }
           if(el && off>-1){
               var txt = el.textContent;//new String(el.textContent);
               var selected_word = null;
               try {
-                  console.log("off=="+off);//NFP
                   var sel = window.getSelection();
                   sel.removeAllRanges();
                   var rng = doc.createRange();
@@ -214,12 +209,10 @@ define(
                   rng.setStart(el, off);
                   rng.setEnd(el, off+1);
                   if(rng.expand){
-                      console.log("rng.expand and sel.addRange");//NFP
                       rng.expand("word");
                       sel.addRange( rng );
                       selected_word = sel.toString();
                   } else {
-                      console.log("sel.modify and sel.collapseToStart");//NFP
                       sel.addRange(rng);
                       sel.modify("extend", "forward", "word");
                       sel.collapseToEnd();
@@ -245,7 +238,6 @@ define(
             var newscale = cf*_scale;
             if(Math.abs(1.0 - newscale) < 0.04) newscale = 1.0;
             _scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
-            console.log("scale == "+_scale)//NFP
             if(!nochange) scale = _scale;
             return _scale;
       }
@@ -295,11 +287,8 @@ define(
               targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
-              console.log(evt.srcEvent.target);//NFP
               var doc = evt.target.ownerDocument;
               selectword(doc, evt.center.x, evt.center.y);
-              console.log("target is");//NFP
-              console.log(evt.target);//NFP
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){
