@@ -242,7 +242,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                                                 } else {
                                                     mtext.style.top="0px";
                                                     options.setpercent(0);
-                                                    book.foliant().get_fromopt(event.target.selectedIndex, event.percent);
+                                                    book.foliant().get_fromopt(event.target.selectedIndex, event.percent | 0);
                                                     console.log("Fired TOC selection change"); //NFP
                                                 }  
                                        });

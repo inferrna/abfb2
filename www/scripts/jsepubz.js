@@ -8,6 +8,9 @@ function (mimetypes, sharedf, sharedc) {
     var b64blobs = {};
     var notifier = null;
     var fsthref = null;
+    var opfPath = '';
+    var opf = {};
+    var container = null;
     var logger = function(text){console.log(text);};
     var srlzr = new XMLSerializer();
     var useCordova = !(window.Worker && window.Int8Array) && window.cordova;
@@ -85,7 +88,7 @@ function (mimetypes, sharedf, sharedc) {
        var tocels = [];
        var namerefs = {};
        function iterate_points(points){
-           for(i=0; i<points.length; i++){
+           for(var i=0; i<points.length; i++){
                var tocel = {}
                var lbl = points[i].getElementsByTagName("navLabel")[0];
                var cont = points[i].getElementsByTagName("content")[0];
@@ -113,8 +116,8 @@ function (mimetypes, sharedf, sharedc) {
        var lastname = '';
        //if(opf.guide.length){
            var newtocels = [];
-           for(_key in opf.guide){
-               key = resolvePath(_key, base); 
+           for(var _key in opf.guide){
+               var key = resolvePath(_key, base); 
                var tocel = {};
                tocel['href'] = key;
                if(key in namerefs) {
@@ -148,8 +151,8 @@ function (mimetypes, sharedf, sharedc) {
                 if (mediaType === "text/css") {
                     result = postProcessCSS(href);
                 } else if (mediaType === "application/x-dtbncx+xml" || newtocre.test(href) || key==='toc') {
-                    try {xml = decodeURIComponent(escape(files[href]));}
-                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
+                    try {var xml = decodeURIComponent(escape(files[href]));}
+                    catch(e) {var xml = files[href]; console.warn(e.stack+"\n href == "+href);};
                     newtocs.push([xmlDocument(xml), href]);
                 } else if (oldtocre.test(href) || key==='ncx') {
                     try {xml = decodeURIComponent(escape(files[href]));}
@@ -396,6 +399,7 @@ function (mimetypes, sharedf, sharedc) {
                    .replace(/large/gi, '1.5em')
                    .replace(/x\-large/gi, '2em')
                    .replace(/xx\-large/gi, '3em');
+        file = file.replace(/\n;/gi, ";");
         console.log("Got css:\n"+file);//NFP
         return file;
     }
