@@ -112,6 +112,9 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     epub.get_by_href(href, function(html){
                             oldhref=href;
                             currentpage = index;
+                            console.log("Got href: \""+href+"\"");//NFP
+                            console.log("Got html:");//NFP
+                            console.log(html.slice(0,1024));//NFP
                             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
                             else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
                         });
@@ -123,7 +126,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
             var contents = js_toc(toc, opf.spine.map(function(sp){ return opf.manifest[sp]['href'];}));
             hrefs = opf.spine.map(function(sp){ return opf.manifest[sp]['href'].split("#")[0];});
             var touched = false;
-            for(tid in toc){
+            for(var tid in toc){
                 var newhref = toc[tid]['href'].split("#")[0];
                 if(hrefs.indexOf(newhref)==-1){
                     touched = true;
@@ -131,7 +134,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 }
             }
             if(touched) hrefs = hrefs.sort();
-            for(h in hrefs) hrefopts[hrefs[h]] = [];
+            for(var h in hrefs) hrefopts[hrefs[h]] = [];
             var opts = contents.getElementsByTagName("option");
             optslength = opts.length;
             pages = [];
