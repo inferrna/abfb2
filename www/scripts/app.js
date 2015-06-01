@@ -51,38 +51,42 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
     function eventifymtext(ifrm){
-        var hmctxarea = new hammer.Manager(ifrm, { recognizers: [
+        if(ifrm){
+            ifrm.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
+            var frm = ifrm;
+        } else {
+            var frm = txarea;
+        }
+        var element = new hammer.Manager(frm, { recognizers: [
                 [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
                 [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
                 [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
         ]});
-        console.log("hmctxarea");//NFP
-        console.log(hmctxarea);//NFP
-        hmctxarea.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
-        hmctxarea.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
-        hmctxarea.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
-        hmctxarea.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
-        hmctxarea.on("doubletap doubleclick", function(evt){
+        element.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
+        element.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
+        element.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL }) );
+        element.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL }) );
+        element.on("doubletap doubleclick", function(evt){
                 console.log("doubletap detected");//NFP
                 options.set_opt('scale', 1.0);
                 uitouch.init_scale(1.0);
             });
-        hmctxarea.on("panleft swipeleft", function(evt){hmctxarea.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';});
-        hmctxarea.on("panright swiperight", function(evt){hmctxarea.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';});
-        hmctxarea.on("panup swipeup", function(evt){
+        element.on("panleft swipeleft", function(evt){element.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';});
+        element.on("panright swiperight", function(evt){element.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';});
+        element.on("panup swipeup", function(evt){
                 options.display('hide');
                 pop.style.display='none';
                 hmctxarea.stop();
                 popups.map(function(el){el.style.display="none";});
             });
-        hmctxarea.on("pandown swipedown", function(evt){ hmctxarea.stop(); options.display('show'); pop.style.display='none';});
-        hmctxarea.on("pinchstart", function(evt){
+        element.on("pandown swipedown", function(evt){ element.stop(); options.display('show'); pop.style.display='none';});
+        element.on("pinchstart", function(evt){
             console.log("pinchstart");//NFP
             var uisc = uitouch.doscale(1.0, false);
             console.log("evt.scale is", evt.scale); //NFP
             percentage.textContent = Math.round(uisc*100)+"%";
             percentage.style.display='block';});
-        hmctxarea.on("pinchend", function(evt){
+        element.on("pinchend", function(evt){
                 console.log("pinchend");//NFP
                 var uisc = uitouch.doscale(Math.sqrt(evt.scale), true);
                 percentage.style.display='none';
@@ -90,7 +94,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                 //percentage.textContent = Math.round(uisc*100)+"%";
                 //window.setTimeout(function(){percentage.style.display='none';}, 512);
             });
-        hmctxarea.on("pinchin pinchout", function(evt){
+        element.on("pinchin pinchout", function(evt){
                                                    //hmctxarea.stop();
                                                    var uisc = uitouch.doscale(Math.sqrt(evt.scale), false);
                                                    console.log("evt.scale is", evt.scale); //NFP
@@ -102,10 +106,10 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             popups.map(function(el){el.style.display="none";});
         }
         function onOnLine(){ 
-            hmctxarea.on("tap click press", taptap);
+            element.on("tap click press", taptap);
         }
         function onOffLine(){
-            hmctxarea.off("tap click press", taptap);
+            element.off("tap click press", taptap);
         }
 
         if(window.navigator.onLine){
@@ -254,7 +258,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             mtextfrm.contentDocument.open();
             mtextfrm.contentDocument.close();
             //console.log(data[0]);
-            mtextfrm.src = "data:text/html," + data[0];
+            mtextfrm.srcdoc = data[0];
             sharedf.move_tags(mtextfrm.contentDocument.getElementsByTagName("body")[0],
                               ['style'],
                               mtextfrm.contentDocument.getElementsByTagName("head")[0]);

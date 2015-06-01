@@ -115,7 +115,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                             currentpage = index;
                             console.log("Got href: \""+href+"\"");//NFP
                             console.log("Got html:");//NFP
-                            console.log(html.slice(0,128));//NFP
+                            console.log( html.match(/p.*?murmured.*?p/gi) );//NFP
                             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
                             else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
                         });
