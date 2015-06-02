@@ -257,8 +257,13 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         if(data[0]){
             mtextfrm.contentDocument.open();
             mtextfrm.contentDocument.close();
-            //console.log(data[0]);
-            mtextfrm.srcdoc = data[0];
+            var fragment = mtextfrm.contentDocument
+                                   .createRange()
+                                   .createContextualFragment(data[0]);
+            mtextfrm.contentWindow
+                    .document
+                    .body
+                    .appendChild(fragment);
             sharedf.move_tags(mtextfrm.contentDocument.getElementsByTagName("body")[0],
                               ['style'],
                               mtextfrm.contentDocument.getElementsByTagName("head")[0]);
