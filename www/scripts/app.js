@@ -76,7 +76,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         element.on("panup swipeup", function(evt){
                 options.display('hide');
                 pop.style.display='none';
-                hmctxarea.stop();
+                element.stop();
                 popups.map(function(el){el.style.display="none";});
             });
         element.on("pandown swipedown", function(evt){ element.stop(); options.display('show'); pop.style.display='none';});
@@ -255,11 +255,13 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
         if(data[0]){
-            mtextfrm.contentDocument.open();
-            mtextfrm.contentDocument.close();
+            //mtextfrm.contentDocument.open();
+            //mtextfrm.contentDocument.close();
             var fragment = mtextfrm.contentDocument
                                    .createRange()
                                    .createContextualFragment(data[0]);
+            console.log("fragment is "+fragment.querySelector('head'));
+            mtextfrm.contentWindow.document.body.innerHTML = "";
             mtextfrm.contentWindow
                     .document
                     .body
