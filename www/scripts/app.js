@@ -255,6 +255,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
         if(data[0]){
+            mtextfrm.contentWindow.document.body.innerHTML = stuff.emptynext;
             //mtextfrm.contentDocument.open();
             //mtextfrm.contentDocument.close();
             var fragment = mtextfrm.contentDocument
