@@ -273,6 +273,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             frame.set_fontcolor();
             frame.set_sizes();
             frame.set_fontsize();
+            frame.set_text_align('justify');
         }
         var cheight = parseInt(stuff.getStyle(mtextfrm.contentWindow.document.body.parentNode, 'height'));
         cheight = Math.max(cheight, window.innerHeight);

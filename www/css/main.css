@@ -167,7 +167,7 @@ div.muchopts {
   }
 
   .bcol {
-    padding: 4pt;
+    padding: 2pt;
     overflow:hidden;
     font-size:0.75em;
     word-wrap:normal;
@@ -176,7 +176,5 @@ div.muchopts {
     min-width: 98%;
     width: 98%;
     right: 4pt;
-    margin-left: 1px;
-    margin-right: 1px;
 /*    text-shadow:#aaa 0px 0.3px 0, #aaa 0px -0.3px 0px, #aaa 0.3px 0px 0px, #aaa -0.3px 0px 0px;*/
   }
