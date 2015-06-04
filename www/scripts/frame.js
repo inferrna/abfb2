@@ -30,6 +30,12 @@ define(
                 mtextfrm.getElementsByTagName('head')[0]
                         .appendChild(style);
             },
+            set_text_align:function(align){
+                style = get_style('txtalign');
+                style.innerHTML = "body {\n    text-align: "+align+";\n}";
+                mtextfrm.getElementsByTagName('head')[0]
+                        .appendChild(style);
+            },
             set_fontsize:function(size){
                 if(!size) size = savedsize;
                 else savedsize = size;
