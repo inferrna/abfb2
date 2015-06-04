@@ -123,7 +123,6 @@ define(
         nm.disabled = 1;
         sel.appendChild(nm);
         sel.id = key;
-        sel.style.width = "80%";
         if(key==="dict_db"){
             sharedc.register('dict', 'got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
         }else if(key==="dsfile"){

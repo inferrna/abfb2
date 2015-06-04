@@ -239,7 +239,6 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         ntoc.appendChild(html);
         dtoc.appendChild(ntoc);
         var sel = document.getElementById("tocselect");
-        sel.style.width = Math.min(parseInt(window.innerWidth)-24, parseInt(stuff.getStyle(sel, 'width')))+"px";
         sel.addEventListener("change", function (event){
                                                 if(event.target.disabled === true) {
                                                     event.target.disabled = false;

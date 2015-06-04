@@ -34,7 +34,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
        var div = document.createElement("div");
        var sel = document.createElement("select");
        sel.setAttribute("id", "tocselect");
-       sel.style.width = "auto";
        for(i=0; i<tocels.length; i++){
            var opt = document.createElement("option");
            opt.style.textIndent = "32px";
