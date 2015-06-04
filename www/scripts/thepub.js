@@ -114,8 +114,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                             oldhref=href;
                             currentpage = index;
                             console.log("Got href: \""+href+"\"");//NFP
-                            console.log("Got html:");//NFP
-                            console.log(html.slice(0,1024));//NFP
                             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
                             else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
                         });
