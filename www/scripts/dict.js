@@ -135,7 +135,7 @@ define(
                 locals[key] = datas[key];
             }
             cache = {};
-            if(datas["sl"]!==oldl && sharedc.exec('dict', 'change_lng')) sharedc.exec('dict', 'change_lng')(datas["sl"]);
+            if(datas["sl"]!==oldl) sharedc.exec('dict', 'change_lng')(datas["sl"]);
         }
     };
   }

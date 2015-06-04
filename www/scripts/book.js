@@ -16,6 +16,7 @@ define(
                          else if(filename.match(refb2)) foliant = thefb2;
                          else { console.warn(filename+" not matched any type"); return ''; } 
                          foliant.init();
+                         sharedc.register('book', 'last_html', foliant.render_all_pages);
                          thefile = file;
                          evo = foliant.evo;
                          return evo;

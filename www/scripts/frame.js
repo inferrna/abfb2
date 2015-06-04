@@ -4,7 +4,7 @@ define(
         var mtext = document.getElementById('maintext');
         var cf = document.getElementById('cf'); //Current font
         var mtextfrm = document.getElementById('mainframe').contentDocument;
-        document.getElementById('mainframe').style.width = window.innerWidth+'px';
+        document.getElementById('mainframe').width = window.innerWidth+'px';
         var savedcolor = null;
         var savedsize = null;
         var savedfamily = null;

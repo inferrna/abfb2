@@ -59,6 +59,7 @@ define(
               options.setpercent(percent);
               console.log("saving.."); options.savepp();
           }
+          sharedc.exec('uitouch', 'fix_toc')();
       }
       function expand2w(off, text){
           "use strict";

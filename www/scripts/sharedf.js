@@ -180,7 +180,7 @@ define(
                 console.log("newparent is ");//NFP
                 console.log(newparent);//NFP
                 for (var i=0; i<taglst.length; i++){
-                     clean_tag(oldparent, taglst[i], newparent);
+                     move_tag(oldparent, taglst[i], newparent);
                 }
             },
             clean_tags:function(doc, taglst){
