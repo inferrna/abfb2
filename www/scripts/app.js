@@ -18,7 +18,6 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     var hammer = require('hammer');
     console.log("Got hammer"); //NFP
     console.log(hammer);
-    var events_initialized = false;
     var style = mtextfrm.ownerDocument.createElement('style');
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
@@ -281,9 +280,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         mtextfrm.style.height = cheight+'px';
         mtext.style.height = cheight+'px';
         mtextfrm.style.display = 'block';
-        if (!events_initialized)
-            eventifymtext(mtextfrm.contentWindow.document.body.parentNode);
-        events_initialized = true;
+        eventifymtext(mtextfrm.contentWindow.document.body.parentNode);
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         if(!nosave) options.setpage(book.foliant().currentpage());
         if(data[1] && !percent) percent = frame.prc_from_anchor(data[1], percent);
