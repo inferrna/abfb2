@@ -6,8 +6,8 @@ define(
     if(navigator.getDeviceStorage) sds_ls = require('sds_ff');
     if(window.cordova) sds_ls = require('sds_cr');
     return {
-             parse:function(sel, obj){
-                 if(sds_ls) sds_ls.parse(sel, obj);
+             parse:function(sel, obj, callback){
+                 if(sds_ls) sds_ls.parse(sel, obj, callback);
              },
              get:function(fnm, callback){
                  if(sds_ls) sds_ls.get(fnm, callback);

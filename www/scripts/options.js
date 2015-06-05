@@ -12,6 +12,7 @@ define(
     opts_brd.textContent = '';
     var toc = document.createElement("div");
     var dtoc = document.createElement("div");
+    var dsfile = null;
     disable_prop(dtoc);
     toc.id = "toc";
     toc.style.width = "95%";
@@ -49,7 +50,7 @@ define(
         socket_port: ['2628', "dictd port", 'none'],
         proxy_host: ['localhost', "proxy host", 'none'],
         proxy_port: ['8082', "proxy port", 'none'],
-        dsfile: [[], "Or choose it from list", 'list-item'],
+        dsfile: [[], "Choose book from list", 'list-item'],
         file: ['',  'Select a book', 'list-item']
     };
     var showdeps = {
@@ -140,8 +141,12 @@ define(
                                                                    sharedc.exec('options', 'got_file')();});
                                 }
                             }, false);
-                sdstorage.parse(sel, obj);
-            return sel;
+                sdstorage.parse(sel, obj, function(){
+                        var filespan = document.getElementById('file_span');
+                        if(filespan) filespan.style.display = false;
+                    });
+                dsfile = sel;
+                return sel;
         } 
         sel.addEventListener("change", function(evt){
                                     console.log("Selection event fired "+ !evt.target.disabled); //NFP
@@ -174,16 +179,26 @@ define(
         var sp  = document.createElement("span");
         sp.style.width = "100%";
         sel.textContent = name;
+        sp.id = key+"_span";
         inp.id = key;
         inp.style.left="4px";
-        if(key==="file") {   inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
-                             inp.addEventListener("change", function (evt){
-                                                            var input = evt.target;
-                                                            file = evt.target.files[0];
-                                                            filename = file.name.replace(fnmre, "$2");
-                                                            set_opt('last_file', filename);
-                                                            set_opt(filename+"_time", Date.now());
-                                                            sharedc.exec('options', 'got_file')();}, false );
+        if(key==="file") {   
+            if(dsfile){
+                if(dsfile.options.length>1){
+                    console.log("dsfile.options.length == "+dsfile.options.length);//NFP
+                    return;
+                    //document.getElementById('file').style.display = 'none';
+                } else {
+                    inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
+                    inp.addEventListener("change", function (evt){
+                                                   var input = evt.target;
+                                                   file = evt.target.files[0];
+                                                   filename = file.name.replace(fnmre, "$2");
+                                                   set_opt('last_file', filename);
+                                                   set_opt(filename+"_time", Date.now());
+                                                   sharedc.exec('options', 'got_file')();}, false );
+                }
+            }
         } else {
             inp.value = value;
             var params = [];

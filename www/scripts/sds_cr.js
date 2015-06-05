@@ -6,7 +6,7 @@ define(
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
     var named_entries = {};
-    function parse_storage_cr(sel, obj){
+    function parse_storage_cr(sel, obj, callback){
         "use strict";
         document.addEventListener("deviceready", onDeviceReady, false);
         function onDeviceReady(){
@@ -34,6 +34,7 @@ define(
                         }
                         if(count>0) {
                             obj.appendChild(sel);
+                            callback();
                             options.msg(count+" files found on SD card");
                             options.get_opt('last_file', 
                                 function(vl){ for(var i = 1; i < sel.options.length; i++){
