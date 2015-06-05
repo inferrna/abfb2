@@ -118,7 +118,8 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         document.addEventListener("online", onOnLine, false);
         document.addEventListener("offline", onOffLine, false);
     }
-    eventifymtext(mtextfrm);
+    mtextfrm.contentWindow.document.body.innerHTML = stuff.empty;
+    eventifymtext(mtextfrm.contentWindow.document.body.parentNode);
     var hammerpop = new hammer.Manager(pop, {
             recognizers: [
             // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
@@ -246,7 +247,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                                                 } else {
                                                     mtext.style.top="0px";
                                                     options.setpercent(0);
-                                                    book.foliant().get_fromopt(event.target.selectedIndex, event.percent | 0);
+                                                    book.foliant().get_fromopt(event.target.selectedIndex, event.percent);
                                                     console.log("Fired TOC selection change"); //NFP
                                                 }  
                                        });
@@ -255,14 +256,13 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     function fill_page(data, percent, nosave){
         if(percent<0) percent=0;
         if(data[0]){
-            mtextfrm.contentWindow.document.body.innerHTML = stuff.emptynext;
+            mtextfrm.contentWindow.document.body.innerHTML = "";
             //mtextfrm.contentDocument.open();
             //mtextfrm.contentDocument.close();
             var fragment = mtextfrm.contentDocument
                                    .createRange()
                                    .createContextualFragment(data[0]);
             console.log("fragment is "+fragment.querySelector('head'));
-            mtextfrm.contentWindow.document.body.innerHTML = "";
             mtextfrm.contentWindow
                     .document
                     .body
@@ -280,7 +280,6 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         mtextfrm.style.height = cheight+'px';
         mtext.style.height = cheight+'px';
         mtextfrm.style.display = 'block';
-        eventifymtext(mtextfrm.contentWindow.document.body.parentNode);
         var fs = parseInt(stuff.getStyle(mtext, 'font-size'));
         if(!nosave) options.setpage(book.foliant().currentpage());
         if(data[1] && !percent) percent = frame.prc_from_anchor(data[1], percent);
