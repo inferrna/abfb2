@@ -199,7 +199,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                      }
              },
              currentpage:function(){
-                     return currentpage;
+                     return currentopt;
              },
              next_page:function(diff){
                     var tidx = diff + pages.indexOf(currentpage);
