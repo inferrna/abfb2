@@ -139,8 +139,8 @@ define(
                           [4, 0], [4, 4], [0, 4], [-4, 4], [-4, 0], [-4, -4], [0, -4], [4, -4]];
           var x = clip(Math.round(_x+spirales[sidx][0]*d), 0, window.innerWidth);
           var y = clip(Math.round(_y+spirales[sidx][1]*d), 0, window.innerHeigth)
-          var el = document.elementFromPoint(x,y);
-          var range = document.createRange();
+          var el = doc.elementFromPoint(x,y);
+          var range = doc.createRange();
           var z = 0;
           var gotit = 0;
           var retch = null;
@@ -167,9 +167,11 @@ define(
           if((gotit && retch.textContent.replace(/\s/g, '')!='') || sidx>=spirales.length){
               if(retch) {
                 return [z, retch];
+              } else {
+                return null;
               }
           } else {
-              return get_off(_x, _y, sidx);
+              return get_off(doc, _x, _y, sidx);
           }
           return true;
       }
@@ -194,7 +196,7 @@ define(
           } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
           if(el === doc.body){ cp = null; el = null; }
           if(!cp && doc.elementFromPoint){
-              var goff = get_off(x, y);
+              var goff = get_off(doc, x, y);
               if(goff){off = goff[0]; el = goff[1];}
           }
           if(el){

@@ -10,7 +10,7 @@ define(
                  if(sds_ls) sds_ls.parse(sel, obj, callback);
              },
              get:function(fnm, callback){
-                 if(sds_ls) sds_ls.get(fnm, obj, callback);
+                 if(sds_ls) sds_ls.get(fnm, callback);
              }
     }
   }

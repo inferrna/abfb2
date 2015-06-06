@@ -66,9 +66,9 @@ define(
     }
     
     return {
-             parse:function(sel, obj){
+             parse:function(sel, obj, clbk){
                  if(!options) options = require('options');
-                 parse_storage_cr(sel, obj);
+                 parse_storage_cr(sel, obj, clbk);
              },
              get:function(_fnm, callback){
                  var fnm = _fnm;//.replace("cdvfile://", "/");

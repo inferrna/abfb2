@@ -31,7 +31,10 @@ define(
             for (var i = 0, il = tags.length; i < il; i++) {
                 var ltag = tags[i];
                 if(ltag){
-                    newparent.appendChild(ltag);
+                    var newtag = newparent.ownerDocument.createElement(tag);
+                    newtag.innerHTML = ltag.innerHTML;
+                    newparent.appendChild(newtag);
+                    ltag.parentNode.removeChild(ltag);
                     //console.log();//NFP
                     //ltag.parentNode.removeChild(ltag);
                 }
