@@ -23,9 +23,9 @@ div.muchopts {
     padding: 5px;
     z-index: 1003;
     border-radius: 6px 6px 6px 6px;
-    background-color: rgba(250,245,240);
-    position:inline;
-    overflow:hidden;
+    background-color: rgb(250,245,240);
+    position: inline-block;
+    overflow: hidden;
 }
   .bar {background: #679;}
   input { padding: 2px; }

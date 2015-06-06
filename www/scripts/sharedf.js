@@ -32,6 +32,7 @@ define(
                 var ltag = tags[i];
                 if(ltag){
                     var newtag = newparent.ownerDocument.createElement(tag);
+                    newtag.type = "text/css";
                     newtag.innerHTML = ltag.innerHTML;
                     newparent.appendChild(newtag);
                     ltag.parentNode.removeChild(ltag);
