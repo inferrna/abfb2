@@ -50,8 +50,8 @@ define(
         socket_port: ['2628', "dictd port", 'none'],
         proxy_host: ['localhost', "proxy host", 'none'],
         proxy_port: ['8082', "proxy port", 'none'],
-        dsfile: [[], "Choose book from list", 'list-item'],
-        file: ['',  'Select a book', 'list-item']
+        file: ['',  'Select a book', 'list-item'],
+        dsfile: [[], "Choose book from list", 'list-item']
     };
     var showdeps = {
         'google':/lang_f|lang_t/,
@@ -143,7 +143,7 @@ define(
                             }, false);
                 sdstorage.parse(sel, obj, function(){
                         var filespan = document.getElementById('file_span');
-                        if(filespan) filespan.style.display = false;
+                        if(filespan) filespan.style.display = 'none';
                     });
                 dsfile = sel;
                 return sel;
@@ -183,22 +183,14 @@ define(
         inp.id = key;
         inp.style.left="4px";
         if(key==="file") {   
-            if(dsfile){
-                if(dsfile.options.length>1){
-                    console.log("dsfile.options.length == "+dsfile.options.length);//NFP
-                    return;
-                    //document.getElementById('file').style.display = 'none';
-                } else {
-                    inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
-                    inp.addEventListener("change", function (evt){
-                                                   var input = evt.target;
-                                                   file = evt.target.files[0];
-                                                   filename = file.name.replace(fnmre, "$2");
-                                                   set_opt('last_file', filename);
-                                                   set_opt(filename+"_time", Date.now());
-                                                   sharedc.exec('options', 'got_file')();}, false );
-                }
-            }
+            inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
+            inp.addEventListener("change", function (evt){
+                                           var input = evt.target;
+                                           file = evt.target.files[0];
+                                           filename = file.name.replace(fnmre, "$2");
+                                           set_opt('last_file', filename);
+                                           set_opt(filename+"_time", Date.now());
+                                           sharedc.exec('options', 'got_file')();}, false );
         } else {
             inp.value = value;
             var params = [];
