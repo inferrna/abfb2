@@ -1,6 +1,6 @@
 define(
-  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc', 'sharedf'],
-  function(dict, uitouch, socket, sdstorage, sharedc, sharedf){
+  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc', 'sharedf', 'stuff'],
+  function(dict, uitouch, socket, sdstorage, sharedc, sharedf, stuff){
     "use strict";
     var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
@@ -124,6 +124,7 @@ define(
         nm.disabled = 1;
         sel.appendChild(nm);
         sel.id = key;
+        sp.id = key+'_span';
         if(key==="dict_db"){
             sharedc.register('dict', 'got_dbs', function(_txt){add_dbs(sel, nm, _txt);});
         }else if(key==="dsfile"){
@@ -141,9 +142,65 @@ define(
                                                                    sharedc.exec('options', 'got_file')();});
                                 }
                             }, false);
-                sdstorage.parse(sel, obj, function(){
+                var btn = document.createElement('button');
+                btn.className = "int-box";
+                btn.style.height = '2em';
+                btn.style.width = btn.style.height; btn.style.borderRadius="3pt"; btn.style.margin="1px"; btn.style.border="1px"; btn.style.top = '0px';
+                btn.style.right = "0px";
+                btn.style.backgroundColor = "";
+                btn.style.backgroundSize = btn.style.height +" "+ btn.style.width;
+                btn.onclick = function(){
+                    var current = sel.options[sel.selectedIndex].value;
+                    sdstorage.parse(sel, obj, function(names){
+                            var filespan = document.getElementById('file_span');
+                            if(names.length>0){
+                                filespan.style.display = 'none';
+                                lbl.textContent = names.length+" files found on SD card";
+                                for(var i = 0; i < names.length; i++){
+                                    var nm  = document.createElement("option");
+                                    nm.textContent = names[i];
+                                    sel.appendChild(nm);
+                                    if(names[i] == current){
+                                        sel.disabled = true;
+                                        sel.selectedIndex = sel.options.length-1;
+                                        sel.disabled = false;
+                                    }
+                                }
+                            } else {
+                                sel.parentNode.removeChild(sel);
+                                //options.msg(badtext+" (err: "+err+")");
+                            }
+                        });
+                }
+                btn.style.backgroundRepeat = "no-repeat";
+                btn.style.backgroundImage = 'url('+stuff.cycles+')';
+                sdstorage.parse(sel, obj, function(names){
                         var filespan = document.getElementById('file_span');
-                        if(filespan) filespan.style.display = 'none';
+                        if(names.length>0){
+                            filespan.style.display = 'none';
+                            sp.appendChild(sel);
+                            sp.appendChild(btn);
+                            obj.appendChild(sp);
+                            lbl.textContent = names.length+" files found on SD card";
+                            get_opt(['last_file'], 
+                                function(ky, vl){ for(var i = 0; i < names.length; i++){
+                                                      var nm  = document.createElement("option");
+                                                      nm.textContent = names[i];
+                                                      sel.appendChild(nm);
+                                                      if(names[i].replace(sharedf.relf, "$2") === vl){
+                                                          sel.selectedIndex = sel.options.length-1;
+                                                          try { var evt = new Event('change');}
+                                                          catch (e) {
+                                                            var evt = document.createEvent('Event'); 
+                                                            evt.initEvent('change', true, true);
+                                                          }
+                                                          sel.dispatchEvent(evt);
+                                                      }
+                                                  } }, null);
+                        } else {
+                            sel.parentNode.removeChild(sel);
+                            //options.msg(badtext+" (err: "+err+")");
+                        }
                     });
                 dsfile = sel;
                 return sel;

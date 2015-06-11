@@ -4,13 +4,13 @@ define(
     var options = null;
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
-    var filenames = [];
     function parse_storage_ff(sel, obj, callback){
         "use strict";
         var pics = navigator.getDeviceStorage('sdcard');
         // Let's browse all the images available
         var paths = ['books', 'Books', 'Library', 'library', 'Download', 'download'];
         var count = 0;
+        var filenames = [];
         for(var p in paths){
             var cursor = pics.enumerate({'path': paths[p]});
             cursor.onsuccess = onsuccess;
@@ -23,23 +23,7 @@ define(
         function onsuccess() {
             function g_or_b(err){
                 "use strict";
-                if(count>0) {
-                    obj.appendChild(sel);
-                    callback();
-                    options.msg(count+" files found on SD card");
-                    options.get_opt('last_file', 
-                        function(vl){ for(var i = 1; i < sel.options.length; i++){
-                                              if(sel.options[i].value.replace(sharedf.relf, "$2") === vl){
-                                                  sel.selectedIndex = i;
-                                                  try { var evt = new Event('change');}
-                                                  catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
-                                                  sel.dispatchEvent(evt);
-                                              }
-                                          } }, null);
-                } else {
-                    sel.parentNode.removeChild(sel);
-                    options.msg(badtext+" (err: "+err+")");
-                }
+                callback(filenames);
             }
             if(this.result!=undefined) var file = this.result;
             else { 
@@ -49,11 +33,8 @@ define(
             try{
                 if(filere.test(file.name)){
                     if(filenames.indexOf(file.name)===-1){
-                        var nm  = document.createElement("option");
-                        nm.textContent = file.name;
                         count++;
                         options.msg("File found: " + file.name);
-                        sel.appendChild(nm);
                         filenames.push(file.name);
                     }
                 }
