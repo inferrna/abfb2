@@ -128,7 +128,7 @@ define(
           return -1;
       }
       function clip(_x, min, max) {return ( _x < min ) ? min : ( _x > max ) ? max : _x};
-      function get_off(_x, _y, sidx){
+      function get_off(doc, _x, _y, sidx){
           "use strict";
           if(!sidx) sidx=0;
           var dpr = window.devicePixelRatio || 1.0;

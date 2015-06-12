@@ -160,7 +160,8 @@ div.muchopts {
   }
 
   .spflex > div select {
-    width: 100%;
+    width: 80%;
+    width: calc(100% - 2.5em);
     font-size: large;
     height: 2em;
     margin-bottom: 0.5em;

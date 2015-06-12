@@ -143,10 +143,12 @@ define(
                                 }
                             }, false);
                 var btn = document.createElement('button');
-                btn.className = "int-box";
+                btn.className = 'int-box';
                 btn.style.height = '2em';
                 btn.style.width = btn.style.height; btn.style.borderRadius="3pt"; btn.style.margin="1px"; btn.style.border="1px"; btn.style.top = '0px';
-                btn.style.right = "0px";
+                btn.style.marginRight = '0.5em';
+                btn.style.marginTop = '-0.2em';
+                btn.style.float = 'right';
                 btn.style.backgroundColor = "";
                 btn.style.backgroundSize = btn.style.height +" "+ btn.style.width;
                 btn.onclick = function(){

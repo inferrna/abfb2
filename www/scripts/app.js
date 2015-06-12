@@ -130,7 +130,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             recognizers: [
             [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }]
     ]});
-    var hmcfltext = new hammer.Manager(fl_text, { recognizers: [
+    /*var hmcfltext = new hammer.Manager(fl_text, { recognizers: [
             [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
             [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
     ]});
@@ -147,7 +147,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     hmcfltext.on("pandown swipedown", function(evt){hmcfltext.stop(); options.display('show'); pop.style.display='none';});
     hammerpop.on("panleft",  function(evt){hammerpop.stop(); uitouch.liftcol(pts,-1);});
     hammerpop.on("panright", function(evt){hammerpop.stop(); uitouch.liftcol(pts, 1);});
-    hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
+    hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});*/
     mtextfrm.contentDocument.body.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
     var hammerhelper = new hammer(helper);
     hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
