@@ -28,11 +28,11 @@ define(
     opts_brd_b.appendChild(rngbr);
     opts_brd_b.appendChild(rng);
     var storage = null; 
-    try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
     var crstorage = null;
     var crstoragel = null;
     try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available")};
     try{ crstoragel = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available")};
+    if(!crstoragel) storage = localStorage;
     console.log("Storages is");//NFP
     console.log(storage ? true : false);//NFP
     console.log(crstorage);//NFP
@@ -72,15 +72,8 @@ define(
         }
     }
     var hasStorage = (function() {
-      try {
-        localStorage.setItem('try', 'try');
-        localStorage.removeItem('try');
-        return true;
-        storage = localStorage;
-      } catch(e) {
-        return false;
-      }
-      return false;
+      if(storage) return true;
+      else return false;
     }());
     var values = {};
     function check_params(callbacks){
@@ -346,22 +339,35 @@ define(
         if(evt) sharedc.exec('options', evt)();
     }
     function get_opt(keys, callback, evt){
-        if(hasStorage) get_ls(keys, callback, evt);
+        if(storage) get_ls(keys, callback, evt);
         else if(crstorage) get_cr(keys, callback, evt);
+        else if(crstoragel) get_crl(keys, callback, evt);
         else if(evt) sharedc.exec('options', evt)();
     }
     function set_opt(key, p){
-        if(hasStorage) set_ls(key, p);
+        if(storage) set_ls(key, p);
         else if(crstorage) set_cr(key, p);
+        else if(crstoragel) set_crl(key, p);
     }
     function set_cr(key, p){
         var pair = {};
         pair[key] = p;
+        var len = p.length | 1;
         console.log("Call to crhomestorage set");//NFP
-        console.log("crhomestorage set len is "+p.length);//NFP
+        console.log("crhomestorage set len is "+len);//NFP
+        console.log("crhomestorage got "+p);//NFP
         console.log("crhomestorage set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
-        if(p.length < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
-        else if(p.length < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
+        if(len < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
+        else if(len < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
+    }
+    function set_crl(key, p){
+        var pair = {};
+        pair[key] = p;
+        var len = p.length | 1;
+        console.log("Call to crhomestoragel set");//NFP
+        console.log("crhomestoragel set len is "+len);//NFP
+        console.log("crhomestoragel set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
+        if(len < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
     }
     function set_ls(key, p){
         localStorage.setItem(key, p);
