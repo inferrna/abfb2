@@ -209,7 +209,7 @@ define(
               var selected_word = null;
               try {
                   console.log("off=="+off);//NFP
-                  var sel = window.getSelection();
+                  var sel = doc.getSelection();
                   sel.removeAllRanges();
                   var rng = doc.createRange();
                   rng.selectNode(el);
@@ -327,8 +327,9 @@ define(
               chscale(e.scale);
           },
           handleSelect:function(evt){
-              var sel = window.getSelection();
+              var sel = evt.target.ownerDocument.getSelection();
               selected_word = sel.toString();
+              console.log('got_selection: '+selected_word);//NFP
               sharedc.exec('uitouch', 'got_selection')([selected_word, '']);
           },
           doscale:function(cf, apply){

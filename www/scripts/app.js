@@ -52,6 +52,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
     function eventifymtext(ifrm){
         if(ifrm){
+            ifrm.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
             ifrm.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
             var frm = ifrm;
         } else {
@@ -100,7 +101,6 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                                                    console.log("evt.scale is", evt.scale); //NFP
                                                    if(!evt.isFinal) percentage.textContent = Math.round(uisc*100)+"%";
                                                    });
-
         function taptap(evt){
             uitouch.handleClick(evt);
             popups.map(function(el){el.style.display="none";});
@@ -130,7 +130,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             recognizers: [
             [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }]
     ]});
-    /*var hmcfltext = new hammer.Manager(fl_text, { recognizers: [
+    var hmcfltext = new hammer.Manager(fl_text, { recognizers: [
             [hammer.Swipe, { direction: hammer.DIRECTION_ALL } ],
             [hammer.Pan, { direction: hammer.DIRECTION_ALL } ]
     ]});
@@ -147,20 +147,18 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     hmcfltext.on("pandown swipedown", function(evt){hmcfltext.stop(); options.display('show'); pop.style.display='none';});
     hammerpop.on("panleft",  function(evt){hammerpop.stop(); uitouch.liftcol(pts,-1);});
     hammerpop.on("panright", function(evt){hammerpop.stop(); uitouch.liftcol(pts, 1);});
-    hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});*/
-    mtextfrm.contentDocument.body.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
+    hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
     var hammerhelper = new hammer(helper);
     hammerhelper.on("click tap pinchin pinchout panleft panright panup pandown", function(evt){
             helper.style.display="none";
         });
-    if(window.navigator.onLine){
+    /*if(window.navigator.onLine){
         hammermtext.on("click tap press", function(e){
                 popups.map(function(el){el.style.display="none";});
                 uitouch.handleClick(e);
                 });
-    }
+    }*/
     window.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
-    mtextfrm.contentDocument.body.addEventListener("keydown", function(e){uitouch.handleKey(e);}, false);
     window.addEventListener("pinch", function(e){console.log("Pinch supported");}, false);
     //window.addEventListener("", function(e){uitouch.handlegest(e);}, false);
     var opt_bl = document.getElementById("options_block");
