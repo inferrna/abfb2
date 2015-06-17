@@ -112,7 +112,7 @@ div.muchopts {
   {
       background-color: #111111;
       overflow:hidden;
-      width: 100%; /* To make the transition work nicely.  (Transitions to/from
+      width: auto; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
                       See http://bugzil.la/731886 for more info.) */
 
@@ -176,6 +176,6 @@ div.muchopts {
     min-height: 98% !important;
     min-width: 98%;
     width: 98%;
-    right: 4pt;
+   /* right: 4pt;*/
 /*    text-shadow:#aaa 0px 0.3px 0, #aaa 0px -0.3px 0px, #aaa 0.3px 0px 0px, #aaa -0.3px 0px 0px;*/
   }
