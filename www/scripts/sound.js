@@ -55,11 +55,11 @@ define(
 
         audios.push(snd);
         sndbt.addEventListener('click', play, false);
-        sndbt.style.height = '2em';
-        sndbt.style.width = sndbt.style.height;
-        sndbt.style.backgroundRepeat = "no-repeat";
-        sndbt.style.backgroundSize = sndbt.style.height +" "+ sndbt.style.width;
-        sndbt.style.backgroundImage = 'url('+stuff.sndimg+')';
+        sndcnt.style.height = '2em';
+        sndcnt.style.width = sndbt.style.height;
+        sndcnt.style.backgroundRepeat = "no-repeat";
+        sndcnt.style.backgroundSize = "90% 90%";
+        sndcnt.style.backgroundImage = 'url('+stuff.sndimg+')';
         sharedc.register('dict', 'change_lng', function(lang){
                        if(lang.length===2) var lidx = swac.lparts[lang];
                        else var lidx = lang;
