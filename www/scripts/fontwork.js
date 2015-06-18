@@ -24,9 +24,9 @@ define(
         fdetect.onclick = detectAll;
         dropdown.style.top = "0px";
         fbtn.className = "int-box";
-        fbtn.style.height = '2em';
         fbtn.textContent = 'F';
-        fbtn.style.width = fbtn.style.height; fbtn.style.borderRadius="3pt"; fbtn.style.margin="1px"; fbtn.style.border="1px"; fbtn.style.top = '0px';
+        fbtn.style.top = '0px';
+        fbtn.style.float = 'left';
         //fbtn.textContent = "F";
         fbtn.onclick = function(){
             if(fontwork.style.display === "none"){
