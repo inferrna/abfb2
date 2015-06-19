@@ -25,9 +25,10 @@ define(
         advbtn.style.top = '0px';
         advbtn.style.float = 'left';
         advbtn.style.right = "0px";
+        advbtn.style.padding = "0px";
         var spb  = document.createElement("div");
-        spb.style.width = '2em';
-        spb.style.height = '2em';
+        spb.style.width = '1.7em';
+        spb.style.height = '1.7em';
         spb.style.backgroundSize = advbtn.style.height +" "+ advbtn.style.width;
         spb.style.backgroundRepeat = "no-repeat";
         spb.style.backgroundImage = 'url('+images.book_svg+')';
