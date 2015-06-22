@@ -21,17 +21,14 @@ define(
                   };
                   if((el.style && el.style[camelize(styleProp)]) || (el.currentStyle && el.currentStyle[camelize(styleProp)])){
                        var res = el.style[camelize(styleProp)] || el.currentStyle[camelize(styleProp)];
-                       console.log(styleProp+" got from style == "+res);//NFP
                        if([null, undefined, 'undefined', '', 'auto'].indexOf(res)===-1) return res;
                   }
                   if(/height|width|top|left|right|bottom/i.test(styleProp) && el.getBoundingClientRect){
                       res = el.getBoundingClientRect()[styleProp];
-                      console.log(styleProp+" got from rect == "+res);//NFP
                       return res;
                   } else if (document.defaultView && document.defaultView.getComputedStyle){
                       res = document.defaultView.getComputedStyle(el,null)
                                                 .getPropertyValue(styleProp);
-                      console.log(styleProp+" got from ComputedStyle == "+res);//NFP
                       return res;
                   }
                 },

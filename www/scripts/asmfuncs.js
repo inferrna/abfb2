@@ -1,7 +1,6 @@
 define(
   [],
   function(){
-    console.log("Starts asms");//NFP
     function AsmFuncs(stdlib, env, heap) {
         "use asm";
         var absf = stdlib.Math.abs;
@@ -160,7 +159,6 @@ define(
         minmaxv: function(arr, len, cnt){
             var res, max=0.0, min=1.0, avg=0.0;
             var start, end, truelen, maxl = arr.byteLength;
-            console.log(" minmaxv got");//NFP
             for(var i=0; i<cnt; i++){
                 start = len*i;
                 end = Math.min(maxl, start+len);
@@ -172,13 +170,11 @@ define(
                 avg += res3farray[2];
             }
             avg = 4*avg / (len*cnt);
-            console.log("max, min, avg", max, min, avg);//NFP
             return [max, min, avg];
         },
         applyscale: function(arr, len, cnt, c, add){
             var res, max=0.0, min=1.0, avg=0.0;
             var start, end, truelen, maxl = arr.byteLength;
-            console.log(" minmaxv got");//NFP
             for(var i=0; i<cnt; i++){
                 start = len*i;
                 end = Math.min(maxl, start+len);
@@ -192,7 +188,6 @@ define(
                 avg += res3farray[2];
             }
             avg = 4*avg / (len*cnt);
-            console.log("max, min, avg", max, min, avg);//NFP
             return [max, min, avg];
         },
         bufsize: inp8array.byteLength

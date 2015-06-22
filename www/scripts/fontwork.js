@@ -31,6 +31,8 @@ define(
         fbtn.onclick = function(){
             if(fontwork.style.display === "none"){
                 fontwork.style.display = "block";
+                options.display('hide');
+                options.display('hide');
                 fontwork.style.top = ( opts_brd_b.parentNode.parentNode.getBoundingClientRect()['bottom']+12 )+"px";
             } else {
                 fontwork.style.display = "none";
@@ -80,7 +82,6 @@ define(
               var progress = timestamp - start;
               cf = 1.0 - (progress/640);
               cf = cf > 0 ? cf : 0;
-              console.log("Y velocity is "+velY+"; timestamp is "+timestamp+"; progress is is "+progress+"; droptop is "+droptop+"; dropheight is "+dropheight);//NFP
               droptop = droptop + progress * velY;
               if(droptop > 0 || droptop < -(dropheight-fontwh/2)) velY = 0;
               if(droptop > 0) droptop = 0;
@@ -89,7 +90,6 @@ define(
               velY *= cf;
               start = timestamp;
               if (Math.abs(velY) > 0.1) {
-                console.log("Y velocity is "+velY+"; cf is "+cf);//NFP
                 animid = requestAnimationFrame(step);
               } else {
                 droptop = parseInt(stuff.getStyle(dropdown, 'top'));

@@ -100,7 +100,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
         if(index>-1){
             if(opf && toc && files){
                 var href = hrefs[index];//
-                console.log("index=="+index+"; href == "+href+"; anchor == "+anchor);//NFP
                 //var idx = pages[index];
                 //var spine = opf.spine[idx];
                 //var href = opf.manifest[spine]["href"];
@@ -112,7 +111,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     epub.get_by_href(href, function(html){
                             oldhref=href;
                             currentpage = index;
-                            console.log("Got href: \""+href+"\"");//NFP
                             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, anchor], percent);
                             else        sharedc.exec('bookng', 'got_fstfile')([html, anchor]);
                         });
@@ -151,12 +149,6 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 else if(pages.length>1) pages.push(pages[pages.length-1]);
                 else pages.push(0);
             }
-            console.log("hrefs is");//NFP
-            console.log(hrefs);//NFP
-            console.log("anchors is");//NFP
-            console.log(anchors);//NFP
-            console.log("pages is");//NFP
-            console.log(pages);//NFP
             for(var i = 0; i<opf.spine.length;i++){
                 var spine = opf.spine[i];
                 opf.manifest[spine]['href'] = opf.manifest[spine]['href'].split("#")[0];

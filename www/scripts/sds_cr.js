@@ -28,7 +28,6 @@ define(
                                 named_entries[fnm] = entries[i];
                                 count++;
                                 options.msg("File found: " + entries[i].name+" url is: "+entries[i].toURL());
-                                console.log("File found: " + entries[i].name+" url is: "+entries[i].toURL());//NFP
                                 sel.appendChild(nm);
                             }
                         }
@@ -57,20 +56,15 @@ define(
              },
              get:function(_fnm, callback){
                  var fnm = _fnm;//.replace("cdvfile://", "/");
-                 console.log(fnm+" requested");//NFP
                  window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileEntry(named_entries[fnm]), fail);
                  /*window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
                  function gotFS(fileSystem){
-                        console.log("fileSystem.root.fullPath:");//NFP
-                        console.log(fileSystem.root.fullPath);//NFP
                         fileSystem.root.getFile("cdvfile://localhost/persistent"+fnm, null, gotFileEntry, fail);
                      }*/
                  function gotFileEntry(fileEntry){
-                        console.log(fnm+" got entry");//NFP
                         fileEntry.file(gotFile, fail);
                      }
                  function gotFile(file){ 
-                        console.log(fnm+" got ok");//NFP
                         callback(file);
                      }
                  function fail(error) { console.log("Unable to get the file: " + fnm + "\ngot error:\n"+JSON.stringify(error)); };

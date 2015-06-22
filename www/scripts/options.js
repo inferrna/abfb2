@@ -33,10 +33,6 @@ define(
     try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available")};
     try{ crstoragel = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available")};
     if(!crstoragel) storage = localStorage;
-    console.log("Storages is");//NFP
-    console.log(storage ? true : false);//NFP
-    console.log(crstorage);//NFP
-    console.log(crstoragel);//NFP
     var type;
     var file = {'name':'empty'};
     var filename = '';
@@ -46,9 +42,9 @@ define(
         dict_db: [['!'], "Dict db (! means all)", 'none'],
         lang_f: ['en', "Translate from", 'none'],
         lang_t: ['ru', "Translate to", 'none'],
-        socket_host: ['localhost', "dictd host", 'none'],
+        socket_host: ['dict.dvo.ru', "dictd host", 'none'],
         socket_port: ['2628', "dictd port", 'none'],
-        proxy_host: ['localhost', "proxy host", 'none'],
+        proxy_host: ['192.168.1.2', "proxy host", 'none'],
         proxy_port: ['8082', "proxy port", 'none'],
         file: ['',  'Select a book', 'list-item'],
         dsfile: [[], "Choose book from list", 'list-item']
@@ -123,7 +119,6 @@ define(
         }else if(key==="dsfile"){
                 sel.addEventListener("change", 
                             function (evt){
-                                console.log("Book selection event fired "); //NFP
                                 var fnm = evt.target.options[evt.target.selectedIndex].value;
                                 var _filename = fnm.replace(sharedf.relf, "$2");
                                 if(_filename != filename){
@@ -204,7 +199,6 @@ define(
                 return sel;
         } 
         sel.addEventListener("change", function(evt){
-                                    console.log("Selection event fired "+ !evt.target.disabled); //NFP
                                     if(evt.target.disabled === true) {
                                         evt.target.disabled = false;
                                     } else {
@@ -238,7 +232,8 @@ define(
         inp.id = key;
         inp.style.left="4px";
         if(key==="file") {   
-            inp.type = 'file'; //inp.accept="application/epub+zip,text/xml,text/plain";
+            inp.type = 'file';
+            inp.accept=".epub,.fb2,.txt";
             inp.addEventListener("change", function (evt){
                                            var input = evt.target;
                                            file = evt.target.files[0];
@@ -247,7 +242,7 @@ define(
                                            set_opt(filename+"_time", Date.now());
                                            sharedc.exec('options', 'got_file')();}, false );
         } else {
-            inp.value = value;
+            inp.placeholder = value;
             var params = [];
             params.push(inp.id);
             inp.type = 'text';
@@ -312,7 +307,6 @@ define(
         return result;
     }
     function get_cr(keys, callback, evt){
-        console.log("Call to crhomestorage get of "+keys);//NFP
         crstorage.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
@@ -324,7 +318,6 @@ define(
             });
     }
     function get_crl(keys, callback, evt){
-        console.log("Call to crhomestoragel get of "+keys);//NFP
         crstoragel.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
@@ -356,10 +349,6 @@ define(
         var pair = {};
         pair[key] = p;
         var len = p.length | 1;
-        console.log("Call to crhomestorage set");//NFP
-        console.log("crhomestorage set len is "+len);//NFP
-        console.log("crhomestorage got "+p);//NFP
-        console.log("crhomestorage set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
         if(len < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
         else if(len < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
     }
@@ -367,9 +356,6 @@ define(
         var pair = {};
         pair[key] = p;
         var len = p.length | 1;
-        console.log("Call to crhomestoragel set");//NFP
-        console.log("crhomestoragel set len is "+len);//NFP
-        console.log("crhomestoragel set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
         if(len < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
     }
     function set_ls(key, p){
