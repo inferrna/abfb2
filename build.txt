@@ -1,2 +1,4 @@
 cordova platform rm android && cordova platform add android && cordova build android #Cordova build
 find ./ -name "*.js" |xargs sed -i '/console.log.*NFP/d' #remove debug logs
+zip -r /tmp/ab_pkg.zip scripts manifest.webapp css index.html images cordova.js
+zip -r /tmp/ab_pkgcr.zip scripts manifest.json main.js css index.html images cordova.js _locales
