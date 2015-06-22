@@ -30,8 +30,6 @@ function (mimetypes, sharedf, sharedc) {
         }
         if(mtype==='blob') reader.readAsDataURL(blob);
         else{ 
-            console.log("Got blob while unzip "+index+":");//NFP
-            console.log(blob);//NFP
             reader.readAsText(blob);
         }
         delete reader;
@@ -64,8 +62,6 @@ function (mimetypes, sharedf, sharedc) {
     }
     function proceedcontainer(){
         container = files["META-INF/container.xml"];
-        console.log("container:");//NFP
-        console.log(container);//NFP
         opfPath = getOpfPathFromContainer(container);
         unzipFiles([opfPath], proceedopf);
     }
@@ -206,7 +202,6 @@ function (mimetypes, sharedf, sharedc) {
 
     function unzipFiles(filelist, extcallback) {
         if(useCordova){
-            console.log("Extract by cordova plugin");//NFP
             function fill_crdo(data, name){
                 if (sharedf.reb.test(name)){
                     logger("extracting blob: " +name+"...");
@@ -230,14 +225,12 @@ function (mimetypes, sharedf, sharedc) {
                 };
             reader.readAsBinaryString(file);
         } else {
-            console.log("Extract by zip.js");//NFP
             var filenames = [];
             var datas = [];
             function getdatas(params){
                 if(params[1]>=params[0].length){ extcallback(); return; }
                 var entries = params[0], i = params[1], reader = params[2];
                 filenames.push(entries[i].filename);
-                console.log("getdatas "+entries[i].filename);//NFP
                 entries[i].getData(new zip.BlobWriter(), function (data) {
                         fill_files(data, filenames[i], getdatas, [entries, i, reader]);
                         i++;
@@ -245,7 +238,6 @@ function (mimetypes, sharedf, sharedc) {
                     });
             }
               var entriestg = gentries.filter(function(entr){return filelist.indexOf(entr.filename)>-1;});
-              console.log(entriestg);//NFP
               getdatas([entriestg, 0, zipreader]);
         }
 
@@ -331,9 +323,6 @@ function (mimetypes, sharedf, sharedc) {
             var node = guideEntries[i];
             opf.guide[node.getAttribute("href")] = node.getAttribute("title");
         }
-        console.log("opf.guide.length is "+opf.guide.length);//NFP
-        console.log("opf.guide is ");//NFP
-        console.log(opf.guide);//NFP
     }
 
     function resolvePath(path, referrerLocation) {
@@ -400,7 +389,6 @@ function (mimetypes, sharedf, sharedc) {
                    .replace(/x\-large/gi, '2em')
                    .replace(/xx\-large/gi, '3em');
         file = file.replace(/\n;/gi, ";");
-        console.log("Got css:\n"+file);//NFP
         return file;
     }
     function extract_title(href){
@@ -449,10 +437,8 @@ function (mimetypes, sharedf, sharedc) {
                 var csshref = resolvePath(link.getAttribute("href"), href);
                 var css = files[csshref];
                 if (inlineStyle.styleSheet){
-                  console.log("inlineStyle.styleSheet is present");//NFP
                   inlineStyle.styleSheet.cssText = css;
                 } else {
-                  console.log("inlineStyle.styleSheet isn't present");//NFP
                   //var textNode = document.createTextNode(css);
                   //textNode.textContent = textNode.textContent.replace('&gt;', '>');
                   //data:"+mimetypes.getMimeType(name)+";base64,
@@ -486,7 +472,6 @@ function (mimetypes, sharedf, sharedc) {
         } else { 
             result = "data:" + mediaType + "," + escape(files[dataHref]);
         }
-        console.log("got mediatype\""+mediaType+"\" from "+url+" and "+href);//NFP
         return result;
     }
 

@@ -9,7 +9,7 @@ button.int-box { display: inline-block;}
 div.muchopts {
     padding: 5px;
     border-radius: 6px 6px 6px 6px;
-    background-color: rgba(250,245,240,0.5);
+    background-color: rgba(250,245,240,0.75);
     position:absolute;
     overflow:hidden;
     top:33%; left:20%; margin-bottom: 3em;

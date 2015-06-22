@@ -997,7 +997,6 @@ define(
     return {
         getMimeType : function(filename) {
             var defaultValue = "application/octet-stream";
-            console.log("mimetyping filename is "+filename);//NFP
             return mimeTypes[filename.split(".").pop().toLowerCase()] || defaultValue;
         }
     }
