@@ -56,11 +56,13 @@ define(
         }
         var animid = 0;
         var hmcdropdown = new fhammer.Manager(dropdown, {});
-        hmcdropdown.add( new fhammer.Swipe({ direction: fhammer.DIRECTION_VERTICAL }) );
-        hmcdropdown.add( new fhammer.Pan({ direction: fhammer.DIRECTION_VERTICAL }) );
-        hmcdropdown.on("panup swipeup pandown swipedown", scrolldrop);
-        hmcdropdown.on("panstart swipestart", function(evt){if(animid) cancelAnimationFrame(animid);});
-        hmcdropdown.on("panend swipeend", function(evt){droptop = parseInt(stuff.getStyle(dropdown, 'top')); fadeScroll();});
+        if(!("ontouchstart" in window || window.DocumentTouch && document instanceof DocumentTouch)){
+            hmcdropdown.add( new fhammer.Swipe({ direction: fhammer.DIRECTION_VERTICAL }) );
+            hmcdropdown.add( new fhammer.Pan({ direction: fhammer.DIRECTION_VERTICAL }) );
+            hmcdropdown.on("panup swipeup pandown swipedown", scrolldrop);
+            hmcdropdown.on("panstart swipestart", function(evt){if(animid) cancelAnimationFrame(animid);});
+            hmcdropdown.on("panend swipeend", function(evt){droptop = parseInt(stuff.getStyle(dropdown, 'top')); fadeScroll();});
+        }
         function chkmv(e){
             return true;
         }
