@@ -114,28 +114,42 @@ function (mimetypes, sharedf, sharedc) {
        }
        var number = 0;
        var lastname = '';
-       //if(opf.guide.length){
-           var newtocels = [];
-           for(var _key in opf.guide){
-               var key = resolvePath(_key, base); 
-               var tocel = {};
-               tocel['href'] = key;
-               if(key in namerefs) {
-                   tocel['name'] = namerefs[key];
-                   lastname = namerefs[key];
-                   number = 1;
+       var newtocels = [];
+       for(var _key in opf.guide){
+           var key = resolvePath(_key, base); 
+           var tocel = {};
+           tocel['href'] = key;
+           if(key in namerefs) {
+               tocel['name'] = namerefs[key];
+               lastname = namerefs[key];
+               number = 1;
+           } else {
+               if(number > 0){
+                   tocel['name'] = lastname.slice(0, 11)+'.. '+number+'.';
+                   number+=1;
                } else {
-                   if(number > 0){
-                       tocel['name'] = lastname.slice(0, 11)+'.. '+number+'.';
-                       number+=1;
-                   } else {
-                       tocel['name'] = opf.guide[key];
-                   }
+                   tocel['name'] = opf.guide[key];
                }
-               newtocels.push(tocel)
            }
-           if(newtocels.length > tocels.length) tocels = newtocels;
-       //}
+           newtocels.push(tocel)
+       }
+       var opg = Object.keys(opf.guide);
+       console.log("opg==");//NFP
+       console.log(opg);//NFP
+       for(var _key in opf.spine){
+           var tocel = {};
+           var idref = opf.spine[_key];
+           console.log("idref == "+idref);//NFP
+           var href = opf.manifest[idref]['href'];
+           if(opg.indexOf(href)==-1){
+               console.log("Added "+href+" from spine");//NFP
+               tocel['href'] = href;
+               tocel['name'] = number;
+               number += 1;
+               newtocels.push(tocel);
+           }
+       }
+       if(newtocels.length > tocels.length) tocels = newtocels;
        delete namerefs, tocel;
        return tocels;
     }
