@@ -87,6 +87,7 @@ function (mimetypes, sharedf, sharedc) {
     function parse_toc(toc, base){
        var tocels = [];
        var namerefs = {};
+       var spnm = {};
        function iterate_points(points){
            for(var i=0; i<points.length; i++){
                var tocel = {}
@@ -95,6 +96,7 @@ function (mimetypes, sharedf, sharedc) {
                tocel['href'] = resolvePath(cont.attributes['src'].value, base);
                tocel['name'] = lbl.textContent.replace(/\s+/mg, ' ');
                namerefs[tocel['href']] = tocel['name'];
+               spnm[tocel['href'].split("#")[0]] = tocel['name'];
                tocels.push(tocel)
            }
        }
@@ -110,16 +112,18 @@ function (mimetypes, sharedf, sharedc) {
            tocel['href'] = resolvePath(a.getAttribute("href"), base);
            tocel['name'] = a.textContent.replace(/\s+/mg, ' ');
            namerefs[tocel['href']] = tocel['name'];
+           spnm[tocel['href'].split("#")[0]] = tocel['name'];
            tocels.push(tocel)
        }
        var number = 0;
        var lastname = '';
        var newtocels = [];
+       var nmr = Object.keys(spnm);
        for(var _key in opf.guide){
            var key = resolvePath(_key, base); 
            var tocel = {};
            tocel['href'] = key;
-           if(key in namerefs) {
+           if(nmr.indexOf(key)>-1) {
                tocel['name'] = namerefs[key];
                lastname = namerefs[key];
                number = 1;
@@ -133,9 +137,12 @@ function (mimetypes, sharedf, sharedc) {
            }
            newtocels.push(tocel)
        }
-       var opg = Object.keys(opf.guide);
+       var opg = Object.keys(opf.guide).map(function(el){return el.split("#")[0]});
        console.log("opg==");//NFP
        console.log(opg);//NFP
+       console.log("nmr==");//NFP
+       console.log(nmr);//NFP
+       var lastname='';
        for(var _key in opf.spine){
            var tocel = {};
            var idref = opf.spine[_key];
@@ -144,8 +151,18 @@ function (mimetypes, sharedf, sharedc) {
            if(opg.indexOf(href)==-1){
                console.log("Added "+href+" from spine");//NFP
                tocel['href'] = href;
-               tocel['name'] = number;
-               number += 1;
+               if(nmr.indexOf(href)>-1) {
+                   tocel['name'] = spnm[href];
+                   lastname = spnm[href];
+                   number = 1;
+               } else {
+                   if(lastname && lastname.length){
+                       tocel['name'] = lastname.slice(0, 11)+'.. '+number+'.';
+                       number+=1;
+                   } else {
+                       tocel['name'] = ''+number;
+                   }
+               }
                newtocels.push(tocel);
            }
        }
