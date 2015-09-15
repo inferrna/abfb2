@@ -134,18 +134,12 @@ function (mimetypes, sharedf, sharedc) {
            newtocels.push(tocel)
        }
        var opg = Object.keys(opf.guide).map(function(el){return el.split("#")[0]});
-       console.log("opg==");//NFP
-       console.log(opg);//NFP
-       console.log("nmr==");//NFP
-       console.log(nmr);//NFP
        var lastname='';
        for(var _key in opf.spine){
            var tocel = {};
            var idref = opf.spine[_key];
-           console.log("idref == "+idref);//NFP
            var href = opf.manifest[idref]['href'];
            if(opg.indexOf(href)==-1){
-               console.log("Added "+href+" from spine");//NFP
                tocel['href'] = href;
                if(nmr.indexOf(href)>-1) {
                    tocel['name'] = spnm[href];
