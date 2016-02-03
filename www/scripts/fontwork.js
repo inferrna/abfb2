@@ -109,7 +109,7 @@ define(
                     var el = document.createElement("option");
                     el.textContent = fname;
                     el.value = fname;
-                    el.class = "dropdown-option";
+                    el.className = "dropdown-option";
                     el.style.fontFamily = fname.replace(/([\W\d])/g, '\\$1');
                     el.onclick = function(evt){
                         mtext.style.fontFamily = evt.target.style.fontFamily;

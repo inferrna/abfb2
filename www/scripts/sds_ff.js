@@ -65,7 +65,8 @@ define(
             if (!this.done) {
             // Then we move to the next result, which call the cursor
             // success with the next file as result.
-                this.continue();
+                //this.continue();
+                console.log("continue???");
             } else {
                 g_or_b("unknown");
                 return;

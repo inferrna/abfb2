@@ -52,7 +52,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         };
     var hammerelements = {};
     function chkmv(evt){
-        console.log(evt.distance+" vs "+drvhds);//NFP
+        //console.log(evt.distance+" vs "+drvhds);//NFP
         evt.srcEvent.preventDefault();
         if(drvhds<evt.distance){
             //console.log(hammerelements);
@@ -93,7 +93,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         }});
     hmctxarea.on("pandown swipedown", function(evt){if(chkmv(evt)){options.display('show'); pop.style.display='none';}});
     hmctxarea.on("tap click press", function(evt){
-            uitouch.handleClick(e);
+            uitouch.handleClick(evt);
             popups.map(function(el){el.style.display="none";});
             });
     hmctxarea.on("pinchstart", function(evt){
