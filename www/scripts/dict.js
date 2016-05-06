@@ -39,10 +39,12 @@ define(
                 var resptext = event.target.responseText;
                 if(datas["dictionary"].match("google.*?$")){
                     resp +="<b>"+_text+"</b> -><br>";
-                    resp += resptext.match(/\".+?\"/g)
-                                    .map(function(x){if(x!=='\"'+_text+'\"' && x!=='\"'+params['sl']+'\"')return x})
-                                    .join(",")
-                                    .replace(/,+/gi, ", ")
+                    respa = resptext.replace(/\[,/g, "[\"\",")
+                                    .replace(/,]/g, ",\"\"]")
+                                    .replace(/,,/g, ",\"\",")
+                                    .replace(/,,/g, ",\"\",");
+                    respj = JSON.parse(respa);
+                    resp += respj[0][0][0] + "<br>";
                     callback(resp);
                 } else {
                     resp += resptext;

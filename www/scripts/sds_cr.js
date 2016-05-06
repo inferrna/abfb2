@@ -3,7 +3,7 @@ define(
   function(require, sharedf){
     var options = null;
     var err = '';
-    var filere = /.*fb2|.*epub|.*txt/i;
+    var filere = /.*\.fb2$|.*\.epub$|.*\.txt$/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
     var named_entries = {};
     function parse_storage_cr(sel, obj, callback){
