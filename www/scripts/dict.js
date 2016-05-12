@@ -30,7 +30,7 @@ define(
         pport: '',
         db: '!' //Dictionary db
     };
-    var googles = {text:'', q:'', sl:'',tl:'',hl:'',ie:'',oe:'', dt:'t', dt:'at', multires:0,otf:1,trs:0,ssel:0,tsel:0,sc:0};
+    var googles = {text:'', q:'', sl:'',tl:'',hl:'',ie:'',oe:'', dt:'t', dt:'at', multires:0,otf:1,trs:0,ssel:0,tsel:0,sc:0,source:'btn',srcrom:1};
     var locals  = {text:'',host:'',port:0};
     function get_http(_text, params, baseurl, callback, basetxt){
         var dreq = new XMLHttpRequest({mozSystem: true});
@@ -43,6 +43,7 @@ define(
                                     .replace(/,]/g, ",\"\"]")
                                     .replace(/,,/g, ",\"\",")
                                     .replace(/,,/g, ",\"\",");
+                    console.log("\n\n\n"+respa+"\n\n\n");
                     respj = JSON.parse(respa);
                     resp += respj[0][0][0] + "<br>";
                     callback(resp);

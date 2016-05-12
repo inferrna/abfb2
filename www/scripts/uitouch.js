@@ -209,18 +209,20 @@ define(
                   var rng = doc.createRange();
                   rng.selectNode(el);
                   rng.setStart(el, off);
-                  rng.setEnd(el, off+1);
-                  if(rng.expand){
+                  rng.setEnd(el, off+2);
+                  console.log("Current selection is "+rng.toString());
+                  if(sel.addRange){
+                      sel.addRange(rng);
+                      sel.modify("extend", "backward", "word");
+                      sel.modify("extend", "forward", "word");
+                      //sel.collapseToEnd();
+                      selected_word = sel.toString();
+                  } else if (rng.expand){
                       rng.expand("word");
                       sel.addRange( rng );
                       selected_word = sel.toString();
-                  } else {
-                      sel.addRange(rng);
-                      sel.modify("extend", "forward", "word");
-                      sel.collapseToEnd();
-                      sel.modify("extend", "backward", "word");
-                      selected_word = sel.toString();
                   }
+                  if(document.execCommand || document.queryCommandEnabled('copy')) document.execCommand('copy');
               } catch(e) { selected_word = expand2w(off, txt); 
                            console.log("Got error "+e.stack+" using expand2w, got "+selected_word+" off=="+off);
               }

@@ -499,7 +499,7 @@ function (mimetypes, sharedf, sharedc) {
         var mediaType = mimetypes.getMimeType(dataHref);
         var result = '';
         if(b64blobs[dataHref]) {
-            result = b64blobs[dataHref].replace(/data\:undefined|data\:application\/octet-stream/i, "data:"+mediaType);
+            result = b64blobs[dataHref].replace(/data\:undefined;|data\:application\/octet-stream;|data:;/i, "data:"+mediaType+";");
         } else { 
             result = "data:" + mediaType + "," + escape(files[dataHref]);
         }
