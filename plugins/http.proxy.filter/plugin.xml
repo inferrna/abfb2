@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Copyright (c) 2014 The Chromium Authors. All rights reserved.
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
+    id="http.proxy.filter"
+    version="0.0.1">
+  <engines>
+    <engine name="cordova" version=">=3.0.0" />
+  </engines>
+
+  <name>HTTP Proxy Filter</name>
+
+  <platform name="android">
+	<source-file src="src/android/Proxy.java" target-dir="src/org/apache/cordova/plugin" />
+
+	<config-file target="res/xml/config.xml" parent="/*">
+				<feature name="Proxy">
+						<param name="android-package" value="http.proxy.filter"/>
+				 </feature>
+				 <plugin name="Proxy" value="http.proxy.filter" />
+	</config-file>
+	<config-file target="AndroidManifest.xml" parent="/*">
+		<uses-permission android:name="android.permission.INTERNET"> </uses-permission>
+		<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"> </uses-permission>
+	</config-file>
+
+    <source-file src="littleproxy-1.1.2-SNAPSHOT.jar" target-dir="libs" />
+    <framework src="src/android/extras.gradle" custom="true" type="gradleReference" />
+  </platform>
+</plugin>
