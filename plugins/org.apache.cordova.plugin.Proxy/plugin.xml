@@ -5,7 +5,7 @@
   found in the LICENSE file.
 -->
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
-    id="http.proxy.filter"
+    id="org.apache.cordova.plugin.Proxy"
     version="0.0.1">
   <engines>
     <engine name="cordova" version=">=3.0.0" />
@@ -15,19 +15,19 @@
 
   <platform name="android">
 	<source-file src="src/android/Proxy.java" target-dir="src/org/apache/cordova/plugin" />
+    <source-file src="littleproxy-1.1.2-SNAPSHOT.jar" target-dir="libs" />
 
 	<config-file target="res/xml/config.xml" parent="/*">
 				<feature name="Proxy">
-						<param name="android-package" value="http.proxy.filter"/>
+						<param name="android-package" value="org.apache.cordova.plugin.Proxy"/>
 				 </feature>
-				 <plugin name="Proxy" value="http.proxy.filter" />
+				 <plugin name="Proxy" value="org.apache.cordova.plugin.Proxy" />
 	</config-file>
 	<config-file target="AndroidManifest.xml" parent="/*">
 		<uses-permission android:name="android.permission.INTERNET"> </uses-permission>
 		<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"> </uses-permission>
 	</config-file>
 
-    <source-file src="littleproxy-1.1.2-SNAPSHOT.jar" target-dir="libs" />
     <framework src="src/android/extras.gradle" custom="true" type="gradleReference" />
   </platform>
 </plugin>

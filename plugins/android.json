@@ -18,19 +18,16 @@
         },
         "cordova-plugin-remote-injection": {
             "PACKAGE_NAME": "com.example.abread"
-        },
-        "http.proxy.filter": {
-            "PACKAGE_NAME": "com.example.abread"
         }
     },
     "dependent_plugins": {
-        "android.support.v4": {
-            "PACKAGE_NAME": "com.example.abread"
-        },
         "cordova-plugin-compat": {
             "PACKAGE_NAME": "com.example.abread"
         },
         "org.apache.cordova.plugin.Echo": {
+            "PACKAGE_NAME": "com.example.abread"
+        },
+        "org.apache.cordova.plugin.Proxy": {
             "PACKAGE_NAME": "com.example.abread"
         },
         "org.apache.cordova.plugin.XSLT": {

@@ -11,7 +11,7 @@
     <access origin="*" />
     <icon src="icon.png" />
     <preference name="fullscreen" value="true" />
-    <!-- plugin name="Echo" value="org.apache.cordova.plugin.Echo" / -->
+    <plugin name="org.apache.cordova.plugin.Proxy" value="org.apache.cordova.plugin.Proxy" />
     <preference name="webviewbounce" value="true" />
     <preference name="CRIInjectFirstFiles" value="www/scripts/init.js" />
 </widget>
