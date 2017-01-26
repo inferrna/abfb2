@@ -13,4 +13,5 @@
     <preference name="fullscreen" value="true" />
     <!-- plugin name="Echo" value="org.apache.cordova.plugin.Echo" / -->
     <preference name="webviewbounce" value="true" />
+    <preference name="CRIInjectFirstFiles" value="www/scripts/init.js" />
 </widget>

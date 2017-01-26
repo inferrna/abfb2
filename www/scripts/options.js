@@ -142,6 +142,7 @@ define(
                     var current = sel.options[sel.selectedIndex].value;
                     sdstorage.parse(sel, obj, function(names){
                             var filespan = document.getElementById('file_span');
+                            console.log("options: got "+names.length+" new filenames");
                             if(names.length>0){
                                 filespan.style.display = 'none';
                                 lbl.textContent = names.length+" files found on SD card";
@@ -156,7 +157,7 @@ define(
                                     }
                                 }
                             } else {
-                                sel.parentNode.removeChild(sel);
+                                if(sel.options.length==0) sel.parentNode.removeChild(sel);
                                 //options.msg(badtext+" (err: "+err+")");
                             }
                         });

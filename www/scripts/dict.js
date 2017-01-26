@@ -32,7 +32,20 @@ define(
     };
     var googles = {text:'', q:'', sl:'',tl:'',hl:'',ie:'',oe:'', dt:'t', dt:'at', multires:0,otf:1,trs:0,ssel:0,tsel:0,sc:0,source:'btn',srcrom:1};
     var locals  = {text:'',host:'',port:0};
+    var httproxy = function() {};
+    try {
+        var exec = cordova.require('cordova/exec');
+        httproxy = function() {
+            exec(function(x){console.log("Got "+x);}, function(err) {
+                console.log("Call to proxy");
+            }, "Proxy", "first", ["second"]);
+        };
+        httproxy();
+    } catch(e) { console.log("No cordova proxy available."); }
+
     function get_http(_text, params, baseurl, callback, basetxt){
+        var myIframe = document.getElementById("myiframe");
+        myIframe.contentWindow.postMessage('hello', '*');
         var dreq = new XMLHttpRequest({mozSystem: true});
         dreq.onload = function (event) {
                 resp = basetxt;

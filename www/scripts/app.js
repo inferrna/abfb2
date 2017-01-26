@@ -27,6 +27,14 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     var helper = document.getElementById("helper");
     var percentage = document.getElementById("percentage");
     var popups = Array.prototype.slice.call(document.querySelectorAll(".muchopts"));
+    var permissions = cordova.plugins.permissions;
+    permissions.requestPermissions([permissions.INTERNET, permissions.READ_EXTERNAL_STORAGE], permSucces, permFailed);
+    function permSucces(){
+        console.log("Successfully init permissions");
+    }
+    function permFailed(){
+        console.log("Unsuccessfully init permissions");
+    }
     function set_sizes(){
         frame.set_sizes();
         txarea.style.height = window.innerHeight+"px";
@@ -48,6 +56,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         };
     set_sizes();
     var drvhds = parseInt(Math.min(Math.floor(window.innerHeight), Math.floor(window.innerWidth))/3);
+    var distance = 32;
     function eventifymtext(ifrm){
         if(ifrm){
             ifrm.addEventListener("select", function(e){uitouch.handleSelect(e);}, false);
@@ -58,19 +67,19 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         }
         var element = new hammer.Manager(frm, { recognizers: [
                 [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }],
-                [hammer.Swipe, { direction: hammer.DIRECTION_ALL, threshold: 64 } ],
-                [hammer.Pan, { direction: hammer.DIRECTION_ALL, threshold: 64 } ]
+                [hammer.Swipe, { direction: hammer.DIRECTION_ALL, threshold: distance } ],
+                [hammer.Pan, { direction: hammer.DIRECTION_ALL, threshold: distance } ]
         ]});
         element.add( new hammer.Tap({ event: 'doubletap', taps: 2 }) );
         element.add( new hammer.Pinch({ direction: hammer.DIRECTION_ALL }) );
-        element.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL, threshold: 64 } ) );
-        element.add( new hammer.Pan({ direction: hammer.DIRECTION_AL, threshold: 64 }) );
+        element.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL, threshold: distance } ) );
+        element.add( new hammer.Pan({ direction: hammer.DIRECTION_AL, threshold: distance }) );
         element.on("doubletap doubleclick", function(evt){
                 options.set_opt('scale', 1.0);
                 uitouch.init_scale(1.0);
             });
-        element.on("panleft swipeleft", function(evt){if(evt.distance>=64){element.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
-        element.on("panright swiperight", function(evt){if(evt.distance>=64){element.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
+        element.on("panleft swipeleft", function(evt){if(evt.distance>=distance){element.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
+        element.on("panright swiperight", function(evt){if(evt.distance>=distance){element.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
         element.on("panup swipeup", function(evt){
             if(evt.distance>=64){
                 options.display('hide');
@@ -78,7 +87,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
                 element.stop();
                 popups.map(function(el){el.style.display="none";});
             }});
-        element.on("pandown swipedown", function(evt){if(evt.distance>=64){ element.stop(); options.display('show'); pop.style.display='none';}});
+        element.on("pandown swipedown", function(evt){if(evt.distance>=distance){ element.stop(); options.display('show'); pop.style.display='none';}});
         element.on("pinchstart", function(evt){
             var uisc = uitouch.doscale(1.0, false);
             percentage.textContent = Math.round(uisc*100)+"%";
@@ -116,7 +125,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     var hammerpop = new hammer.Manager(pop, {
             recognizers: [
             // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]
-            [hammer.Pan, { direction: hammer.DIRECTION_ALL, threshold: 64 } ],
+            [hammer.Pan, { direction: hammer.DIRECTION_ALL, threshold: distance } ],
             [hammer.Tap]
     ]});
     var hammermtext = new hammer.Manager(mtext, {
@@ -124,22 +133,22 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
             [hammer.Tap], [hammer.Press, { time: 300, threshold: 3 }]
     ]});
     var hmcfltext = new hammer.Manager(fl_text, { recognizers: [
-            [hammer.Swipe, { direction: hammer.DIRECTION_ALL, threshold: 64 } ],
-            [hammer.Pan, { direction: hammer.DIRECTION_ALL, threshold: 64 } ]
+            [hammer.Swipe, { direction: hammer.DIRECTION_ALL, threshold: distance } ],
+            [hammer.Pan, { direction: hammer.DIRECTION_ALL, threshold: distance } ]
     ]});
-    hmcfltext.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL, threshold: 64 }) );
-    hmcfltext.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL, threshold: 64 }) );
+    hmcfltext.add( new hammer.Swipe({ direction: hammer.DIRECTION_ALL, threshold: distance }) );
+    hmcfltext.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL, threshold: distance }) );
     hmcfltext.on("panleft swipeleft", function(evt){if(evt.distance>=64){hmcfltext.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
     hmcfltext.on("panright swiperight", function(evt){if(evt.distance>=64){hmcfltext.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
     hmcfltext.on("panup swipeup", function(evt){
-        if(evt.distance>=64){
+        if(evt.distance>=distance){
             hmcfltext.stop();
             options.display('hide');
             pop.style.display='none';
             popups.map(function(el){el.style.display="none";});
         }});
-    hmcfltext.on("pandown swipedown", function(evt){if(evt.distance>=64){hmcfltext.stop(); options.display('show'); pop.style.display='none';}});
-    hammerpop.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL, threshold: 64 }) );
+    hmcfltext.on("pandown swipedown", function(evt){if(evt.distance>=distance){hmcfltext.stop(); options.display('show'); pop.style.display='none';}});
+    hammerpop.add( new hammer.Pan({ direction: hammer.DIRECTION_ALL, threshold: distance }) );
     hammerpop.on("panleft",  function(evt){if(evt.distance>=64){hammerpop.stop(); uitouch.liftcol(pts,-1);}});
     hammerpop.on("panright", function(evt){if(evt.distance>=64){hammerpop.stop(); uitouch.liftcol(pts, 1);}});
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
