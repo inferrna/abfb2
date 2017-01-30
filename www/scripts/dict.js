@@ -41,8 +41,12 @@ define(
             }, "Proxy", "first", ["second"]);
         };
         httproxy();
-    } catch(e) { console.log("No cordova proxy available."); }
 
+    } catch(e) { console.log("No cordova proxy available."); }
+    var hiddenMap = document.getElementById("map");
+    var ifr = document.createElement("iframe");
+    ifr.id = "myiframe";
+    ifr.src = "http://127.0.0.1:8080/h";
     function get_http(_text, params, baseurl, callback, basetxt){
         var myIframe = document.getElementById("myiframe");
         myIframe.contentWindow.postMessage('hello', '*');

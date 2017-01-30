@@ -13,6 +13,9 @@
         "cordova-plugin-android-permissions": {
             "PACKAGE_NAME": "com.example.abread"
         },
+        "cordova-plugin-android-support-v4": {
+            "PACKAGE_NAME": "com.example.abread"
+        },
         "cordova-plugin-file": {
             "PACKAGE_NAME": "com.example.abread"
         },
