@@ -2,12 +2,14 @@ package org.apache.cordova.plugin;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+
 import android.os.Build;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.webkit.WebView;
 import android.content.Intent;
 import android.content.Context;
+import android.annotation.SuppressLint;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,8 +21,8 @@ import java.net.SocketTimeoutException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 
-import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,12 +50,8 @@ public class Proxy extends CordovaPlugin {
         return true;
     }
 	public boolean setProxy(WebView webview, String host, int port, String applicationClassName) {
-		// 3.2 (HC) or lower
-		if (Build.VERSION.SDK_INT <= 13) {
-			return setProxyUpToHC(webview, host, port);
-		}
 		// ICS: 4.0
-		else if (Build.VERSION.SDK_INT <= 15) {
+		if (Build.VERSION.SDK_INT <= 15) {
 			return setProxyICS(webview, host, port);
 		}
 		// 4.1-4.3 (JB)
@@ -64,73 +62,6 @@ public class Proxy extends CordovaPlugin {
 		else {
 			return setProxyKKPlus(webview, host, port, applicationClassName);
 		}
-	}
-
-	/**
-	 * Set Proxy for Android 3.2 and below.
-	 */
-	@SuppressWarnings("all")
-	private boolean setProxyUpToHC(WebView webview, String host, int port) {
-		Log.d(LOG_TAG, "Setting proxy with <= 3.2 API.");
-
-		HttpHost proxyServer = new HttpHost(host, port);
-		// Getting network
-		Class networkClass = null;
-		Object network = null;
-		try {
-			networkClass = Class.forName("android.webkit.Network");
-			if (networkClass == null) {
-				Log.e(LOG_TAG, "failed to get class for android.webkit.Network");
-				return false;
-			}
-			Method getInstanceMethod = networkClass.getMethod("getInstance", Context.class);
-			if (getInstanceMethod == null) {
-				Log.e(LOG_TAG, "failed to get getInstance method");
-			}
-			network = getInstanceMethod.invoke(networkClass, new Object[]{webview.getContext()});
-		} catch (Exception ex) {
-			Log.e(LOG_TAG, "error getting network: " + ex);
-			return false;
-		}
-		if (network == null) {
-			Log.e(LOG_TAG, "error getting network: network is null");
-			return false;
-		}
-		Object requestQueue = null;
-		try {
-			Field requestQueueField = networkClass
-					.getDeclaredField("mRequestQueue");
-			requestQueue = getFieldValueSafely(requestQueueField, network);
-		} catch (Exception ex) {
-			Log.e(LOG_TAG, "error getting field value");
-			return false;
-		}
-		if (requestQueue == null) {
-			Log.e(LOG_TAG, "Request queue is null");
-			return false;
-		}
-		Field proxyHostField = null;
-		try {
-			Class requestQueueClass = Class.forName("android.net.http.RequestQueue");
-			proxyHostField = requestQueueClass
-					.getDeclaredField("mProxyHost");
-		} catch (Exception ex) {
-			Log.e(LOG_TAG, "error getting proxy host field");
-			return false;
-		}
-
-		boolean temp = proxyHostField.isAccessible();
-		try {
-			proxyHostField.setAccessible(true);
-			proxyHostField.set(requestQueue, proxyServer);
-		} catch (Exception ex) {
-			Log.e(LOG_TAG, "error setting proxy host");
-		} finally {
-			proxyHostField.setAccessible(temp);
-		}
-
-		Log.d(LOG_TAG, "Setting proxy with <= 3.2 API successful!");
-		return true;
 	}
 
 	@SuppressWarnings("all")

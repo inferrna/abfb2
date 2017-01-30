@@ -34,6 +34,5 @@
     <!-- framework src="com.google.collections:google-collections:1.0" / -->
     <framework src="com.barchart.udt:barchart-udt-bundle:2.3.0" />
     <framework src="io.netty:netty-all:4.1.6.Final" />
-    <framework src="org.apache.httpcomponents:httpclient:4.5.2" />
   </platform>
 </plugin>
