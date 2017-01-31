@@ -36,17 +36,20 @@ define(
     try {
         var exec = cordova.require('cordova/exec');
         httproxy = function() {
-            exec(function(x){console.log("Got "+x);}, function(err) {
+            exec(function(x){
+                    console.log("Successfully set up proxy");
+                    var hiddenMap = document.getElementById("map");
+                    var ifr = document.createElement("iframe");
+                    ifr.id = "myiframe";
+                    ifr.src = "http://www.irk.ru/";
+                    hiddenMap.appendChild(ifr); 
+                }, function(err) {
                 console.log("Call to proxy");
             }, "Proxy", "first", ["second"]);
         };
         httproxy();
 
     } catch(e) { console.log("No cordova proxy available."); }
-    var hiddenMap = document.getElementById("map");
-    var ifr = document.createElement("iframe");
-    ifr.id = "myiframe";
-    ifr.src = "http://127.0.0.1:8080/h";
     function get_http(_text, params, baseurl, callback, basetxt){
         var myIframe = document.getElementById("myiframe");
         myIframe.contentWindow.postMessage('hello', '*');

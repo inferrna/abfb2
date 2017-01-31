@@ -4,7 +4,8 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 
 import android.os.Build;
-import android.support.v4.util.ArrayMap;
+import android.os.Parcelable;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.webkit.WebView;
 import android.content.Intent;
@@ -46,7 +47,8 @@ public class Proxy extends CordovaPlugin {
             }
             });
         WebView androidWebView = (WebView)webView.getEngine().getView();
-        setProxy(androidWebView, "127.0.0.1", 8080, "com.example.abread");
+        setProxy(androidWebView, "127.0.0.1", 8080, "android.app.Application");
+        callbackContext.success("['Success']");
         return true;
     }
 	public boolean setProxy(WebView webview, String host, int port, String applicationClassName) {
@@ -167,7 +169,7 @@ public class Proxy extends CordovaPlugin {
 		System.setProperty("https.proxyPort", port + "");
 		try {
 			Class applictionCls = Class.forName(applicationClassName);
-			Field loadedApkField = applictionCls.getField("mLoadedApk");
+			Field loadedApkField = applictionCls.getDeclaredField("mLoadedApk");
 			loadedApkField.setAccessible(true);
 			Object loadedApk = loadedApkField.get(appContext);
 			Class loadedApkCls = Class.forName("android.app.LoadedApk");
@@ -180,6 +182,18 @@ public class Proxy extends CordovaPlugin {
 					if (clazz.getName().contains("ProxyChangeListener")) {
 						Method onReceiveMethod = clazz.getDeclaredMethod("onReceive", Context.class, Intent.class);
 						Intent intent = new Intent(android.net.Proxy.PROXY_CHANGE_ACTION);
+
+                        String CLASS_NAME;
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                          CLASS_NAME = "android.net.ProxyProperties";
+                        } else {
+                          CLASS_NAME = "android.net.ProxyInfo";
+                        } 
+                        Class cls = Class.forName(CLASS_NAME);
+						Constructor constructor = cls.getConstructor(String.class, Integer.TYPE, String.class);
+						constructor.setAccessible(true);
+						Object proxyProperties = constructor.newInstance(host, port, null);
+						intent.putExtra("proxy", (Parcelable) proxyProperties);
 
 						onReceiveMethod.invoke(rec, appContext, intent);
 					}
@@ -219,6 +233,12 @@ public class Proxy extends CordovaPlugin {
 			Log.v(LOG_TAG, e.getMessage());
 			Log.v(LOG_TAG, exceptionAsString);
 		} catch (java.lang.reflect.InvocationTargetException e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			String exceptionAsString = sw.toString();
+			Log.v(LOG_TAG, e.getMessage());
+			Log.v(LOG_TAG, exceptionAsString);
+		} catch (java.lang.InstantiationException e) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			String exceptionAsString = sw.toString();

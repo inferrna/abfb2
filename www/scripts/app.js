@@ -27,14 +27,6 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
     var helper = document.getElementById("helper");
     var percentage = document.getElementById("percentage");
     var popups = Array.prototype.slice.call(document.querySelectorAll(".muchopts"));
-    var permissions = cordova.plugins.permissions;
-    permissions.requestPermissions([permissions.INTERNET, permissions.READ_EXTERNAL_STORAGE], permSucces, permFailed);
-    function permSucces(){
-        console.log("Successfully init permissions");
-    }
-    function permFailed(){
-        console.log("Unsuccessfully init permissions");
-    }
     function set_sizes(){
         frame.set_sizes();
         txarea.style.height = window.innerHeight+"px";
