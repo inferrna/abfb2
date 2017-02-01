@@ -21,6 +21,9 @@
         },
         "cordova-plugin-remote-injection": {
             "PACKAGE_NAME": "com.example.abread"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.example.abread"
         }
     },
     "dependent_plugins": {

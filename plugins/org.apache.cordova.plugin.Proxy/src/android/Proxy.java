@@ -83,7 +83,7 @@ public class Proxy extends CordovaPlugin {
             }
             });
         WebView androidWebView = (WebView)webView.getEngine().getView();
-        setProxy(androidWebView, "192.168.0.2", 8899, "android.app.Application");
+        setProxy(androidWebView, "127.0.0.1", 8080, "android.app.Application");
         callbackContext.success("['Success']");
         return true;
     }

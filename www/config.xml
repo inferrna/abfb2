@@ -9,6 +9,11 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <access origin="http://*.google.com" />
+    <access origin="https://*.google.com" />
+    <access origin="https://irk.ru" />
+    <access origin="http://irk.ru" />
+    <allow-navigation href="*" />
     <icon src="icon.png" />
     <preference name="fullscreen" value="true" />
     <plugin name="org.apache.cordova.plugin.Proxy" value="org.apache.cordova.plugin.Proxy" />
