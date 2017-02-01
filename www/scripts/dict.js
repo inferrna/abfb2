@@ -38,6 +38,9 @@ define(
         httproxy = function() {
             exec(function(x){
                     console.log("Successfully set up proxy");
+                    /*cordoca.proxy.set({host: "192.168.0.2", port:"8899"}, 
+                                      function{console.log("got some callback from cordova proxy");});
+                    console.log("Successfully set up cordova proxy");*/
                     var hiddenMap = document.getElementById("map");
                     var ifr = document.createElement("iframe");
                     ifr.id = "myiframe";

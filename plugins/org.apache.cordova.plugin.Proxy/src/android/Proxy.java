@@ -24,11 +24,24 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 
+import java.util.List;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 import org.littleshoot.proxy.HttpProxyServer;
+import org.littleshoot.proxy.HttpFiltersSourceAdapter;
+import org.littleshoot.proxy.HttpFilters;
+import org.littleshoot.proxy.HttpFiltersSourceAdapter;
+import org.littleshoot.proxy.HttpFiltersAdapter;
+
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpMessage;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.channel.ChannelHandlerContext;
+
 /**
  * This class echoes a string called from JavaScript.
  */
@@ -43,11 +56,34 @@ public class Proxy extends CordovaPlugin {
                 HttpProxyServer server =
                     DefaultHttpProxyServer.bootstrap()
                         .withPort(8080)
-                        .start();
+                        .withFiltersSource(new HttpFiltersSourceAdapter() {
+                            public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
+                                return new HttpFiltersAdapter(originalRequest) {
+                                    /*@Override
+                                    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+                                        // TODO: implement your filtering here
+                                        return null;
+                                    }*/
+                
+                                    @Override
+                                    public HttpObject serverToProxyResponse(HttpObject httpObject) {
+                                        // TODO: implement your filtering here
+                                        Log.d(LOG_TAG, "the proxy got a packet");
+                                        if(httpObject instanceof HttpMessage){
+                                            List<Map.Entry<String,String>> allHdrs = ((HttpMessage)httpObject).headers().entries();
+                                            for(Map.Entry<String,String> hdr : allHdrs){
+                                                Log.d(LOG_TAG, String.format("Header '%s' has value '%s'.", hdr.getKey(), hdr.getValue()));
+                                            }
+                                        }
+                                        return httpObject;
+                                    }
+                                };
+                            }
+                        }).start();
             }
             });
         WebView androidWebView = (WebView)webView.getEngine().getView();
-        setProxy(androidWebView, "127.0.0.1", 8080, "android.app.Application");
+        setProxy(androidWebView, "192.168.0.2", 8899, "android.app.Application");
         callbackContext.success("['Success']");
         return true;
     }

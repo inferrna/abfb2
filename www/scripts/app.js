@@ -73,7 +73,7 @@ function(uitouch, dict, frame, options, book, stuff, sound, sharedf, sharedc, re
         element.on("panleft swipeleft", function(evt){if(evt.distance>=distance){element.stop(); uitouch.liftcol(mtext, -1); pop.style.display='none';}});
         element.on("panright swiperight", function(evt){if(evt.distance>=distance){element.stop(); uitouch.liftcol(mtext, 1); pop.style.display='none';}});
         element.on("panup swipeup", function(evt){
-            if(evt.distance>=64){
+            if(evt.distance>=distance){
                 options.display('hide');
                 pop.style.display='none';
                 element.stop();
