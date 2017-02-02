@@ -40,6 +40,7 @@ import org.littleshoot.proxy.HttpFiltersAdapter;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -70,6 +71,9 @@ public class Proxy extends CordovaPlugin {
                                         // TODO: implement your filtering here
                                         Log.d(LOG_TAG, "the proxy got a packet");
                                         if(httpObject instanceof HttpMessage){
+                                            HttpHeaders mainHdrs = ((HttpMessage)httpObject).headers();
+                                            mainHdrs.remove("X-Frame-Options");
+                                            mainHdrs.remove("X-XSS-Protection");
                                             List<Map.Entry<String,String>> allHdrs = ((HttpMessage)httpObject).headers().entries();
                                             for(Map.Entry<String,String> hdr : allHdrs){
                                                 Log.d(LOG_TAG, String.format("Header '%s' has value '%s'.", hdr.getKey(), hdr.getValue()));

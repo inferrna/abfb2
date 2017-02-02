@@ -14,6 +14,7 @@
     <access origin="https://irk.ru" />
     <access origin="http://irk.ru" />
     <allow-navigation href="*" />
+    <allow-intent href="*" />
     <icon src="icon.png" />
     <preference name="fullscreen" value="true" />
     <plugin name="org.apache.cordova.plugin.Proxy" value="org.apache.cordova.plugin.Proxy" />

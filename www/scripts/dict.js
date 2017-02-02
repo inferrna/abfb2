@@ -44,8 +44,23 @@ define(
                     var hiddenMap = document.getElementById("map");
                     var ifr = document.createElement("iframe");
                     ifr.id = "myiframe";
-                    ifr.src = "http://www.irk.ru/";
-                    hiddenMap.appendChild(ifr); 
+                    var onIfrLoad = function(){
+                            var inpwrp = ifr.contentDocument.getElementById("input-wrap");
+                            var txtare = ifr.contentDocument.getElementById("source");
+                            if(inpwrp != null && inpwrp != undefined){
+                                var txtsrc = inpwrp.getElementById("source");
+                                console.log("the placeholder is "+txtsrc.placeholder);
+                            } else if(txtare != null && txtare != undefined){
+                                console.log("the name is "+txtare.name);
+                            } else {
+                                console.log("Can't find any of expected elements.");
+                            }
+                        };
+                    ifr.addEventListener('DOMContentLoaded', onIfrLoad);
+                    ifr.src = "http://translate.google.com/";
+                    hiddenMap.appendChild(ifr);
+                    ifr.contentWindow.onload = onIfrLoad;
+                    ifr.contentDocument.onload = onIfrLoad;
                 }, function(err) {
                 console.log("Call to proxy");
             }, "Proxy", "first", ["second"]);
