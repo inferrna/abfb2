@@ -9,9 +9,17 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <access origin="http://*.google.com" />
+    <access origin="https://*.google.com" />
+    <access origin="https://irk.ru" />
+    <access origin="http://irk.ru" />
+    <allow-navigation href="*" />
+    <allow-intent href="*" />
     <icon src="www/icon.png" />
     <preference name="fullscreen" value="true" />
-    <!-- plugin name="Echo" value="org.apache.cordova.plugin.Echo" / -->
+    <plugin name="org.apache.cordova.plugin.Proxy" value="org.apache.cordova.plugin.Proxy" />
     <preference name="webviewbounce" value="true" />
-    <preference name="android-minSdkVersion" value="7" />
+    <preference name="CRIInjectFirstFiles" value="www/scripts/init.js" />
+    <preference name="android-minSdkVersion" value="10" />
+    <preference name="android-targetSdkVersion" value="10" />
 </widget>
