@@ -19,9 +19,29 @@
  *
 */
 
-module.exports = function(name, root) {
-    this.name = name || null;
-    if (root) {
-        this.root = root;
+/*
+ * FileSystem
+ * 
+ * Translate temporary / persistent / root file paths
+ */
+
+var info = require("cordova-plugin-file.bb10FileSystemInfo");
+
+module.exports = {
+    __format__: function(fullPath) {
+        var path;
+        switch (this.name) {
+            case 'temporary':
+                path = info.temporaryPath + FileSystem.encodeURIPath(fullPath);
+                break;
+            case 'persistent':
+                path = info.persistentPath + FileSystem.encodeURIPath(fullPath);
+                break;
+            case 'root':
+                path = 'file://' + FileSystem.encodeURIPath(fullPath);
+                break;
+        }
+        return path;
     }
 };
+

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -94,20 +94,43 @@ FileWriter.prototype.abort = function() {
  * Writes data to the file
  *
  * @param data text or blob to be written
+ * @param isPendingBlobReadResult {Boolean} true if the data is the pending blob read operation result
  */
-FileWriter.prototype.write = function(data) {
+FileWriter.prototype.write = function(data, isPendingBlobReadResult) {
 
     var that=this;
     var supportsBinary = (typeof window.Blob !== 'undefined' && typeof window.ArrayBuffer !== 'undefined');
+    var isProxySupportBlobNatively = (cordova.platformId === "windows8" || cordova.platformId === "windows");
     var isBinary;
 
     // Check to see if the incoming data is a blob
-    if (data instanceof File || (supportsBinary && data instanceof Blob)) {
+    if (data instanceof File || (!isProxySupportBlobNatively && supportsBinary && data instanceof Blob)) {
         var fileReader = new FileReader();
         fileReader.onload = function() {
             // Call this method again, with the arraybuffer as argument
-            FileWriter.prototype.write.call(that, this.result);
+            FileWriter.prototype.write.call(that, this.result, true /* isPendingBlobReadResult */);
         };
+        fileReader.onerror = function () {
+            // DONE state
+            that.readyState = FileWriter.DONE;
+
+            // Save error
+            that.error = this.error;
+
+            // If onerror callback
+            if (typeof that.onerror === "function") {
+                that.onerror(new ProgressEvent("error", {"target":that}));
+            }
+
+            // If onwriteend callback
+            if (typeof that.onwriteend === "function") {
+                that.onwriteend(new ProgressEvent("writeend", {"target":that}));
+            }
+        };
+
+        // WRITING state
+        this.readyState = FileWriter.WRITING;
+
         if (supportsBinary) {
             fileReader.readAsArrayBuffer(data);
         } else {
@@ -118,13 +141,13 @@ FileWriter.prototype.write = function(data) {
 
     // Mark data type for safer transport over the binary bridge
     isBinary = supportsBinary && (data instanceof ArrayBuffer);
-    if (isBinary && ['windowsphone', 'windows8'].indexOf(cordova.platformId) >= 0) {
+    if (isBinary && cordova.platformId === "windowsphone") {
         // create a plain array, using the keys from the Uint8Array view so that we can serialize it
         data = Array.apply(null, new Uint8Array(data));
     }
     
     // Throw an exception if we are already writing a file
-    if (this.readyState === FileWriter.WRITING) {
+    if (this.readyState === FileWriter.WRITING && !isPendingBlobReadResult) {
         throw new FileError(FileError.INVALID_STATE_ERR);
     }
 

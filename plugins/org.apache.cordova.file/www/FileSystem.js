@@ -29,16 +29,27 @@ var DirectoryEntry = require('./DirectoryEntry');
  * {DirectoryEntry} root directory of the file system (readonly)
  */
 var FileSystem = function(name, root) {
-    this.name = name || null;
+    this.name = name;
     if (root) {
-        this.root = new DirectoryEntry(root.name, root.fullPath, this);
+        this.root = new DirectoryEntry(root.name, root.fullPath, this, root.nativeURL);
     } else {
         this.root = new DirectoryEntry(this.name, '/', this);
     }
 };
 
-FileSystem.prototype.__format__ = function(fullPath) {
+FileSystem.prototype.__format__ = function(fullPath, nativeUrl) {
     return fullPath;
+};
+
+FileSystem.prototype.toJSON = function() {
+    return "<FileSystem: " + this.name + ">";
+};
+
+// Use instead of encodeURI() when encoding just the path part of a URI rather than an entire URI.
+FileSystem.encodeURIPath = function(path) {
+    // Because # is a valid filename character, it must be encoded to prevent part of the
+    // path from being parsed as a URI fragment.
+    return encodeURI(path).replace(/#/g, '%23');
 };
 
 module.exports = FileSystem;
