@@ -20,4 +20,6 @@
     <plugin name="org.apache.cordova.plugin.Proxy" value="org.apache.cordova.plugin.Proxy" />
     <preference name="webviewbounce" value="true" />
     <preference name="CRIInjectFirstFiles" value="www/scripts/init.js" />
+    <preference name="android-minSdkVersion" value="10" />
+    <preference name="android-targetSdkVersion" value="10" />
 </widget>
