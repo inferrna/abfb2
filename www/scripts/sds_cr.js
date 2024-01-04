@@ -14,33 +14,38 @@ define(
                 var i;
                 var count = 0;
                 for (i=0; i<entries.length; i++) {
-                    if(filere.test(entries[i].name) && entries[i].isFile){
+                    var entry = entries[i];
+                    console.log("Enty found: " + entry.name);
+                    if(filere.test(entry.name) && entry.isFile){
                         var nm  = document.createElement("option");
-                        var fnm = entries[i].fullPath;//toURL();// 
+                        var fnm = entry.fullPath;//toURL();// 
                         nm.textContent = fnm;
-                        named_entries[fnm] = entries[i];
-                        count++;
-                        options.msg("File found: " + entries[i].name+" url is: "+entries[i].toURL());
-                        console.log("File found: " + entries[i].name+" url is: "+entries[i].toURL());//NFP
+                        named_entries[fnm] = entry;
+                        options.msg("File found: " + entry.name+" url is: "+entry.toURL());
+                        console.log("File found: " + entry.name+" url is: "+entry.toURL());//NFP
                         sel.appendChild(nm);
+                    } else if (entry.isDirectory) {
+                        console.log("Dir found: " + entry.name+" url is: "+entry.toURL());
                     }
                 }
-                if(count>0) {
+                if(Object.keys(named_entries).length > 0) {
                     obj.appendChild(sel);
                     options.msg(count+" files found on SD card");
                     options.get_opt('last_file', 
-                        function(vl){ for(var i = 1; i < sel.options.length; i++){
-                                              var currentname = sel.options[i].value.replace(sharedf.relf, "$2");
-                                              if(currentname === vl){
-                                                  console.log("File "+currentname+" found");//NFP
-                                                  sel.selectedIndex = i;
-                                                  try { var evt = new Event('change');}
-                                                  catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
-                                                  sel.dispatchEvent(evt);
-                                              } else {
-                                                  console.log("File "+vl+" not found in "+currentname);//NFP
-                                              }
-                                          } }, null);
+                        function(vl){ 
+                            for(var i = 1; i < sel.options.length; i++){
+                                var currentname = sel.options[i].value.replace(sharedf.relf, "$2");
+                                if(currentname === vl){
+                                    console.log("File "+currentname+" found");//NFP
+                                    sel.selectedIndex = i;
+                                    try { var evt = new Event('change');}
+                                    catch (e) { var evt = document.createEvent('Event'); evt.initEvent('change', true, true); }
+                                    sel.dispatchEvent(evt);
+                                } else {
+                                    console.log("File "+vl+" not found in "+currentname);//NFP
+                                }
+                            } 
+                        }, null);
                 } else {
                     if(sel.parentNode) sel.parentNode.removeChild(sel);
                     options.msg(badtext+" (err: "+err+")");
@@ -55,8 +60,10 @@ define(
             "use strict";
             console.log("deviceready fired");//NFP
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-                dirs = ['books', 'Books', 'Library', 'library', 'Download', 'download'];
+                var rootDir = new DirectoryEntry("my_root", '/', fileSystem);
+                dirs = ['lib', '/'];
                 for(var i=0; i<dirs.length; i++){
+                   console.log("Try to scan "+dirs[i]);
                    fileSystem.root.getDirectory(dirs[i], {
                            create: false,
                            exclusive : false

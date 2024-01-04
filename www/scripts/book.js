@@ -8,13 +8,41 @@ define(
         var repub = /[\w\W]+\.(epub|zip)/;
         var refb2 = /[\w\W]+\.fb2/;
         var filename = '';
+        function getMethods(obj) {
+          var result = [];
+          for (var id in obj) {
+            try {
+              if (typeof(obj[id]) == "function") {
+                result.push(id + ": " + obj[id].toString());
+              }
+            } catch (err) {
+              result.push(id + ": inaccessible");
+            }
+          }
+          return result;
+        }
+
         return {
                  init:function(file) {
+                         var Reader = new FileReader();
+                         Reader.onload = function(evt) {
+                             var content = new String(evt.target.result);
+                             console.warn("File content: "+content);
+                         };
+
                          if(file) filename = file.name;
+                         if(filename.length<1 && file.localURL != undefined && file.localURL != null && file.localURL.length>1) {
+                             filename == file.localURL;
+                         }
+                         console.warn("Got file with type "+(typeof file)+" and name "+filename);
                          if(filename.match(repub)) foliant = thepub;
                          else if(filename.match(retxt)) foliant = thetxt;
                          else if(filename.match(refb2)) foliant = thefb2;
-                         else { console.warn(filename+" not matched any type"); return ''; } 
+                         else {
+                             Reader.readAsText(file, "UTF-8"); //Testing call, only for small files
+                             console.warn(filename+" not matched any type");
+                             return ''; 
+                         } 
                          foliant.init();
                          thefile = file;
                          evo = foliant.evo;
