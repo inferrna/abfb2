@@ -85,15 +85,22 @@ define(
             else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
                                    "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], got_def, '');
             else if (datas["dictionary"] === 'socket'){
+                console.log("word " + lword + " requested to socket");
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);
                 socket.get_def(lword, function(resp){
+                        console.log("word " + lword + " answered by socket with "+resp.length+" length answer");
                         try {
-                            var re = new RegExp("^(.*?"+lword+")*", "mgi");
-                            resp = resp.replace(/\"|\'|\.|\,/mg, ' ').split(/151.+?/gi).slice(2, 999)
-                                       .map(function(wr){return wr.replace(/\s/mgi, ' ').replace(re, ' ').replace(/\s+/mg, ' ');})
-                                       .join(", ");
-                        } catch(e) { }
+                            var rex = new RegExp("([.,\?! \s]|^)("+lword+")([.,\?! \s]|$)", "mgi");
+                            var ren = new RegExp("[\n]+", "mgi");
+                            resp = resp.replace("<tr>", "<i>")
+                                       .replace(ren, "<br>")
+                                       .replace("</tr>", "</i>")
+                                       .replace(" ~ ", " <b>"+lword+"</b> ")
+                                       .replace(" * ", " <b>"+lword+"</b> ")
+                                       .replace(rex, "$1<b>$2</b>$3");
+                        } catch(e) { console.log("error modifying response from socket: "+e) }
+                    
                         got_def(resp);
                     });
             } else console.log("No dictionary selected");

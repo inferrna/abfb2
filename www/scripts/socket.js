@@ -9,7 +9,20 @@ define(
     var resp = '';
     var db = "!";
     var rcl = 0;
+    var exec = null;
     var callback = function(){};
+    function tcpecho(arr, callback){};
+    try {
+        exec = cordova.require('cordova/exec');
+        tcpecho = function(arr, callback) {
+            exec(callback, function(err) {
+                console.log("Error calling cordova socket: "+err)
+                callback("");
+            }, "Echo", "echo", arr);
+        };
+        sockavail = 'cordova';
+    } catch(e) { console.log("No cordova sockets available."); }
+
     function parse_resp(resp){
         "use strict";
         if(resp.match(/.*552 no match.*/)){
@@ -19,28 +32,8 @@ define(
             callback(resp);
         }
     }
-    function get_matches(){
-        "use strict";
-        var l = word.length;
-        var cut = Math.floor(l/5);
-        text = "MATCH "+db+" re ^.{0,"+cut+"}"+word.slice(cut, l-cut)+".{0,"+cut+"}$\n";
-        if(sockavail === 'chrome') chromecreate();
-        else if (sockavail === 'mozilla') mozopen();
-        else if (sockavail === 'cordova') cordova_get(host, port, text);
-        else console.log("Socket still unavailiable or check first");
-    }
-    function tcpecho(arr, callback){};
-    try {
-        var exec = cordova.require('cordova/exec');
-        tcpecho = function(arr, callback) {
-            exec(callback, function(err) {
-                callback("");
-            }, "Echo", "echo", arr);
-        };
-        sockavail = 'cordova';
-    } catch(e) { console.log("No cordova sockets available."); }
-    
     function cordova_get(host, port, text){
+        console.log("cordova socket send '"+text+"'");
         tcpecho([host, port, text], function(resstr) {
             parse_resp(resstr);
         });
@@ -87,6 +80,16 @@ define(
                 }
             }, 256)};
     }
+    function get_matches(){
+        "use strict";
+        var l = word.length;
+        var cut = Math.floor(l/5);
+        text = "MATCH "+db+" re ^.{0,"+cut+"}"+word.slice(cut, l-cut)+".{0,"+cut+"}$\n";
+        if(sockavail === 'chrome') chromecreate();
+        else if (sockavail === 'mozilla') mozopen();
+        else if (sockavail === 'cordova') cordova_get(host, port, text);
+        else console.log("Socket still unavailiable or check first");
+    }
     return {
         get_def:function(_word, _clbck){
             callback = _clbck;
@@ -108,7 +111,7 @@ define(
         check:function(){
             var _chrome = false;
             try{if(chrome.socket) _chrome = true;}
-            catch(e){console.warn(e.stack); }
+            catch(e){console.warn("chrome socket unavailable"); }
             if(navigator.mozTCPSocket){
                 try{
                     navigator.mozTCPSocket.open('8.8.8.8', 53, {binaryType: 'arraybuffer'});

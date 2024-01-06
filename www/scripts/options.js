@@ -225,7 +225,7 @@ define(
         for(var key in datas){
             var elem = document.getElementById(key);
             if(elem){ values[key] = elem.value; }
-            else{console.warn("No "+key+" found.");}
+            else{console.warn("No element with id '"+key+"' found.");}
         }
         dict.init_params({"db": values["dict_db"], "dictionary": values["dict_src"], 
                           "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
