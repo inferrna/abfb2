@@ -9,9 +9,9 @@
 	
 	<name>unzip</name>
 	
-	<description>This plugin lets your app access tcp sockets.</description>
+	<description>This plugin lets your app unzip archives.</description>
 	<author>Inferrna</author>
-	<keywords>tcp,socket,network</keywords>
+	<keywords>unzip</keywords>
 	<license>GPLv3 license</license>
 	
 	<platform name="android">

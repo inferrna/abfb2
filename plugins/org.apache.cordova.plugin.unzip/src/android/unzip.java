@@ -24,8 +24,10 @@ import org.json.JSONObject;
 import android.util.Base64;
 import android.util.Log;
 
+
 public class unzip extends CordovaPlugin {
 
+    private static final int BUFFER_SIZE = 4096;
     private static final String LOG_TAG = "unzip";
     
     @Override
@@ -65,12 +67,17 @@ public class unzip extends CordovaPlugin {
 
             ZipEntry ze;
             int i = 0;
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[BUFFER_SIZE];
             JSONObject json;
             ByteArrayOutputStream bo;// = new ByteArrayOutputStream();
             PluginResult pluginResult;
             byte[] outb;
             //BufferedReader br = new BufferedReader(zis);
+
+            pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
+
             while ((ze = zis.getNextEntry()) != null) 
             {
                 String compressedName = ze.getName();
@@ -88,8 +95,10 @@ public class unzip extends CordovaPlugin {
                     bo.write(buffer, 0, count); 
                 }
                 System.arraycopy(bo.toByteArray(), 0, outb, 0, sz);
-                android.util.Log.i("CordovaLog unzipSync", "Unzip entry "+i+") "+compressedName+" ("+sz+")");
-                json = new JSONObject("{name:\""+compressedName+"\", data:\""+Base64.encodeToString(outb, 0, sz, Base64.NO_WRAP)+"\"}");
+                Log.i("CordovaLog unzipSync", "Unzip entry "+i+") "+compressedName+" ("+sz+")");
+                json = new JSONObject();
+                json.put("name", compressedName);
+                json.put("data", Base64.encodeToString(outb, 0, sz, Base64.NO_WRAP));
                 pluginResult = new PluginResult(PluginResult.Status.OK, json);
                 pluginResult.setKeepCallback(true);
                 callbackContext.sendPluginResult(pluginResult);
@@ -100,10 +109,6 @@ public class unzip extends CordovaPlugin {
             pluginResult.setKeepCallback(false);
             is = null; zis = null; ze = null; buffer = null; json = null; bo = null; outb = null;
             callbackContext.sendPluginResult(pluginResult);
-            pluginResult = null;
-            return;
-            //callbackContext.success(new JSONObject("{name:\"END\", data:\"END\"}"));
-            
         } catch (Exception e) {
             String errorMessage = "An error occurred while unzipping.";
             callbackContext.error(errorMessage);
