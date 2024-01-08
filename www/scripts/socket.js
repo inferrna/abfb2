@@ -22,14 +22,36 @@ define(
         };
         sockavail = 'cordova';
     } catch(e) { console.log("No cordova sockets available."); }
+    // Function to find index by matching the string against the regular expression
+    function findIndexByRegex(array, regex) {
+        for (var i = 0; i < array.length; i++) {
+            if (regex.test(array[i])) {
+                return i; // Return the index if a match is found
+            }
+        }
+        return -1; // Return -1 if no match is found
+    }
 
     function parse_resp(resp){
         "use strict";
-        if(resp.match(/.*552 no match.*/)){
+        if(resp.match(/.*\n552 .{1,32}\n.*/)){
             if(rcl===0){rcl=1; get_matches();}
             else{rcl=0; callback("<b>"+word+"</b> not found.");}
         } else {
-            callback(resp);
+            var arr = resp.split("\n").filter(function(el){return el!='';});
+            var start = findIndexByRegex(arr, /1\d\d .{2,32}/); //First line
+            console.log("Raw response is:\n"+resp);
+            if(start==-1) {
+                console.log("Response was unsuccessful, code 1xx not found");
+                return;
+            }
+            var end = findIndexByRegex(arr, /250 .{2,8}/); //Last line
+            if(end==-1) {
+                console.log("Response was unsuccessful, code 250 not found in array");
+                return;
+            }
+            var newresp = arr.slice(start+1, end-1).join("\n");
+            callback(newresp);
         }
     }
     function cordova_get(host, port, text){
@@ -94,7 +116,7 @@ define(
         get_def:function(_word, _clbck){
             callback = _clbck;
             word = _word;
-            text = "DEFINE "+db+" "+word+"\n";
+            text = "DEFINE "+db+" "+word;
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
             else if (sockavail === 'cordova') cordova_get(host, port, text);
@@ -102,7 +124,7 @@ define(
         },
         get_dbs:function(_clbck){
             callback = _clbck;
-            text = "SHOW DATABASES\n";
+            text = "SHOW DATABASES";
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
             else if (sockavail === 'cordova') cordova_get(host, port, text);

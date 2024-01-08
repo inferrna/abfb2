@@ -286,7 +286,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                       el.style.top = 0+"px"; el.style.bottom = '100%';
                     }
                 if(pos==='bot'){el.style.bottom = 0+"px"; el.style.top = '100%';}// dt.style.display='none'; db.style.display=disp;}
-                    dict.get_def(texts);
+                dict.get_def(texts);
             } else {el.style.display = disp;}
         }
     }

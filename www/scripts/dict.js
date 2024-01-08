@@ -93,11 +93,11 @@ define(
                         try {
                             var rex = new RegExp("([.,\?! \s]|^)("+lword+")([.,\?! \s]|$)", "mgi");
                             var ren = new RegExp("[\n]+", "mgi");
+                            var rep = new RegExp("([\n, ])[\*,\~]([\n, ])", "mgi");
                             resp = resp.replace("<tr>", "<i>")
-                                       .replace(ren, "<br>")
                                        .replace("</tr>", "</i>")
-                                       .replace(" ~ ", " <b>"+lword+"</b> ")
-                                       .replace(" * ", " <b>"+lword+"</b> ")
+                                       .replace(rep, "$1<b>"+lword+"</b>$2")
+                                       .replace(ren, "<br>")
                                        .replace(rex, "$1<b>$2</b>$3");
                         } catch(e) { console.log("error modifying response from socket: "+e) }
                     

@@ -312,17 +312,12 @@ define(
         sels.map(function(sl){set_sel_vl(sl);});
     }
     function add_dbs(sel, _nm, txt){
-        var _txt = txt.replace(/\ /g, "_._").replace(/(\s|\0)+/g, "\n")
-                      .replace(/_\._/g, " ").replace(/\"/g, "");
-        var count = parseInt(txt.replace(/\s+/g, " ")
-                                .replace(/(.*110.+?)(\d*)(.+?databases present.*)/, "$2"));
-        var arr = _txt.split("\n").filter(function(el){return el!='';});
-        var start = arr.indexOf("250 ok")-2;
-        if(isNaN(count) || start<0) { console.warn("No db count or start in "+txt); return; }
+        console.log("add_dbs got raw input "+txt);
         var itms = [];
         Array.prototype.slice.call(sel.options).map(function(el){sel.removeChild(el);});
         sel.appendChild(_nm);
-        for(var i = start; i>(start-count) && i>0; i--){
+        const arr = txt.split("\n");
+        for(var i = 0; i<arr.length; i++){
                 var itms = arr[i].split(" ");
                 var nm  = document.createElement("option");
                 nm.value = itms[0];
