@@ -22,6 +22,6 @@
     <preference name="CRIInjectFirstFiles" value="www/scripts/init.js" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
-    <preference name="android-minSdkVersion" value="9" />
+    <preference name="android-minSdkVersion" value="8" />
     <preference name="android-targetSdkVersion" value="10" />
 </widget>
