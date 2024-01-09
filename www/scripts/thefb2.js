@@ -1,5 +1,5 @@
-define(['stuff', 'sharedf', 'sharedc', 'cordova.js'],
-function(stuff, sharedf, sharedc){
+define(['stuff', 'sharedf', 'sharedc', 'log', 'cordova.js'],
+function(stuff, sharedf, sharedc, log){
     var fb2 = document.createElement('div');//document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);//;
     //var evo = document.createElement("br");
     //var got_book_ev = new Event('got_book');
@@ -18,7 +18,7 @@ function(stuff, sharedf, sharedc){
             }, "XSLT", "transform", arr);
         };
         transavail = 'cordova';
-    } catch(e) { console.log("No cordova transform available."); }
+    } catch(e) { log.warn("No cordova transform available."); }
 
     function cordova_trans(xslt, xml, callback){
         ctransform([xslt, xml], function(string) {
@@ -34,8 +34,8 @@ function(stuff, sharedf, sharedc){
         //var jsxml = require('jsxml');
     }
     function transxsl(xmls, xsls, callback){
-        console.log("xsl is");//NFP
-        console.log(unescape(stuff.fb2xsl));//NFP
+        log.warn("xsl is");//NFP
+        log.warn(unescape(stuff.fb2xsl));//NFP
         if(window.XSLTProcessor) {
             var xml = parsr.parseFromString(xmls, 'text/xml');
             callback(xsltp.transformToFragment(xml, document));
@@ -59,7 +59,7 @@ function(stuff, sharedf, sharedc){
             var divlist = fb2.getElementsByTagName('div');
             var re = /TOC_.*/;
             sharedf.clean_tags(fb2, ['script', 'a']);
-            console.log(divlist[1].textContent);
+            log.warn(divlist[1].textContent);
             for(var i = 0; i < divlist.length; i++)
                 if(re.test(divlist[i].getAttribute('id'))){ 
                     divs.push(divlist[i]);
@@ -72,7 +72,7 @@ function(stuff, sharedf, sharedc){
         var invalids = Array.prototype.slice.call(doc.childNodes)
                        .filter(function(node){
                                     try{srlzr.serializeToString(node); return true;}
-                                    catch (e) { console.warn(e); return false;}
+                                    catch (e) { log.warn(e); return false;}
                                });
     }
     function get_indexed_page(index, percent){
@@ -82,7 +82,7 @@ function(stuff, sharedf, sharedc){
             try {
                 var html = srlzr.serializeToString(ch);
                 currentpage = index;
-            } catch (e) { console.warn(ch);
+            } catch (e) { log.warn(ch);
                 clean_invalid(ch);
                 return null;}
             if(percent) sharedc.exec('bookng', 'got_fstfile')([html, null], percent);
@@ -96,11 +96,11 @@ function(stuff, sharedf, sharedc){
             var idx, lastidx=0, values = [];
             for(var i = 0; i<divs.length; i++){
                 values.push(divs[i].getAttribute('id'));
-                console.log(divs[i].getAttribute('id')+" pushed");//NFP
+                log.warn(divs[i].getAttribute('id')+" pushed");//NFP
             }
             for(var i = 0; i<options.length; i++){
                 idx  = values.indexOf(options[i].getAttribute('did'));
-                console.log("index for "+options[i].getAttribute('did')+" is "+idx);//NFP
+                log.warn("index for "+options[i].getAttribute('did')+" is "+idx);//NFP
                 if(idx>-1){
                     pages.push(idx);
                     lastidx = idx;

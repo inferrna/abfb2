@@ -1,6 +1,6 @@
 define(
-    ['options', 'stuff', 'sharedc', 'book'],
-  function(options, stuff, sharedc, book){
+    ['options', 'stuff', 'sharedc', 'book', 'log'],
+  function(options, stuff, sharedc, book, log){
    //   "use strict";
       var dictflag = 0;
       var liftflag = 0;
@@ -56,7 +56,7 @@ define(
           if(el.id==="maintext"){
               percent = -100*parseFloat(newtop)/elh;
               options.setpercent(percent);
-              console.log("saving.."); options.savepp();
+              log.warn("saving.."); options.savepp();
           }
       }
       function expand2w(off, text){
@@ -114,7 +114,7 @@ define(
           try {
               var t = Math.max(rect.bottom, rect.top);
               var b = Math.min(rect.bottom, rect.top);
-          } catch(e) {/*console.log(e.stack+"\n"+JSON.stringify(rect));*/ return false;}
+          } catch(e) {/*log.warn(e.stack+"\n"+JSON.stringify(rect));*/ return false;}
           if(x>rect.left && x<rect.right && y>b && y<t) return true;
           else return false;
       }
@@ -150,7 +150,7 @@ define(
               for(var k = Math.floor(child.textContent.length/2); k>0; k = Math.floor(k/2)){
                   for(var i = z+k; i<child.textContent.length; i+=k){
                       try{clone.setEnd(clone.endContainer, i);}
-                      catch(e){console.log(e.stack); break;}
+                      catch(e){log.warn(e.stack); break;}
                       if(ispointinrectlist(clone.getClientRects(), x, y)>-1){
                           z = i-k;
                           retch = child;
@@ -188,22 +188,22 @@ define(
                   off = cp.startOffset;
                   el = cp.commonAncestorContainer;
               }
-          } else {console.log("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
+          } else {log.warn("None of both document.caretRangeFromPoint or document.caretPositionFromPoint supports.");}
           if(el === document.body){ cp = null; el = null; }
           if(!cp && document.elementFromPoint){
               var goff = get_off(x, y);
               if(goff){off = goff[0]; el = goff[1];}
           }
           if(el){
-              console.log("el.id=="+el.id);//NFP
-              console.log("el==");//NFP
-              console.log(el);//NFP
+              log.warn("el.id=="+el.id);//NFP
+              log.warn("el==");//NFP
+              log.warn(el);//NFP
           }
           if(el && off>-1){
               var txt = el.textContent;//new String(el.textContent);
               var selected_word = null;
               try {
-                  console.log("off=="+off);//NFP
+                  log.warn("off=="+off);//NFP
                   var sel = window.getSelection();
                   sel.removeAllRanges();
                   var rng = document.createRange();
@@ -211,12 +211,12 @@ define(
                   rng.setStart(el, off);
                   rng.setEnd(el, off+1);
                   if(rng.expand){
-                      console.log("rng.expand and sel.addRange");//NFP
+                      log.warn("rng.expand and sel.addRange");//NFP
                       rng.expand("word");
                       sel.addRange( rng );
                       selected_word = sel.toString();
                   } else {
-                      console.log("sel.modify and sel.collapseToStart");//NFP
+                      log.warn("sel.modify and sel.collapseToStart");//NFP
                       sel.addRange(rng);
                       sel.modify("extend", "forward", "word");
                       sel.collapseToEnd();
@@ -224,13 +224,13 @@ define(
                       selected_word = sel.toString();
                   }
               } catch(e) { selected_word = expand2w(off, txt); 
-                           console.log("Got error "+e.stack+" using expand2w, got "+selected_word+" off=="+off);
+                           log.warn("Got error "+e.stack+" using expand2w, got "+selected_word+" off=="+off);
               }
               if(!selected_word || !selected_word.length){
                   selected_word = expand2w(off, txt);
               }
               if(selected_word && selected_word.length){                  
-                  console.log("got "+selected_word+" off=="+off);
+                  log.warn("got "+selected_word+" off=="+off);
                   sharedc.exec('uitouch', 'got_selection')([selected_word.toLowerCase(), expand23w(selected_word, txt, off)]);
               }
           }
@@ -241,7 +241,7 @@ define(
             var newscale = cf*scale;
             if(Math.abs(1.0 - newscale) < 0.04) newscale = 1.0;
             scale = newscale > 8.0 ? 8.0 : newscale < 0.25 ? 0.25 : newscale;
-            console.log("scale == "+scale)//NFP
+            log.warn("scale == "+scale)//NFP
       }
       function apply_scale(){
             "use strict";
@@ -290,9 +290,9 @@ define(
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
               targimg.style.display = 'block';
               selectword(evt.center.x, evt.center.y);
-              console.log("target is");//NFP
-              console.log(evt.target);//NFP
-              console.log(evt.srcEvent.target);//NFP
+              log.warn("target is");//NFP
+              log.warn(evt.target);//NFP
+              log.warn(evt.srcEvent.target);//NFP
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){

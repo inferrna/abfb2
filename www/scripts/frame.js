@@ -1,6 +1,6 @@
 define(
-    ['sharedf', 'stuff'],
-  function(sharedf, stuff){
+    ['sharedf', 'stuff', 'log'],
+  function(sharedf, stuff, log){
         var mtext = document.getElementById('maintext');
         var cf = document.getElementById('cf'); //Current font
         var mtextfrm = document.getElementById('mainframe').contentDocument;
@@ -59,12 +59,12 @@ define(
                         .appendChild(style);
             },
             prc_from_anchor:function(anchor, prc){
-                console.log("Got"); //NFP
-                console.log("anchor "+anchor); //NFP
-                console.log("prc "+prc); //NFP
+                log.warn("Got"); //NFP
+                log.warn("anchor "+anchor); //NFP
+                log.warn("prc "+prc); //NFP
                 var ancel = mtextfrm.getElementById(anchor);
-                console.log("ancel:"); //NFP
-                console.log(ancel); //NFP
+                log.warn("ancel:"); //NFP
+                log.warn(ancel); //NFP
                 if(!ancel) 
                     if(!prc) return 0;
                     else return prc;

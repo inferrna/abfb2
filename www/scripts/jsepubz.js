@@ -1,5 +1,5 @@
-define(['mimetypes', 'sharedf', 'sharedc'], 
-function (mimetypes, sharedf, sharedc) {
+define(['mimetypes', 'sharedf', 'sharedc', 'log'], 
+function (mimetypes, sharedf, sharedc, log) {
     var blob = null;//blob;
     var file = null;//file;
     var zipreader = null;
@@ -11,12 +11,12 @@ function (mimetypes, sharedf, sharedc) {
     var opfPath = '';
     var opf = {};
     var container = null;
-    var logger = function(text){console.log(text);};
+    var logger = function(text){log.warn(text);};
     var srlzr = new XMLSerializer();
     var useCordova = !(window.Worker && window.Int8Array) && window.cordova;
     function extract_data(blob, index, array, callback, params, mtype){
         var reader = new FileReader();
-        if(files[index]) console.warn("dublicated index "+index);
+        if(files[index]) log.warn("dublicated index "+index);
         if(reader.addEventListener){
             reader.addEventListener("loadend", function() {
                    array[index]=reader.result;
@@ -66,7 +66,7 @@ function (mimetypes, sharedf, sharedc) {
         unzipFiles([opfPath], proceedopf);
     }
     function proceedopf(){
-        console.log("call to read opf");
+        log.warn("call to read opf");
         readOpf(files[opfPath]);
         var staff2ext = [];
         var keyre = /^(ncx|toc)$/i;
@@ -134,18 +134,18 @@ function (mimetypes, sharedf, sharedc) {
            newtocels.push(tocel)
        }
        var opg = Object.keys(opf.guide).map(function(el){return el.split("#")[0]});
-       console.log("opg==");//NFP
-       console.log(opg);//NFP
-       console.log("nmr==");//NFP
-       console.log(nmr);//NFP
+       log.warn("opg==");//NFP
+       log.warn(opg);//NFP
+       log.warn("nmr==");//NFP
+       log.warn(nmr);//NFP
        var lastname='';
        for(var _key in opf.spine){
            var tocel = {};
            var idref = opf.spine[_key];
-           console.log("idref == "+idref);//NFP
+           log.warn("idref == "+idref);//NFP
            var href = opf.manifest[idref]['href'];
            if(opg.indexOf(href)==-1){
-               console.log("Added "+href+" from spine");//NFP
+               log.warn("Added "+href+" from spine");//NFP
                tocel['href'] = href;
                if(nmr.indexOf(href)>-1) {
                    tocel['name'] = spnm[href];
@@ -179,11 +179,11 @@ function (mimetypes, sharedf, sharedc) {
                     result = postProcessCSS(href);
                 } else if (mediaType === "application/x-dtbncx+xml" || newtocre.test(href) || key==='toc') {
                     try {var xml = decodeURIComponent(escape(files[href]));}
-                    catch(e) {var xml = files[href]; console.warn(e.stack+"\n href == "+href);};
+                    catch(e) {var xml = files[href]; log.warn(e.stack+"\n href == "+href);};
                     newtocs.push([xmlDocument(xml), href]);
                 } else if (oldtocre.test(href) || key==='ncx') {
                     try {xml = decodeURIComponent(escape(files[href]));}
-                    catch(e) {xml = files[href]; console.warn(e.stack+"\n href == "+href);};
+                    catch(e) {xml = files[href]; log.warn(e.stack+"\n href == "+href);};
                     oldtocs.push([xmlDocument(xml), href]);
                 }
                 if (result !== undefined) {
@@ -221,7 +221,7 @@ function (mimetypes, sharedf, sharedc) {
                         files[href] = result;
                     }
                 }
-            } catch(e) {console.log("key is: "+key+"\nerror was:\n"+(e));}
+            } catch(e) {log.warn("key is: "+key+"\nerror was:\n"+(e));}
         }
     }
     function proceedhtmlfst(href, clbk){
@@ -435,7 +435,7 @@ function (mimetypes, sharedf, sharedc) {
     function postProcessHTML(href) {
         var xml = null;
         if(sharedf.reb.test(href)) return "<img src="+getDataUri(href)+">";
-        //console.log(files[href]);
+        //log.warn(files[href]);
         try{ xml = decodeURIComponent(escape(files[href]));}
         catch(e){xml = files[href];}
         var doc = xmlDocument(xml);
@@ -481,7 +481,7 @@ function (mimetypes, sharedf, sharedc) {
         }
         try{
             sharedf.clean_tags(doc, ["script", "a"]);
-        }catch(e){console.log("postProcessHTML: clean tags failed"+e);}
+        }catch(e){log.warn("postProcessHTML: clean tags failed"+e);}
         try { 
             //var div = document.createElement('div');
             //while(doc.firstChild) div.appendChild(doc.firstChild);
@@ -528,7 +528,7 @@ function (mimetypes, sharedf, sharedc) {
     function xmlDocument(xml) {
         try{
             var doc = new DOMParser().parseFromString(xml, "text/xml");
-        } catch(e) { console.warn("xml parse failed, got "+e.stack||e); }
+        } catch(e) { log.warn("xml parse failed, got "+e.stack||e); }
 
         if (doc.childNodes[1] && doc.childNodes[1].nodeName === "parsererror") {
             throw doc.childNodes[1].childNodes[0].nodeValue;

@@ -1,6 +1,6 @@
 define(
-    [],
-  function(){
+    ['log'],
+  function(log){
         var debug = 1;
         return {
                  pick:function(arg, def) {
@@ -10,7 +10,7 @@ define(
                          Object.prototype.toString.call(obj).replace(/^\[object (.+)\]$/,"$1").toLowerCase();
                  },
                  log:function(object){
-                    if(debug===1) console.log(object);
+                    if(debug===1) log.warn(object);
                  },
                 getStyle:function(el,styleProp) { //http://stackoverflow.com/questions/1955048/get-computed-font-size-for-dom-element-in-js
                   var camelize = function (str) {
@@ -20,17 +20,17 @@ define(
                   };
                   if((el.style && el.style[camelize(styleProp)]) || (el.currentStyle && el.currentStyle[camelize(styleProp)])){
                        var res = el.style[camelize(styleProp)] || el.currentStyle[camelize(styleProp)];
-                       console.log(styleProp+" got from style == "+res);//NFP
+                       log.warn(styleProp+" got from style == "+res);//NFP
                        if([null, undefined, 'undefined', '', 'auto'].indexOf(res)===-1) return res;
                   }
                   if(/height|width|top|left|right|bottom/i.test(styleProp) && el.getBoundingClientRect){
                       res = el.getBoundingClientRect()[styleProp];
-                      console.log(styleProp+" got from rect == "+res);//NFP
+                      log.warn(styleProp+" got from rect == "+res);//NFP
                       return res;
                   } else if (document.defaultView && document.defaultView.getComputedStyle){
                       res = document.defaultView.getComputedStyle(el,null)
                                                 .getPropertyValue(styleProp);
-                      console.log(styleProp+" got from ComputedStyle == "+res);//NFP
+                      log.warn(styleProp+" got from ComputedStyle == "+res);//NFP
                       return res;
                   }
                 },

@@ -10,7 +10,7 @@ define(
                 callbacks[module][funcname] = func;
             },
             exec:function(module, funcname){
-                if(callbacks[module][funcname]===undefined) console.log(callbacks);
+                if(callbacks[module][funcname]===undefined) console.warn(callbacks);
                 return callbacks[module][funcname];
             }
         }

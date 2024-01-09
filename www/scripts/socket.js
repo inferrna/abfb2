@@ -1,6 +1,6 @@
 define(
-  ['stuff', 'encod', 'cordova.js'],
-  function(stuff, encod){
+  ['stuff', 'encod', 'log', 'cordova.js'],
+  function(stuff, encod, log){
     var sockavail = null;
     var host = 'localhost';
     var port = 2628;
@@ -16,12 +16,12 @@ define(
         exec = cordova.require('cordova/exec');
         tcpecho = function(arr, callback) {
             exec(callback, function(err) {
-                console.log("Error calling cordova socket: "+err)
+                console.warn("Error calling cordova socket: "+err)
                 callback("");
             }, "Echo", "echo", arr);
         };
         sockavail = 'cordova';
-    } catch(e) { console.log("No cordova sockets available."); }
+    } catch(e) { console.warn("No cordova sockets available."); }
     // Function to find index by matching the string against the regular expression
     function findIndexByRegex(array, regex) {
         for (var i = 0; i < array.length; i++) {
@@ -40,14 +40,14 @@ define(
         } else {
             var arr = resp.split("\n").filter(function(el){return el!='';});
             var start = findIndexByRegex(arr, /1\d\d .{2,32}/); //First line
-            console.log("Raw response is:\n"+resp);
+            log.warn("Raw response is:\n"+resp);
             if(start==-1) {
-                console.log("Response was unsuccessful, code 1xx not found");
+                log.warn("Response was unsuccessful, code 1xx not found");
                 return;
             }
             var end = findIndexByRegex(arr, /250 .{2,8}/); //Last line
             if(end==-1) {
-                console.log("Response was unsuccessful, code 250 not found in array");
+                log.warn("Response was unsuccessful, code 250 not found in array");
                 return;
             }
             var newresp = arr.slice(start+1, end-1).join("\n");
@@ -55,7 +55,7 @@ define(
         }
     }
     function cordova_get(host, port, text){
-        console.log("cordova socket send '"+text+"'");
+        log.warn("cordova socket send '"+text+"'");
         tcpecho([host, port, text], function(resstr) {
             parse_resp(resstr);
         });
@@ -110,7 +110,7 @@ define(
         if(sockavail === 'chrome') chromecreate();
         else if (sockavail === 'mozilla') mozopen();
         else if (sockavail === 'cordova') cordova_get(host, port, text);
-        else console.log("Socket still unavailiable or check first");
+        else console.warn("Socket still unavailiable or check first");
     }
     return {
         get_def:function(_word, _clbck){
@@ -120,7 +120,7 @@ define(
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
             else if (sockavail === 'cordova') cordova_get(host, port, text);
-            else console.log("Socket still unavailiable or check first");
+            else console.warn("Socket still unavailiable or check first");
         },
         get_dbs:function(_clbck){
             callback = _clbck;
@@ -128,7 +128,7 @@ define(
             if(sockavail === 'chrome') chromecreate();
             else if (sockavail === 'mozilla') mozopen();
             else if (sockavail === 'cordova') cordova_get(host, port, text);
-            else console.log("Socket still unavailiable or check first");
+            else console.warn("Socket still unavailiable or check first");
         },
         check:function(){
             var _chrome = false;
@@ -138,10 +138,16 @@ define(
                 try{
                     navigator.mozTCPSocket.open('8.8.8.8', 53, {binaryType: 'arraybuffer'});
                     sockavail = 'mozilla';
-                } catch(e) {console.log("navigator.mozTCPSocket present, but unaccessible");}
+                } catch(e) {console.warn("navigator.mozTCPSocket present, but unaccessible");}
             }
             else if(_chrome) sockavail = 'chrome';
             return sockavail;
+        },
+        tcpsend:function(host, port, text){
+            if(sockavail===null){
+                return;
+            }
+            tcpsend([host, port, text]);
         },
         init:function(_host, _port, _db){
             if(sockavail===null){

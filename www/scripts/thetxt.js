@@ -1,5 +1,5 @@
-define(['stuff', 'sharedc'],
-function(stuff, sharedc){
+define(['stuff', 'sharedc', 'log'],
+function(stuff, sharedc, log){
     var text = [];
     var name = '';
     var currentpage = 0;
@@ -24,7 +24,7 @@ function(stuff, sharedc){
                 while(re.test(txt.charAt(curstrip))===false && curstrip < maxlen-1){curstrip++;}
                 curstrip++;
                 text.push(txt.substring(off, curstrip));
-                //console.log("Got strip "+curstrip);
+                //log.warn("Got strip "+curstrip);
                 off = curstrip; 
                 curstrip += strip; 
             }
@@ -32,7 +32,7 @@ function(stuff, sharedc){
         }
         sharedc.exec('bookng', 'got_toc')();
         sharedc.exec('book', 'got_book')();
-        //console.log(text[0]);
+        //log.warn(text[0]);
     }
     function get_indexed_page(index, percent){
         if(index>-1){
@@ -55,14 +55,14 @@ function(stuff, sharedc){
             }
             contents.appendChild(h1);
             contents.appendChild(sel);
-            //console.log(contents);
+            //log.warn(contents);
             return contents;//.innerHtml;
         }
         return 0;
     }
     return {
              load:function(file, lib) {
-                        //console.log("Loads txt file "+file.name);
+                        //log.warn("Loads txt file "+file.name);
                         load_txt(file);
              },
              get_page:function(index){

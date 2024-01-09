@@ -1,6 +1,6 @@
 define(
-  ['require', 'sharedf'],
-  function(require, sharedf){
+  ['require', 'sharedf', 'log'],
+  function(require, sharedf, log){
     var options = null;
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
@@ -17,7 +17,7 @@ define(
             cursor.onerror = onerror;
         }
         function onerror() {
-          console.warn("No file found "+this.error);
+          log.warn("No file found "+this.error);
           options.msg(badtext);
         }
         function onsuccess() {
@@ -66,7 +66,7 @@ define(
             // Then we move to the next result, which call the cursor
             // success with the next file as result.
                 //this.continue();
-                console.log("continue???");
+                log.warn("continue???");
             } else {
                 g_or_b("unknown");
                 return;
@@ -84,7 +84,7 @@ define(
                  var sdcard = navigator.getDeviceStorage('sdcard');
                  var request = sdcard.get(fnm);
                  request.onsuccess = function(){callback(this.result);};
-                 request.onerror = function () { console.warn("Unable to get the file: " + fnm + "got error: '\n    "+this.error); };
+                 request.onerror = function () { log.warn("Unable to get the file: " + fnm + "got error: '\n    "+this.error); };
              }
     }
   }

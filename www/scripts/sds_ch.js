@@ -1,6 +1,6 @@
 define(
-  ['require', 'sharedf'],
-  function(require, sharedf){
+  ['require', 'sharedf', 'log'],
+  function(require, sharedf, log){
     var options = null;
     var filere = /.*fb2|.*epub|.*txt/i;
     var badtext = "No any book on your SD card. You may try pick it by button above, or put books on SD card and reopen app.";
@@ -46,7 +46,7 @@ define(
                         }
 
                     }, function (error) {
-                        console.warn(error.code);
+                        log.warn(error.code);
                     });
 
                    } );
@@ -66,8 +66,8 @@ define(
                  try{
                     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, null);
                  } catch (e){
-                     console.warn("Got error while requestFileSystem");
-                     console.warn(e);
+                     log.warn("Got error while requestFileSystem");
+                     log.warn(e);
                      return false;
                  }
                  function gotFS(fileSystem){fileSystem.root.getFile(fnm, null, gotFileEntry, null);}

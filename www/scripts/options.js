@@ -1,6 +1,6 @@
 define(
-  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc', 'sharedf', 'fontwork'],
-  function(dict, uitouch, socket, sdstorage, sharedc, sharedf, fontwork){
+  ['dict', 'uitouch', 'socket', 'sdstorage', 'sharedc', 'sharedf', 'fontwork', 'log'],
+  function(dict, uitouch, socket, sdstorage, sharedc, sharedf, fontwork, log){
     "use strict";
     var opts_brd   = document.getElementById('options');
     var opts_brd_b = document.getElementById('options_block');
@@ -27,15 +27,15 @@ define(
     opts_brd_b.appendChild(rngbr);
     opts_brd_b.appendChild(rng);
     var storage = null; 
-    try { storage = localStorage } catch(e) {console.warn("localStorage not available");}
+    try { storage = localStorage } catch(e) {log.warn("localStorage not available");}
     var crstorage = null;
     var crstoragel = null;
-    try{ crstorage = chrome.storage.sync;} catch(e) {console.warn("chrome.storage not available")};
-    try{ crstoragel = chrome.storage.local;} catch(e) {console.warn("chrome.storage not available")};
-    console.log("Storages is");//NFP
-    console.log(storage ? true : false);//NFP
-    console.log(crstorage);//NFP
-    console.log(crstoragel);//NFP
+    try{ crstorage = chrome.storage.sync;} catch(e) {log.warn("chrome.storage not available")};
+    try{ crstoragel = chrome.storage.local;} catch(e) {log.warn("chrome.storage not available")};
+    log.warn("Storages is");//NFP
+    log.warn(storage ? true : false);//NFP
+    log.warn(crstorage);//NFP
+    log.warn(crstoragel);//NFP
     var type;
     var file = {'name':'empty'};
     var filename = '';
@@ -129,7 +129,7 @@ define(
         }else if(key==="dsfile"){
                 sel.addEventListener("change", 
                             function (evt){
-                                console.log("Book selection event fired "); //NFP
+                                log.warn("Book selection event fired "); //NFP
                                 var fnm = evt.target.options[evt.target.selectedIndex].value;
                                 var _filename = fnm.replace(sharedf.relf, "$2");
                                 if(_filename != filename){
@@ -145,7 +145,7 @@ define(
             return sel;
         } 
         sel.addEventListener("change", function(evt){
-                                    console.log("Selection event fired "+ !evt.target.disabled); //NFP
+                                    log.warn("Selection event fired "+ !evt.target.disabled); //NFP
                                     if(evt.target.disabled === true) {
                                         evt.target.disabled = false;
                                     } else {
@@ -225,7 +225,7 @@ define(
         for(var key in datas){
             var elem = document.getElementById(key);
             if(elem){ values[key] = elem.value; }
-            else{console.warn("No element with id '"+key+"' found.");}
+            else{log.warn("No element with id '"+key+"' found.");}
         }
         dict.init_params({"db": values["dict_db"], "dictionary": values["dict_src"], 
                           "host": values["socket_host"], "port": parseInt(values["socket_port"]), 
@@ -251,7 +251,7 @@ define(
         return result;
     }
     function get_cr(keys, callback, evt){
-        console.log("Call to crhomestorage get of "+keys);//NFP
+        log.warn("Call to crhomestorage get of "+keys);//NFP
         crstorage.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
@@ -263,7 +263,7 @@ define(
             });
     }
     function get_crl(keys, callback, evt){
-        console.log("Call to crhomestoragel get of "+keys);//NFP
+        log.warn("Call to crhomestoragel get of "+keys);//NFP
         crstoragel.get(keys, function(result){
                 var cnt = 0;
                 for(var key in result){
@@ -292,11 +292,11 @@ define(
     function set_cr(key, p){
         var pair = {};
         pair[key] = p;
-        console.log("Call to crhomestorage set");//NFP
-        console.log("crhomestorage set len is "+p.length);//NFP
-        console.log("crhomestorage set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
-        if(p.length < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*console.log(p+" saved as "+key);*/});
-        else if(p.length < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){console.log(key + " saved to local storage");});
+        log.warn("Call to crhomestorage set");//NFP
+        log.warn("crhomestorage set len is "+p.length);//NFP
+        log.warn("crhomestorage set lim is "+crstorage.QUOTA_BYTES_PER_ITEM+", "+crstoragel.QUOTA_BYTES);//NFP
+        if(p.length < crstorage.QUOTA_BYTES_PER_ITEM) crstorage.set(pair, function(){/*log.warn(p+" saved as "+key);*/});
+        else if(p.length < crstoragel.QUOTA_BYTES) crstoragel.set(pair, function(){log.warn(key + " saved to local storage");});
     }
     function set_ls(key, p){
         localStorage.setItem(key, p);
@@ -312,7 +312,7 @@ define(
         sels.map(function(sl){set_sel_vl(sl);});
     }
     function add_dbs(sel, _nm, txt){
-        console.log("add_dbs got raw input "+txt);
+        log.warn("add_dbs got raw input "+txt);
         var itms = [];
         Array.prototype.slice.call(sel.options).map(function(el){sel.removeChild(el);});
         sel.appendChild(_nm);

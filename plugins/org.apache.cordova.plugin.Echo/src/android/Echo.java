@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * This class echoes a string called from JavaScript.
@@ -43,8 +44,23 @@ public class Echo extends CordovaPlugin {
                 }
             });
             return true;
+        } else if (action.equals("tcpsend")) {
+            tcpsend(args.getString(0), Integer.parseInt(args.getString(1)), args.getString(2));
+            return true;
         }
         return false;
+    }
+
+    private void tcpsend(String hostName, int portNumber, String text) {
+        try {
+            Socket _socket = new Socket(hostName, portNumber);
+            PrintWriter out = new PrintWriter(_socket.getOutputStream(), true);
+            out.println(text);
+            _socket.close();
+        } catch (Throwable e) {
+            Log.w("cordova.echo", String.format("Can't send log to addr %s port %d got error", hostName, portNumber), e);
+        }
+
     }
 
     private void tcpecho(String hostName, int portNumber, String text, CallbackContext callbackContext) {
@@ -72,14 +88,14 @@ public class Echo extends CordovaPlugin {
                 sb.add(currentLine);
                 boolean gotOkCode = currentLine.matches(regexOkCode);
                 boolean gotBadCode = currentLine.matches(regexBadCode);
-                System.out.println("Just read string \""+currentLine+"\", gotAPoint = "+gotAPoint+", gotOkCode = "+gotOkCode+", gotBadCode = "+gotBadCode);
+                Log.i("cordova.echo", "Just read string \""+currentLine+"\", gotAPoint = "+gotAPoint+", gotOkCode = "+gotOkCode+", gotBadCode = "+gotBadCode);
 
                 if(gotOkCode && gotAPoint) break;
                 if(gotBadCode && sanitycount<4) break;
 
                 sanitycount++;
             }
-            System.out.println("Just read all "+sanitycount+" lines");
+            Log.i("cordova.echo", "Just read all "+sanitycount+" lines");
             out.println("quit");
             in.close();
             String resStr = TextUtils.join("\n", sb);

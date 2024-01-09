@@ -1,5 +1,5 @@
-define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf', 'sharedc'],
-function(jsepub, stuff, encod, options, sharedf, sharedc){
+define(['jsepubz', 'stuff', 'encod', 'options', 'sharedf', 'sharedc', 'log'],
+function(jsepub, stuff, encod, options, sharedf, sharedc, log){
     var marea = document.getElementById("maintext");
     var pageids = [];
     var pages = [];
@@ -84,7 +84,7 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                 return i+1;
             }
         }
-        console.warn(url+" not found");
+        log.warn(url+" not found");
         return id;
     }
     //function get_anchor(url){
@@ -202,9 +202,9 @@ function(jsepub, stuff, encod, options, sharedf, sharedc){
                     try{
                         currentopt = page;
                     } catch(e){
-                        console.warn(e);
-                        console.warn("Can not find index from page "+page+" by href "+hrefs[page]);
-                        console.warn(hrefs);
+                        log.warn(e);
+                        log.warn("Can not find index from page "+page+" by href "+hrefs[page]);
+                        log.warn(hrefs);
                     }
                     return get_indexed_page(page, null, prc);
              },

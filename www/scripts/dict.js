@@ -1,6 +1,6 @@
 define(
-  ['stuff', 'encod', 'socket', 'sharedc'],
-  function(stuff, encod, socket, sharedc){
+  ['stuff', 'encod', 'socket', 'sharedc', 'log'],
+  function(stuff, encod, socket, sharedc, log){
     var resp = '';
     //var got_def_ev = new Event('got_def');
     var gsocketid = 0;
@@ -39,7 +39,7 @@ define(
                 var resptext = event.target.responseText;
                 if(datas["dictionary"].match("google.*?$")){
                     resp +="<b>"+_text+"</b> -><br>";
-                    console.log(resptext);//NFP
+                    log.warn(resptext);//NFP
                     resp += resptext.match(/\".+?\"/g)
                                     .map(function(x){if(x!=='\"'+_text+'\"' && x!=='\"'+params['sl']+'\"')return x})
                                     .join(",")
@@ -61,7 +61,7 @@ define(
         l_arr.push("dt=at");
         params_get_str = l_arr.join("&");
         var url = baseurl+params_get_str;
-        console.log(url);//NFP
+        log.warn(url);//NFP
         dreq.open("GET", url, "true");
         dreq.send();
     }
@@ -76,7 +76,7 @@ define(
                 push_cache(lword, resp);
                 sharedc.exec('dict', 'got_def')(resp, lword, seealso);
             }
-            if(cache[lword]) { console.log("Got from cache"); sharedc.exec('dict', 'got_def')(cache[lword], lword, seealso);}
+            if(cache[lword]) { log.warn("Got from cache"); sharedc.exec('dict', 'got_def')(cache[lword], lword, seealso);}
             else if(datas["dictionary"] === 'socket proxy'){
                 get_http('DEFINE '+datas["db"]+' '+lword+'\n', locals, "http://"+datas["phost"]+":"+datas["pport"]+"/?", 
                     got_def, '');
@@ -85,11 +85,11 @@ define(
             else if (datas["dictionary"] === 'google proxy') get_http(lword, googles,
                                    "http://"+datas["phost"]+":"+datas["pport"]+datas["google_proxy_url"], got_def, '');
             else if (datas["dictionary"] === 'socket'){
-                console.log("word " + lword + " requested to socket");
+                log.warn("word " + lword + " requested to socket");
                 socket.check();
                 socket.init(datas["host"], 2628, datas["db"]);
                 socket.get_def(lword, function(resp){
-                        console.log("word " + lword + " answered by socket with "+resp.length+" length answer");
+                        log.warn("word " + lword + " answered by socket with "+resp.length+" length answer");
                         try {
                             var rex = new RegExp("([.,\?! \s]|^)("+lword+")([.,\?! \s]|$)", "mgi");
                             var ren = new RegExp("[\n]+", "mgi");
@@ -99,11 +99,11 @@ define(
                                        .replace(rep, "$1<b>"+lword+"</b>$2")
                                        .replace(ren, "<br>")
                                        .replace(rex, "$1<b>$2</b>$3");
-                        } catch(e) { console.log("error modifying response from socket: "+e) }
+                        } catch(e) { log.warn("error modifying response from socket: "+e) }
                     
                         got_def(resp);
                     });
-            } else console.log("No dictionary selected");
+            } else log.warn("No dictionary selected");
 
     }
 
