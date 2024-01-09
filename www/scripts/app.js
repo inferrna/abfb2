@@ -244,14 +244,20 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         }
         return mtext;
     }
-    function fill_thumb(text, word, els){
-        if(text.length > 1){
+    function fill_thumb(dtext, word, els){
+        log.info("fill_thumb with response for word "+word+" with length "+dtext.length);
+        if(dtext.length > 1){
             var cl = document.getElementById('pts');
             var el = document.getElementById('pop');
             var cf = 0.1;
-            var width = parseInt(el.style.width, 10);
-            dtext = text.replace(reb, "strong>").replace(retr, "/").replace(ren, "<br>").replace(/220[\s\S.]+?\s\d\d\d\s/, '');//.replace(/<.*>\n/, '');
-            cl.innerHTML = dtext;
+            log.info("el.style.width = "+el.style.width);
+            try {
+                log.info("Set inner HTML to this:\n"+dtext+"\n");
+                cl.innerHTML = dtext;
+            } catch (e) {
+                log.error("Can't set innerHTML to provided response, got error "+e);
+                cl.innerHTML = "Error happen while setting innerHTML, see logs for details";
+            }
             sndbt.appendChild(sndcnt);
             cl.appendChild(sndbt);
             cl.appendChild(nosnd);

@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.net.SocketTimeoutException;
 
+import java.nio.charset.Charset;
+
 import java.util.ArrayList;
 import java.util.regex.*;
 
@@ -21,12 +23,31 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Base64;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * This class echoes a string called from JavaScript.
  */
 public class Echo extends CordovaPlugin {
+
     final static int MAX_CNT = 2048;
+    public static String encodeURIComponent(String value) {
+        try {
+            return URLEncoder.encode(value, "UTF-8")
+                    .replaceAll("\\+", "%20")
+                    .replaceAll("\\%21", "!")
+                    .replaceAll("\\%27", "'")
+                    .replaceAll("\\%28", "(")
+                    .replaceAll("\\%29", ")")
+                    .replaceAll("\\%7E", "~");
+        } catch (UnsupportedEncodingException e) {
+            // This should never happen since "UTF-8" is always supported
+            throw new RuntimeException("Error encoding URL component", e);
+        }
+    }
+
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         //final JSONArray fargs = args;
@@ -64,16 +85,12 @@ public class Echo extends CordovaPlugin {
     }
 
     private void tcpecho(String hostName, int portNumber, String text, CallbackContext callbackContext) {
-        /*if (args.length != 3) {
-            callbackContext.error("Args must be: [host, port, text]");
-        }*/
-        byte[] resultBuff = new byte[0];
+        ArrayList<String> sb = new ArrayList();
         try { 
             Socket _socket = new Socket(hostName, portNumber);
             PrintWriter out = new PrintWriter(_socket.getOutputStream(), true);
             out.println(text);
 
-            ArrayList<String> sb = new ArrayList();
             BufferedReader in = new BufferedReader( new InputStreamReader(_socket.getInputStream()) );
             int sanitycount = 0;
             boolean gotAPoint = false;
@@ -100,15 +117,23 @@ public class Echo extends CordovaPlugin {
             in.close();
             String resStr = TextUtils.join("\n", sb);
             callbackContext.success(resStr);
+           // Log.i("cordova.echo", "The resulting abswer is:\n"+resStr);
+            //String uriEncodedRes = encodeURIComponent(resStr);
+            //byte[] uriEncodedBytes = uriEncodedRes.getBytes(Charset.forName("UTF-8"));
+            //callbackContext.success(Base64.encodeToString(uriEncodedBytes, Base64.NO_WRAP));
+            //callbackContext.success(Base64.encodeToString(uriEncodedBytes, Base64.NO_WRAP));
+            //String base64resStr = Base64.encodeToString(resStr.getBytes(Charset.forName("UTF-8")), Base64.NO_WRAP);
+            //Log.i("cordova.echo", base64resStr);
+            //callbackContext.success(base64resStr);
             _socket.close();
         } catch (UnknownHostException e) {
             callbackContext.error("Don't know about host " + hostName);
         } catch( SocketTimeoutException e) {
-            if(resultBuff.length>0) callbackContext.success(resultBuff);
+            if(sb.size()>0) callbackContext.success(TextUtils.join("\n", sb));
             else callbackContext.error("Connection timeout.");
             //_socket.close();
         } catch (IOException e) {
-            if(resultBuff.length>15){ callbackContext.success(resultBuff); }
+            if(sb.size()>0){ callbackContext.success(TextUtils.join("\n", sb)); }
             else {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));

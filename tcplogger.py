@@ -1,6 +1,6 @@
-import base64
 import socket
 import json
+from urllib.parse import unquote
 
 def start_server(host, port):
     # Create a TCP socket
@@ -18,7 +18,7 @@ def start_server(host, port):
         while True:
             # Accept a connection from a client
             client_socket, client_address = server_socket.accept()
-            print(f"Accepted connection from {client_address}")
+            # print(f"Accepted connection from {client_address}")
 
             # Read data from the client and write it to stdout
             data = client_socket.recv(MAX_BYTES)
@@ -26,10 +26,10 @@ def start_server(host, port):
                 base_data = data.decode('utf-8')
                 try:
                     struct = json.loads(base_data)
-                    msg = base64.b64decode(struct["message"])
+                    msg = unquote(struct["message"])
                     sev = struct["severity"]
                     caller = struct["caller"]
-                    print(f"Received message: {msg}, severity: {sev}, caller: {caller}")
+                    print(f"\"{msg}\", severity: {sev}, caller: {caller}")
                 except Exception:
                        print(f"Got wrong line: '{base_data}'")
                 data = client_socket.recv(MAX_BYTES)

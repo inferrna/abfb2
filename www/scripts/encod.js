@@ -70,8 +70,8 @@ define(
             }
             return buffer;
         },
-        decodeutf8:function(buf) {//http://terenceyim.wordpress.com/2011/03/04/javascript-utf-8-codec-that-supports-supplementary-code-points/
-            var bytes = new Uint8Array(buf);
+        decodeutf8:function(bytes) {//http://terenceyim.wordpress.com/2011/03/04/javascript-utf-8-codec-that-supports-supplementary-code-points/
+            //var bytes = new Uint8Array(buf);
             var len = bytes.length;
             var result = "";
             var code;

@@ -99,6 +99,7 @@ define(
                                        .replace(rep, "$1<b>"+lword+"</b>$2")
                                        .replace(ren, "<br>")
                                        .replace(rex, "$1<b>$2</b>$3");
+                            log.info(resp);
                         } catch(e) { log.warn("error modifying response from socket: "+e) }
                     
                         got_def(resp);

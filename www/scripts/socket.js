@@ -32,15 +32,65 @@ define(
         return -1; // Return -1 if no match is found
     }
 
+
+    function stringToCharCodes(str){
+        var res = [];
+        for (var i = 0; i < str.length; i++) {
+            res.push(str.charCodeAt(i));
+        }
+        log.warn("stringToCharCodes got len "+res.length);
+        return res;
+    }
+    function decodeCharCodesToUTF8(charCodes) {
+    // Convert an array of character codes to a string
+        var utf8String = '';
+
+        for (var i = 0; i < charCodes.length; i++) {
+            // Check if it's a valid UTF-8 code point
+            if (charCodes[i] >= 0 && charCodes[i] <= 0x7F) {
+                // Single-byte character
+                utf8String += String.fromCharCode(charCodes[i]);
+            } else if (charCodes[i] >= 0xC0 && charCodes[i] <= 0xDF && i + 1 < charCodes.length) {
+                // Two-byte character
+                utf8String += String.fromCharCode(((charCodes[i] & 0x1F) << 6) | (charCodes[i + 1] & 0x3F));
+                i++; // Move to the next character code
+            } else if (charCodes[i] >= 0xE0 && charCodes[i] <= 0xEF && i + 2 < charCodes.length) {
+                // Three-byte character
+                utf8String += String.fromCharCode(((charCodes[i] & 0xF) << 12) | ((charCodes[i + 1] & 0x3F) << 6) | (charCodes[i + 2] & 0x3F));
+                i += 2; // Move to the next character code
+            } else {
+                // Invalid UTF-8 code point
+                throw new Error('Invalid UTF-8 encoding');
+            }
+        }
+
+        return utf8String;
+    }
+
     function parse_resp(resp){
         "use strict";
+        //log.warn("Raw response is:\n"+base64resp);
+        //const resp = decodeURIComponent(window.atob(base64resp));
+        //const resp = window.atob(base64resp);
+        
+        
+        //Debug code!!
+        //log.info(decodeCharCodesToUTF8(stringToCharCodes(resp)));
+/*
+        for (var i = 0; i < resp.length; i++) {
+            try {
+                log.info(resp.charAt(i));
+            } catch(e) {
+                log.warn("Failed to decode char at "+i+" with code "+resp.charCodeAt(i));
+            }
+        }
+*/
         if(resp.match(/.*\n552 .{1,32}\n.*/)){
             if(rcl===0){rcl=1; get_matches();}
             else{rcl=0; callback("<b>"+word+"</b> not found.");}
         } else {
             var arr = resp.split("\n").filter(function(el){return el!='';});
             var start = findIndexByRegex(arr, /1\d\d .{2,32}/); //First line
-            log.warn("Raw response is:\n"+resp);
             if(start==-1) {
                 log.warn("Response was unsuccessful, code 1xx not found");
                 return;
@@ -51,6 +101,7 @@ define(
                 return;
             }
             var newresp = arr.slice(start+1, end-1).join("\n");
+            log.warn("Response was successful, proceed further with length "+newresp.length);
             callback(newresp);
         }
     }

@@ -15,21 +15,30 @@ define(
         }
     } catch(e) { console.warn("No cordova sockets available."); }
     function send_log(str, severity) {
-       const callerInfo = new Error().stack.split('\n').slice(3).map(function(s){return s.trim()}).join('<-');
-       tcpsend([host, port, "{\"message\": \""+window.btoa(""+str)+"\", \"severity\": \""+severity+"\", \"caller\":\""+callerInfo+"\"}"]);
+        var callerInfo = "";
+        try {
+            callerInfo = new Error().stack.split('\n').slice(3).map(function(s){return s.trim()}).join('<-');
+        } catch(e) {
+            //console.warn(e);
+        }
+        try {
+           tcpsend([host, port, "{\"message\": \""+encodeURIComponent(""+str)+"\", \"severity\": \""+severity+"\", \"caller\":\""+callerInfo+"\"}"]);
+        } catch(e) {
+            //console.warn(e);
+        }
     }
     return {
         info:function(str){
-            send_log(str, "info");
             console.log(str);
+            send_log(str, "info");
         },
         warn:function(str){
-            send_log(str, "warn");
             console.warn(str);
+            send_log(str, "warn");
         },
         error:function(str){
-            send_log(str, "error");
             console.error(str);
+            send_log(str, "error");
         }
     };
   }

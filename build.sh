@@ -13,6 +13,6 @@ adb install -r /home/inferno/.dev/Android/abfb2/platforms/android/build/outputs/
 printf "\nClear logs\n"
 adb logcat -c
 printf "\nPush book\n"
-adb push prolog.epub /data/data/com.example.abread/lib/prolog.epub
+adb push hwjm.epub /data/data/com.example.abread/lib/prolog.epub
 printf "\nPush book to /sdcard/\n"
-adb push prolog.epub /sdcard/
+adb push hwjm.epub /sdcard/
