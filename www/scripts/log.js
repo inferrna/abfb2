@@ -6,6 +6,7 @@ define(
     var exec = null;
     var callback = function(){};
     function tcpsend(arr){};
+    var logs_enabled = true;
     try {
         exec = cordova.require('cordova/exec');
         tcpsend = function(arr) {
@@ -22,23 +23,30 @@ define(
             //console.warn(e);
         }
         try {
-           tcpsend([host, port, "{\"message\": \""+encodeURIComponent(""+str)+"\", \"severity\": \""+severity+"\", \"caller\":\""+callerInfo+"\"}"]);
+           var data = "{\"message\": \""+encodeURIComponent(""+str)+"\", \"severity\": \""+severity+"\", \"caller\":\""+callerInfo+"\"}";
+           tcpsend([host, port, data]);
         } catch(e) {
             //console.warn(e);
         }
     }
     return {
         info:function(str){
-            console.log(str);
-            send_log(str, "info");
+            if(logs_enabled) {
+                console.log(str);
+                send_log(str, "info");
+            }
         },
         warn:function(str){
-            console.warn(str);
-            send_log(str, "warn");
+            if(logs_enabled) {
+                console.warn(str);
+                send_log(str, "warn");
+            }
         },
         error:function(str){
-            console.error(str);
-            send_log(str, "error");
+            if(logs_enabled) {
+                console.error(str);
+                send_log(str, "error");
+            }
         }
     };
   }

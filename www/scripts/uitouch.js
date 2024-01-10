@@ -20,8 +20,6 @@ define(
       targimg.style.display = 'none';
       targimg.style.position = "absolute";
       targimg.style.display = 'block';
-      targimgw = stuff.getStyle(targimg, 'width');
-      targimgh = stuff.getStyle(targimg, 'height');
       targimg.style.display = 'none';
       var reprefix = new RegExp(stuff.pprefix+"\\d+?");
       var scale = 1.0;
@@ -61,7 +59,7 @@ define(
       }
       function expand2w(off, text){
           "use strict";
-          var re = /[\s\.\;\"\,\<\>\(\)—\-\“]/;
+          var re = /\W/;
           var spirale = [-1, 1, -2, 2, -3, 3];
           var newoff = 0;
           if(text.charAt(off).match(/\s/)){
@@ -72,7 +70,7 @@ define(
           }
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
-          return text.slice(loind+1, hiind).replace(/(^\s)|[\.\!\?\,\;\:\"\“\)\(]|(\s$)/gm, "");
+          return text.slice(loind+1, hiind).replace(/\W|(\s$)/gm, "");
       }
       function expand23w(word, text, off){
           "use strict";
@@ -171,6 +169,20 @@ define(
           }
           return true;
       }
+      function removeHighlightedSpan() {
+        var highlightedSpans = document.querySelectorAll('span.highlighted');
+        for(var i=0; i<highlightedSpans.length; i++) {
+          var span = highlightedSpans[i];
+          var textNode = document.createTextNode(span.textContent);
+          span.parentNode.replaceChild(textNode, span);
+        }
+      }
+      function replaceSelectionWithSpan(selectedText, range, element) {
+          removeHighlightedSpan();
+          const span = document.createElement('span');
+          span.className = 'highlighted';
+          range.surroundContents(span);
+      }
       function selectword(x, y, rec){
           "use strict";
           max_Y = y;
@@ -195,37 +207,27 @@ define(
               if(goff){off = goff[0]; el = goff[1];}
           }
           if(el){
-              log.warn("el.id=="+el.id);//NFP
-              log.warn("el==");//NFP
-              log.warn(el);//NFP
+              log.warn("Select inside el.id=="+el.id);//NFP
           }
+
           if(el && off>-1){
+              function getRangeFromWord(word) {
+                  var newoff = Math.max(0, off - word.length);
+                  while(el.textContent.substring(newoff, newoff+word.length) != word) {
+                      newoff += 1;
+                  }
+                  var rng = document.createRange();
+                  rng.setStart(el, newoff);
+                  const end = newoff+word.length;
+                  rng.setEnd(el, end);
+                  log.warn("Got range from "+newoff+" to "+end+" for word "+word);
+                  return rng;
+              }
               var txt = el.textContent;//new String(el.textContent);
               var selected_word = null;
-              try {
-                  log.warn("off=="+off);//NFP
-                  var sel = window.getSelection();
-                  sel.removeAllRanges();
-                  var rng = document.createRange();
-                  rng.selectNode(el);
-                  rng.setStart(el, off);
-                  rng.setEnd(el, off+1);
-                  if(rng.expand){
-                      log.warn("rng.expand and sel.addRange");//NFP
-                      rng.expand("word");
-                      sel.addRange( rng );
-                      selected_word = sel.toString();
-                  } else {
-                      log.warn("sel.modify and sel.collapseToStart");//NFP
-                      sel.addRange(rng);
-                      sel.modify("extend", "forward", "word");
-                      sel.collapseToEnd();
-                      sel.modify("extend", "backward", "word");
-                      selected_word = sel.toString();
-                  }
-              } catch(e) { selected_word = expand2w(off, txt); 
-                           log.warn("Got error "+e.stack+" using expand2w, got "+selected_word+" off=="+off);
-              }
+              selected_word = expand2w(off, txt);
+              replaceSelectionWithSpan(selected_word, getRangeFromWord(selected_word), el);
+                  //log.warn("Got error \'"+e+"\' use expand2w instead, got "+selected_word+" off=="+off);
               if(!selected_word || !selected_word.length){
                   selected_word = expand2w(off, txt);
               }
@@ -286,13 +288,13 @@ define(
               }
           },
           handleClick:function(evt){
+              selectword(evt.center.x, evt.center.y);
+              targimg.style.display = 'block';
+              const targimgw = parseInt(stuff.getStyle(targimg, 'width'));
+              const targimgh = parseInt(stuff.getStyle(targimg, 'height'));
               targimg.style.left = (evt.center.x-(targimgw||8)/2)+"px";
               targimg.style.top = (evt.center.y-(targimgh||8)/2)+"px";
-              targimg.style.display = 'block';
-              selectword(evt.center.x, evt.center.y);
-              log.warn("target is");//NFP
-              log.warn(evt.target);//NFP
-              log.warn(evt.srcEvent.target);//NFP
+              log.warn("target is "+evt.target);//NFP
               window.setTimeout(function(){targimg.style.display = 'none';}, 256);
           },
           handleKey:function(evt){

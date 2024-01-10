@@ -175,3 +175,13 @@ div.muchopts {
     margin-right: 0.75em;
 /*    text-shadow:#aaa 0px 0.3px 0, #aaa 0px -0.3px 0px, #aaa 0.3px 0px 0px, #aaa -0.3px 0px 0px;*/
   }
+
+span.highlighted {
+  background-color: #000; /* Set a background color for the selection */
+  color: #ffffff; /* Set text color for the selection */
+}
+
+::selection {
+  background-color: #d3d3d3; /* Set a background color for the selection */
+  color: #000; /* Set text color for the selection */
+}
