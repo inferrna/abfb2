@@ -41,7 +41,7 @@ div.muchopts {
     height: 4px;
     width: 10px;
     bottom: 0px;
-    background-color: #AABBCC;
+    background-color: #DDFFDD;
     border-radius: 5px;
   }
   #pop {
@@ -94,7 +94,7 @@ div.muchopts {
   }
   .popflex > div
   {
-      background-color: #EEEEEE;
+      background-color: #FFEEDD;
       overflow:hidden;
       width: 100%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
@@ -110,7 +110,7 @@ div.muchopts {
   }
   .dpopflex > div
   {
-      background-color: #111111;
+      background-color: #DDEEFF;
       overflow:hidden;
       width: 100%; /* To make the transition work nicely.  (Transitions to/from
                       "width:auto" are buggy in Gecko and Webkit, at least.
@@ -162,7 +162,7 @@ div.muchopts {
   .bcol {
     /*padding-left: 0.75em;
     padding-right: 0.75em;*/
-    text-align: justify;
+    text-align: left;
     overflow:hidden;
     font-size:0.75em;
     word-wrap:normal;
@@ -172,8 +172,8 @@ div.muchopts {
     width: 98%;
     padding: 0px;
     /*right: 4pt;*/
-    margin-left: 0.75em;
-    margin-right: 0.75em;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
 /*    text-shadow:#aaa 0px 0.3px 0, #aaa 0px -0.3px 0px, #aaa 0.3px 0px 0px, #aaa -0.3px 0px 0px;*/
   }
 
@@ -187,6 +187,6 @@ span.highlighted {
 }
 
 ::selection {
-  background-color: #d3d3d3; /* Set a background color for the selection */
+  background-color: #eee; /* Set a background color for the selection */
   color: #000; /* Set text color for the selection */
 }
