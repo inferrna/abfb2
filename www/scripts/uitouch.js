@@ -60,16 +60,9 @@ define(
       function expand2w(off, text){
           "use strict";
           var re = /\W/;
-          var spirale = [-1, 1, -2, 2, -3, 3];
           var newoff = 0;
-          if(text.charAt(off).match(/\s/)){
-              for(var i = 0; i<spirale.length; i++){
-                  newoff = clip(off+spirale[i], 0, text.length);
-                  if(!text.charAt(newoff).match(/\s/)) {off = newoff; break;} 
-              }
-          }
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
-          for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
+          for(var loind = off; re.test(text.charAt(loind))===false && loind > -1; loind--){}
           return text.slice(loind+1, hiind).replace(/\W|(\s$)/gm, "");
       }
       function expand23w(word, text, off){
@@ -175,6 +168,7 @@ define(
           var span = highlightedSpans[i];
           var textNode = document.createTextNode(span.textContent);
           span.parentNode.replaceChild(textNode, span);
+          span.remove();
         }
       }
       function replaceSelectionWithSpan(selectedText, range, element) {
@@ -226,7 +220,12 @@ define(
               var txt = el.textContent;//new String(el.textContent);
               var selected_word = null;
               selected_word = expand2w(off, txt);
-              replaceSelectionWithSpan(selected_word, getRangeFromWord(selected_word), el);
+              const rng = getRangeFromWord(selected_word);
+              //var sel = getSelection();
+              //sel.removeAllRanges();
+              //sel.addRange(rng);
+              replaceSelectionWithSpan(selected_word, rng, el);
+
                   //log.warn("Got error \'"+e+"\' use expand2w instead, got "+selected_word+" off=="+off);
               if(!selected_word || !selected_word.length){
                   selected_word = expand2w(off, txt);
@@ -299,6 +298,7 @@ define(
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
+              console.warn("Got keyboard event with code "+Code);
               if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();
