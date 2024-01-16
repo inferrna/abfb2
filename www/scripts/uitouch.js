@@ -168,7 +168,7 @@ define(
           var span = highlightedSpans[i];
           var textNode = document.createTextNode(span.textContent);
           span.parentNode.replaceChild(textNode, span);
-          span.remove();
+          if(span && span.remove) span.remove();
         }
       }
       function replaceSelectionWithSpan(selectedText, range, element) {
@@ -298,7 +298,7 @@ define(
           },
           handleKey:function(evt){
               var Code = parseInt(evt.keyCode);
-              console.warn("Got keyboard event with code "+Code);
+              log.warn("Got keyboard event with code "+Code);
               if([37,38,39,40,107,187,109,189].indexOf(Code)===-1) return;
               evt.stopPropagation();
               evt.preventDefault();
