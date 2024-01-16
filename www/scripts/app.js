@@ -124,7 +124,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
     hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
-    hammerpop.on("click tap press", uitouch.handleClick);
+    hammerpop.on("press", uitouch.handleClick);
     hammermtext.on("click tap press", function(e){
         popups.map(function(el){el.style.display="none";});
         uitouch.handleClick(e);
@@ -264,8 +264,13 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
             cl.appendChild(nosnd);
             el.style.display = 'block';
             if(els && els.length){
+                function on_el_click(evt) {
+                    const y = evt.target.getBoundingClientRect().y;
+                    thumb_block(y, evt.target.textContent, 'block');
+                }
                 for(var i = 0; i<els.length; i++){
                     cl.appendChild(document.createElement("br"));
+                    els[i].addEventListener('click', on_el_click, false); 
                     cl.appendChild(els[i]);
                 }
             }
