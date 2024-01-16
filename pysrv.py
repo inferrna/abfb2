@@ -9,18 +9,46 @@ try: from lxml import etree
 except: import xml.etree.ElementTree as etree
 from xml.sax.saxutils import escape
 
-def get_def(word, dct, host, port):
+def get_def(text, host, port):
     #HOST = 'localhost'    # The remote host
     #PORT = 2628         # The same port as used by the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
-    s.recv(1024)
-    s.sendall(('DEFINE '+dct+' '+word+'\n').encode())
-    data = s.recv(1024)
-    if data.decode()[:3]=="150":
-        data = data + s.recv(512000)
-    s.close()
+    s.sendall(f"{text}\n".encode())
+    data = s.recv(65536)
     return data
+
+def _get_def(request, host, port):
+    # Create a socket object
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        # Connect to the server
+        client_socket.connect((host, port))
+
+        # Send the request
+        client_socket.sendall((f"{request}\n").encode('utf-8'))
+
+        # Receive the response
+        response = b''
+        while True:
+            data = client_socket.recv(1024)
+            if not data:
+                break
+            response += data
+
+            # Check if the response ends with a line starting with 2xx or 5xx
+            if b'\n2' in response or b'\n5' in response:
+                break
+
+        return response.decode('utf-8')
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+    finally:
+        # Close the socket
+        client_socket.close()
 
 
 
@@ -50,17 +78,13 @@ class Handler(BaseHTTPRequestHandler):
         self.do_smth(get_data)
 
     def do_smth(self, data):
-        if data['swac']:
+        if 'swac' in data:
             f = open('swac.json', 'w')
             f.write(str(data['swac']))
             f.close()
         try: word = data['text'][0]
         except:
             self.wfile.write('{error: no word given}'.encode('utf-8'))
-            return
-        try: dct = data['dict'][0]
-        except:
-            self.wfile.write('{error: no dictionary given}'.encode('utf-8'))
             return
         try: host = data['host'][0]
         except:
@@ -70,8 +94,7 @@ class Handler(BaseHTTPRequestHandler):
         except:
             self.wfile.write('{error: no port given}'.encode('utf-8'))
             return
-        print(dct, host, port, word)
-        self.wfile.write(get_def(word, dct, host, port))
+        self.wfile.write(get_def(word, host, port))
         if not self.wfile.closed:
             self.wfile.flush()
             self.wfile.close()
