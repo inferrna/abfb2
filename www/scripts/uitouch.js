@@ -67,30 +67,62 @@ define(
       }
       function expand23w(word, text, off){
           "use strict";
-          var rep = /[\.\,\:\;\?\!—\)\(\"\“]/mg;
-          var res = [];
-          word = word.replace(rep, '');
-          var newtexts = text.split(rep);
-          var newtext = null, j=0, i=0;
-          for(j=0; j<newtexts.length && i<off; j++){
-                i+=(newtexts[j].length+1);
-              }
-          if(!newtext) newtext = newtexts[j-1];
-          if(!newtext) newtext = text;
-          var realwords = newtext.match(/[\w\S]{4,99}/mg);
-          if(!realwords) return '';
-          if(realwords.length<4) realwords = newtext.match(/[\w\S]{3,99}/mg);
-          if(realwords.length<4) realwords = newtext.match(/[\w\S]{2,99}/mg);
-          var idx = realwords.indexOf(word);
-          var spirale = [-1, 1, -2, 2, -3, 3, -4, 4];
-          for(i = 0; i<spirale.length && res.length<3; i++){
-                var nw = realwords[idx+spirale[i]];
-                if(nw && nw.length>0 && spirale[i]>0) var snt = newtext.slice(newtext.indexOf(word), newtext.indexOf(nw)+nw.length+1);
-                if(nw && nw.length>0 && spirale[i]<0) var snt = newtext.slice(newtext.indexOf(nw), newtext.indexOf(word)+word.length+1);
-                if(nw && snt && snt.length>0 && res.indexOf(snt)===-1) {res.push(snt); snt=null;}
+          var re = /[\.!?]/gi;
+          var sh = /\.(rm|srm|sm|rd|ts)/gi;
+          var off_start = 0;
+          var rev_first_half = text.slice(0, off).split("").reverse().join("");
+          var cursor = 0;
+          log.warn(rev_first_half);
+          while(cursor < off) {
+            var text_part = rev_first_half.slice(cursor, off);
+            var off_sh = text_part.search(sh);
+            var start_idx = text_part.search(re);
+            log.warn("off_sh = "+off_sh+", start_idx = "+start_idx+", off = "+off+", off_start = "+off_start);
+            if (off_sh == start_idx && off_sh>-1) {
+                //Shift cursor over shorthand
+                cursor += off_sh+1;
+            } else if (start_idx>-1) {
+                //Found ok
+                off_start = cursor + start_idx;
+                break;
+            } else {
+                //No ending symbol found
+                off_start = off;
+                break;
+            }
           }
-          if(newtext.length<99 && res.indexOf(newtext)===-1) res.push(newtext);
-          return res;
+          off_start = Math.max(0, off - off_start);
+          var off_end = text.length;
+          var sh = /(mr|mrs|ms|dr|st)\./gi;
+          cursor = off;
+          while(cursor < text.length) {
+            var text_part = text.slice(cursor, text.length);
+            var match_sh = text_part.match(sh);
+            if(match_sh && match_sh[0]) {
+                var off_sh = text_part.search(sh) + match_sh[0].length - 1;
+            } else {
+                var off_sh = -1;
+            }
+            var end_idx = text_part.search(re);
+            log.warn("off_sh = "+off_sh+", end_idx = "+end_idx+", off = "+off+", off_end = "+off_end);
+            if (off_sh == end_idx && off_sh>-1) {
+                //Shift cursor over shorthand
+                cursor += off_sh+1;
+            } else if (end_idx>-1) {
+                //Found ok
+                off_end = cursor + end_idx;
+                break;
+            } else {
+                //No ending symbol found
+                off_end = text.length;
+                break;
+            }
+          }
+
+          off_end = Math.min(off_end, text.length);
+          log.warn("off_start = "+off_start+", off_end = "+off_end+", text.length = "+text.length);
+
+          return [text.slice(off_start, off_end)];
       }
       function expand2s(off, text){
           "use strict";
@@ -176,6 +208,7 @@ define(
           const span = document.createElement('span');
           span.className = 'highlighted';
           range.surroundContents(span);
+          return span;
       }
       function selectword(x, y, rec){
           "use strict";
@@ -224,14 +257,31 @@ define(
               //var sel = getSelection();
               //sel.removeAllRanges();
               //sel.addRange(rng);
-              replaceSelectionWithSpan(selected_word, rng, el);
 
-                  //log.warn("Got error \'"+e+"\' use expand2w instead, got "+selected_word+" off=="+off);
-              if(!selected_word || !selected_word.length){
-                  selected_word = expand2w(off, txt);
-              }
               if(selected_word && selected_word.length){                  
                   log.warn("got "+selected_word+" off=="+off);
+                  var pel = el;
+                  for(var i = 0; i<6; i+=1) {
+                    if(txt.length > 1024) break;
+                    if(pel.previousSibling) {
+                        pel = pel.previousSibling;
+                        txt = pel.textContent + txt;
+                        off += pel.textContent.length;
+                    } else {
+                        break;
+                    }
+                  }
+                  var nel = el;
+                  for(var i = 0; i<6; i+=1) {
+                    if(txt.length > 1024) break;
+                    if(nel.nextSibling) {
+                        nel = nel.nextSibling;
+                        txt = txt + nel.textContent;
+                    } else {
+                        break;
+                    }
+                  }
+                  replaceSelectionWithSpan(selected_word, rng, el);
                   sharedc.exec('uitouch', 'got_selection')([selected_word.toLowerCase(), expand23w(selected_word, txt, off)]);
               }
           }
