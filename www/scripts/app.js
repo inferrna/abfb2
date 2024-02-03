@@ -16,7 +16,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     var ta_rectObject = txarea.getBoundingClientRect();
     var hammer = require('hammer');
     log.warn("Got hammer"); //NFP
-    log.warn(hammer);
+    //log.warn(hammer);
     var style = document.createElement('style');
     document.getElementsByTagName('head')[0].appendChild(style);
     var sndcnt = document.getElementById('sndcnt');
@@ -124,7 +124,7 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
     hammerpop.on("panleft",  function(evt){if(chkmv(evt)){uitouch.liftcol(pts,-1);}});
     hammerpop.on("panright", function(evt){if(chkmv(evt)){uitouch.liftcol(pts, 1);}});
     hammerpop.on("panup pandown",   function(evt){uitouch.dragpop(evt.center.y);});
-    hammerpop.on("press", uitouch.handleClick);
+    //hammerpop.on("press", uitouch.handleClick);
     hammermtext.on("click tap press", function(e){
         popups.map(function(el){el.style.display="none";});
         uitouch.handleClick(e);
@@ -250,22 +250,12 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
         if(dtext.length > 1){
             var cl = document.getElementById('pts');
             var el = document.getElementById('pop');
+            cl.innerHTML = '';
             var cf = 0.1;
             log.info("el.style.width = "+el.style.width);
-            try {
-                log.info("Set inner HTML to this:\n"+dtext+"\n");
-                cl.innerHTML = dtext;
-            } catch (e) {
-                log.error("Can't set innerHTML to provided response, got error "+e);
-                cl.innerHTML = "Error happen while setting innerHTML, see logs for details";
-            }
-            sndbt.appendChild(sndcnt);
-            cl.appendChild(sndbt);
-            cl.appendChild(nosnd);
-            el.style.display = 'block';
             if(els && els.length){
                 function on_el_click(evt) {
-                    const y = evt.target.getBoundingClientRect().y;
+                    const y = cl.getBoundingClientRect().y;
                     thumb_block(y, evt.target.textContent, 'block');
                 }
                 for(var i = 0; i<els.length; i++){
@@ -274,6 +264,19 @@ function(uitouch, dict, options, book, stuff, sound, sharedf, sharedc, require, 
                     cl.appendChild(els[i]);
                 }
             }
+            try {
+                log.info("Set inner HTML to this:\n"+dtext+"\n");
+                var resp_holder = document.createElement("div");
+                resp_holder.innerHTML = dtext;
+                cl.appendChild(resp_holder);
+            } catch (e) {
+                log.error("Can't set innerHTML to provided response, got error "+e);
+                cl.innerHTML = "Error happen while setting innerHTML, see logs for details";
+            }
+            sndbt.appendChild(sndcnt);
+            cl.appendChild(sndbt);
+            cl.appendChild(nosnd);
+            el.style.display = 'block';
             sndbt.style.display = 'block';
             uitouch.dragpop(-1);
             sndbt.style.display = 'none';
