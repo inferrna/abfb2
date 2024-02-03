@@ -6,15 +6,17 @@ define(
     var exec = null;
     var callback = function(){};
     function tcpsend(arr){};
-    var logs_enabled = true;
-    try {
-        exec = cordova.require('cordova/exec');
-        tcpsend = function(arr) {
-            exec(callback, function(err) {
-                console.warn("Error calling cordova socket: "+err)
-            }, "Echo", "tcpsend", arr);
-        }
-    } catch(e) { console.warn("No cordova sockets available."); }
+    var logs_enabled = false;
+    if(logs_enabled) {
+        try {
+            exec = cordova.require('cordova/exec');
+            tcpsend = function(arr) {
+                exec(callback, function(err) {
+                    console.warn("Error calling cordova socket: "+err)
+                }, "Echo", "tcpsend", arr);
+            }
+        } catch(e) { console.warn("No cordova sockets available."); }
+    }
     function send_log(str, severity) {
         var callerInfo = "";
         try {
