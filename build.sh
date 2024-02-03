@@ -12,7 +12,7 @@ printf "\nInstall apk\n"
 adb install -r /home/inferno/.dev/Android/abfb2/platforms/android/build/outputs/apk/android-debug.apk
 printf "\nClear logs\n"
 adb logcat -c
-printf "\nPush book\n"
-adb push hwjm.epub /data/data/com.example.abread/lib/prolog.epub
-printf "\nPush book to /sdcard/\n"
-adb push hwjm.epub /sdcard/
+printf "\nPush books\n"
+adb push *.epub /data/data/com.example.abread/lib/
+printf "\nPush books to /sdcard/\n"
+adb push *.epub /sdcard/
