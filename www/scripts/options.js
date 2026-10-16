@@ -316,7 +316,7 @@ define(
         var itms = [];
         Array.prototype.slice.call(sel.options).map(function(el){sel.removeChild(el);});
         sel.appendChild(_nm);
-        const arr = txt.split("\n");
+        var arr = txt.split("\n");
         for(var i = 0; i<arr.length; i++){
                 var itms = arr[i].split(" ");
                 var nm  = document.createElement("option");

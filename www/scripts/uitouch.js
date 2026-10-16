@@ -68,7 +68,7 @@ define(
       function expand23w(word, text, off){
           "use strict";
           var re = /[\.!?]/gi;
-          var sh = /\.(rm|srm|sm|rd|ts)/gi;
+          var sh = /\.(rm|srm|sm|rd|ts) /gi;
           var off_start = 0;
           var rev_first_half = text.slice(0, off).split("").reverse().join("");
           var cursor = 0;
@@ -93,7 +93,7 @@ define(
           }
           off_start = Math.max(0, off - off_start);
           var off_end = text.length;
-          var sh = /(mr|mrs|ms|dr|st)\./gi;
+          var sh = / (mr|mrs|ms|dr|st)\./gi;
           cursor = off;
           while(cursor < text.length) {
             var text_part = text.slice(cursor, text.length);
@@ -126,7 +126,7 @@ define(
       }
       function expand2s(off, text){
           "use strict";
-          var re = /[\.\!\?]/;
+          var re = /[;\.\!\?]/;
           for(var hiind = off; re.test(text.charAt(hiind))===false && hiind < text.length; hiind++){}
           for(var loind = off; re.test(text.charAt(loind))===false && loind > 0; loind--){}
           var out = text.slice(loind===0 ? loind : loind+1, hiind===text.length ? hiind : hiind+1);
@@ -215,6 +215,7 @@ define(
           max_Y = y;
           var off = -1;
           var el = null;
+          var getRangeFromWord;
           if(document.caretPositionFromPoint) {
               var cp = document.caretPositionFromPoint(x, y);
               if(cp){
@@ -238,14 +239,14 @@ define(
           }
 
           if(el && off>-1){
-              function getRangeFromWord(word) {
+              getRangeFromWord = function (word) {
                   var newoff = Math.max(0, off - word.length);
                   while(el.textContent.substring(newoff, newoff+word.length) != word) {
                       newoff += 1;
                   }
                   var rng = document.createRange();
                   rng.setStart(el, newoff);
-                  const end = newoff+word.length;
+                  var end = newoff+word.length;
                   rng.setEnd(el, end);
                   log.warn("Got range from "+newoff+" to "+end+" for word "+word);
                   return rng;
@@ -253,7 +254,7 @@ define(
               var txt = el.textContent;//new String(el.textContent);
               var selected_word = null;
               selected_word = expand2w(off, txt);
-              const rng = getRangeFromWord(selected_word);
+              var rng = getRangeFromWord(selected_word);
               //var sel = getSelection();
               //sel.removeAllRanges();
               //sel.addRange(rng);

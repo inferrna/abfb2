@@ -27,7 +27,7 @@ define(
                          var Reader = new FileReader();
                          Reader.onload = function(evt) {
                              var content = new String(evt.target.result);
-                             log.warn("File content: "+content);
+                             //log.warn("File content: "+content);
                          };
 
                          if(file) filename = file.name;

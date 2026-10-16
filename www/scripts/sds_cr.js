@@ -61,7 +61,7 @@ define(
             log.warn("deviceready fired");//NFP
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
                 var rootDir = new DirectoryEntry("my_root", '/', fileSystem);
-                dirs = ['lib', '/', 'Download', 'sdcard', 'sdcard/Download', 'books'];
+                var dirs = ['lib', '/', 'Download', 'sdcard', 'sdcard/Download', 'books'];
                 for(var i=0; i<dirs.length; i++){
                    log.warn("Try to scan "+dirs[i]);
                    fileSystem.root.getDirectory(dirs[i], {
